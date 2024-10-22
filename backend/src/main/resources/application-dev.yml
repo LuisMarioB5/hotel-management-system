@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}/hotel_management_dev?createDatabaseIfNotExist=true
+    username: ${DB_USER}
+    password: ${DB_PWD}
+    jpa:
+      hibernate.ddl-auto: update
+      show-sql: true
+      properties.hibernate.format_sql: true
+
+logging.level.org.hibernate.SQL: DEBUG
