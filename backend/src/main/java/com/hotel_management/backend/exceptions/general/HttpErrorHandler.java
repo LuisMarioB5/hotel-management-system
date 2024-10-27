@@ -1,5 +1,8 @@
-package com.hotel_management.backend.errors;
+package com.hotel_management.backend.exceptions.general;
 
+import com.hotel_management.backend.exceptions.specific.EntityNotActiveException;
+import com.hotel_management.backend.exceptions.specific.ResourceNotFoundException;
+import com.hotel_management.backend.exceptions.specific.ValidationException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

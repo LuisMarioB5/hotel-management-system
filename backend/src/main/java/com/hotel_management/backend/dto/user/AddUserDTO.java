@@ -1,4 +1,4 @@
-package com.hotel_management.backend.user.dto;
+package com.hotel_management.backend.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 

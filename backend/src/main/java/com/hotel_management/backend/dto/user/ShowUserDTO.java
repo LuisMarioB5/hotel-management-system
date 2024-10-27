@@ -1,6 +1,6 @@
-package com.hotel_management.backend.user.dto;
+package com.hotel_management.backend.dto.user;
 
-import com.hotel_management.backend.user.UserEntity;
+import com.hotel_management.backend.model.UserEntity;
 
 public record ShowUserDTO(
     Long id,

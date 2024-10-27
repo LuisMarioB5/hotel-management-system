@@ -1,6 +1,9 @@
-package com.hotel_management.backend.user;
+package com.hotel_management.backend.service.user;
 
-import com.hotel_management.backend.user.dto.AddUserDTO;
+import com.hotel_management.backend.enums.Roles;
+import com.hotel_management.backend.model.UserEntity;
+import com.hotel_management.backend.repository.UserRepository;
+import com.hotel_management.backend.dto.user.AddUserDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -17,7 +20,6 @@ public class UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
@@ -26,8 +28,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
     // Guarda un nuevo usuario
+    @Transactional
     public UserEntity save(@Valid AddUserDTO userDTO) {
         Roles role = Optional.ofNullable(userDTO.role())
                 .map(r -> Roles.valueOf(r.toUpperCase()))

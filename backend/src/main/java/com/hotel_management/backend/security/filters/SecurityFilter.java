@@ -1,9 +1,10 @@
-package com.hotel_management.backend.security.config;
+package com.hotel_management.backend.security.filters;
 
-import com.hotel_management.backend.errors.ValidationException;
-import com.hotel_management.backend.user.UserEntity;
-import com.hotel_management.backend.user.UserRepository;
-import com.hotel_management.backend.security.service.TokenService;
+import com.hotel_management.backend.exceptions.specific.ValidationException;
+import com.hotel_management.backend.config.PermittedRoutesConfig;
+import com.hotel_management.backend.model.UserEntity;
+import com.hotel_management.backend.repository.UserRepository;
+import com.hotel_management.backend.service.auth.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

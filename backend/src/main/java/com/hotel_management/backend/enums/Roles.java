@@ -1,4 +1,4 @@
-package com.hotel_management.backend.user;
+package com.hotel_management.backend.enums;
 
 import lombok.Getter;
 

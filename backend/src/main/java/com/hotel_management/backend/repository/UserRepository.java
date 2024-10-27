@@ -1,5 +1,6 @@
-package com.hotel_management.backend.user;
+package com.hotel_management.backend.repository;
 
+import com.hotel_management.backend.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

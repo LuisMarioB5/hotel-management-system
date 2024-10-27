@@ -1,7 +1,9 @@
-package com.hotel_management.backend.user;
+package com.hotel_management.backend.controller;
 
-import com.hotel_management.backend.user.dto.ShowUserDTO;
-import com.hotel_management.backend.user.dto.AddUserDTO;
+import com.hotel_management.backend.model.UserEntity;
+import com.hotel_management.backend.service.user.UserService;
+import com.hotel_management.backend.dto.user.ShowUserDTO;
+import com.hotel_management.backend.dto.user.AddUserDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

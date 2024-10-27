@@ -1,14 +1,14 @@
-    package com.hotel_management.backend.security.service;
+    package com.hotel_management.backend.service.auth;
 
     import com.auth0.jwt.JWT;
     import com.auth0.jwt.algorithms.Algorithm;
     import com.auth0.jwt.exceptions.JWTCreationException;
     import com.auth0.jwt.exceptions.JWTVerificationException;
     import com.auth0.jwt.interfaces.DecodedJWT;
-    import com.hotel_management.backend.errors.ResourceNotFoundException;
-    import com.hotel_management.backend.errors.ValidationException;
-    import com.hotel_management.backend.user.UserEntity;
-    import com.hotel_management.backend.user.Roles;
+    import com.hotel_management.backend.exceptions.specific.ResourceNotFoundException;
+    import com.hotel_management.backend.exceptions.specific.ValidationException;
+    import com.hotel_management.backend.model.UserEntity;
+    import com.hotel_management.backend.enums.Roles;
     import org.slf4j.Logger;
     import org.slf4j.LoggerFactory;
     import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +22,6 @@
     public class TokenService {
         private final String JWT_SECRET = getSecret();
         private final Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
-
         private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
 
         private String getSecret() {

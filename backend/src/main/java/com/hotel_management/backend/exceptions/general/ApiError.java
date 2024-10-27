@@ -1,4 +1,4 @@
-package com.hotel_management.backend.errors;
+package com.hotel_management.backend.exceptions.general;
 
 import lombok.Getter;
 import lombok.Setter;

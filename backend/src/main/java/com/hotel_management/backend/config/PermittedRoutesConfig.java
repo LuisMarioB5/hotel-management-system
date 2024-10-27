@@ -1,4 +1,4 @@
-package com.hotel_management.backend.security.config;
+package com.hotel_management.backend.config;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;
@@ -10,6 +10,7 @@ import java.util.Set;
 @Component
 @Getter
 public class PermittedRoutesConfig {
+
     private final Map<String, Set<String>> permittedRoutes = new HashMap<String, Set<String>>();
 
     public PermittedRoutesConfig() {

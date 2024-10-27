@@ -1,5 +1,6 @@
-package com.hotel_management.backend.security.config;
+package com.hotel_management.backend.config;
 
+import com.hotel_management.backend.security.filters.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,8 @@
-package com.hotel_management.backend.security;
+package com.hotel_management.backend.controller;
 
-import com.hotel_management.backend.user.UserEntity;
-import com.hotel_management.backend.security.service.TokenService;
+import com.hotel_management.backend.dto.auth.AuthDTO;
+import com.hotel_management.backend.model.UserEntity;
+import com.hotel_management.backend.service.auth.TokenService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,6 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
-
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired

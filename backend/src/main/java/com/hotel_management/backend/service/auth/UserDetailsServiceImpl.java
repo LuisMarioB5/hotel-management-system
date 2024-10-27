@@ -1,6 +1,6 @@
-package com.hotel_management.backend.security.service;
+package com.hotel_management.backend.service.auth;
 
-import com.hotel_management.backend.user.UserRepository;
+import com.hotel_management.backend.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
-
     private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
     @Autowired
