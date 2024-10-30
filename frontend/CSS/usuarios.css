@@ -1,0 +1,316 @@
+/* usuarios.css */
+
+.user-list-header {
+    background-color: #007bff;
+    padding: 15px;
+    border-radius: 5px 5px 0 0;
+    margin-top: 20px;
+}
+.user-list-header h2 {
+    color: #fff;
+    font-size: 20px;
+    margin: 0;
+}
+
+.user-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.create-button {
+    background-color: #28a745;
+    color: #fff;
+    margin-top: 10px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-button:hover {
+    background-color: #218838;
+}
+
+.table-controls {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-controls label {
+    font-size: 14px;
+}
+
+.table-controls select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.table-controls input[type="text"] {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+
+/* Tabla de usuarios */
+.user-table {
+    margin-top: 1px;
+    overflow-x: auto;
+}
+
+.user-table table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-table th, .user-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-table th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.user-table td {
+    background-color: #fff;
+}
+
+.user-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.user-table .status {
+    padding: 5px 10px;
+    border-radius: 15px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.status.active {
+    background-color: #28a745;
+}
+
+.status.inactive {
+    background-color: #dc3545;
+}
+
+.edit-btn, .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+}
+
+.edit-btn i {
+    color: #007bff;
+}
+
+.delete-btn i {
+    color: #dc3545;
+}
+
+.edit-btn:hover i {
+    color: #0056b3;
+}
+
+.delete-btn:hover i {
+    color: #c82333;
+}
+
+/* Contenedor general de la sección */
+.user-section {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+/* Sección de paginación */
+.pagination-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    margin-top: 10px;
+}
+.pagination-info span {
+    font-size: 14px;
+    color: #666;
+}
+.pagination-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.pagination-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+.pagination-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos del modal */
+.modalusu {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease; /* Suaviza la aparición del modal */
+}
+
+.modalusu-content {
+    background: linear-gradient(135deg, #488ada, #ab2497);
+    width: 500px;
+    max-width: 90%;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    animation: modalFadeIn 0.3s ease forwards; /* Animación de entrada */
+
+}
+
+@keyframes modalFadeIn {
+    to { transform: scale(1); }
+}
+
+.modalusu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+}
+
+.modalusu-header h2 {
+    margin: 0;
+}
+
+.close-buttonusu {
+    cursor: pointer;
+    padding: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    background-color: #dc3545;
+    transition: background-color 0.3s;
+}
+
+.close-buttonusu:hover {
+    background-color: #b52b3a; /* Color más oscuro al pasar el ratón */
+}
+
+.modalusu-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: white;
+    margin-top: 15px;
+}
+
+.modalusu-body label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #f1f1f1;
+}
+
+.modalusu-body input,
+.modalusu-body select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+
+}
+
+.modalusu-body input:focus,
+.modalusu-body select:focus {
+    border-color: #488ada; /* Cambio de color al enfocar */
+    outline: none;
+}
+
+.modalusu-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn_cancelusu {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;background-color: #e74c3c;
+    color: white;
+}
+
+.btn_cancelusu:hover {
+    background-color: #c0392b; /* Un rojo más oscuro para hover */
+    transform: translateY(-2px); /* Efecto de elevación en hover */
+}
+.btn_cancelusu:active {
+    background-color: #a93226; /* Un tono aún más oscuro en clic */
+    transform: translateY(0); /* Vuelve a su posición al presionar */
+}
+/* Botón de Guardar */
+.btn_saveusu {
+    background-color: #2ecc71;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn_saveusu:hover {
+    background-color: #27ae60; /* Un verde más oscuro para hover */
+    transform: translateY(-2px); /* Efecto de elevación en hover */
+}
+
+.btn_saveusu:active {
+    background-color: #229954; /* Un tono aún más oscuro en clic */
+    transform: translateY(0); /* Vuelve a su posición al presionar */
+}
