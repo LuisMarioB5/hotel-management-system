@@ -3,7 +3,7 @@ package com.hotel_management.backend.controller;
 import com.hotel_management.backend.model.UserEntity;
 import com.hotel_management.backend.service.user.UserService;
 import com.hotel_management.backend.dto.user.ShowUserDTO;
-import com.hotel_management.backend.dto.user.AddUserDTO;
+import com.hotel_management.backend.dto.user.CreateUserDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +25,8 @@ public class UserController {
 
     // Endpoint para crear un nuevo usuario
     @PostMapping
-    public ResponseEntity<ShowUserDTO> addUser(@RequestBody @Valid AddUserDTO user) {
-        UserEntity userEntity = service.save(user);
+    public ResponseEntity<ShowUserDTO> createUser(@RequestBody @Valid CreateUserDTO userDTO) {
+        UserEntity userEntity = service.save(userDTO);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(userEntity.getId())

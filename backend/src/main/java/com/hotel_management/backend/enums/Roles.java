@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum Roles {
     RECEPCIONISTA("recepcionista", "ROLE_RECEPCIONISTA", 1),
     ADMINISTRADOR("administrador", "ROLE_ADMINISTRADOR", 3),
-    LIMPIEZA("limpieza", "ROLE_LIMPIEZA", 1),
+    MANTENIMIENTO("mantenimiento", "ROLE_MANTENIMIENTO", 1),
     VISITANTE("visitante", "ROLE_VISITANTE", 0);
 
     private final String displayName;

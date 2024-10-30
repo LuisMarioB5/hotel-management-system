@@ -11,28 +11,35 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "usuarios")
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-//    private EmployeeEntity employeeEntity; // TODO se debe crear las relaciones hasta llegar a la entidad persona
+    @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "id_empleado", referencedColumnName = "id", unique = true)
+    private EmployeeEntity employeeEntity;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "rol")
     private Roles role;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "nombre_usuario", nullable = false, unique = true)
     private String username;
 
+    @Column(name = "clave", nullable = false)
     private String password;
 
-    @Column(columnDefinition = "BOOLEAN")
+    @Column(name = "esta_activo")
     private Boolean isActive;
 
-    public UserEntity(Roles role, String username, String password, Boolean isActive) {
+    public UserEntity(EmployeeEntity employeeEntity, Roles role, String username, String password, Boolean isActive) {
+        this.employeeEntity = employeeEntity;
         this.role = role;
         this.username = username;
         this.password = password;
@@ -42,6 +49,16 @@ public class UserEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
     }
 
     @Override

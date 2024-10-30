@@ -1,0 +1,38 @@
+package com.hotel_management.backend.dto.person;
+
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
+
+public record CreatePersonDTO(
+        @NotBlank(message = "El nombre no debe estar vacío")
+        @Size(max = 50, message = "El nombre no puede exceder 50 caracteres")
+        String name,
+
+        @NotBlank(message = "El apellido no debe estar vacío")
+        @Size(max = 50, message = "El apellido no puede exceder 50 caracteres")
+        String lastName,
+
+        @NotBlank(message = "El teléfono no debe estar vacío")
+        @Pattern(regexp = "^(\\+\\d{1})?\\d{3}-?\\d{3}-?\\d{4}$", message = "Formato del número de teléfono no válido")
+        String phoneNumber,
+
+        @NotBlank(message = "La dirección no debe estar vacía")
+        @Size(max = 150, message = "La dirección no puede exceder 150 caracteres")
+        String address,
+
+        @NotNull(message = "La fecha de nacimiento no debe estar vacía")
+        @Past(message = "La fecha de nacimiento debe estar en el pasado")
+        LocalDate birthDate,
+
+        @NotBlank(message = "La cédula no debe estar vacía")
+        @Pattern(regexp = "^\\d{3}-?\\d{7}-?\\d$", message = "Formato de cédula no válido. Debe ser XXX-XXXXXXX-X, XXXXXXXXX-X o XXXXXXXXXXX")
+        String idCard,
+
+        @NotBlank(message = "El email no debe estar vacío")
+        @Email(message = "El email tiene un formato inválido")
+        String email,
+
+        Boolean isActive) {
+
+}
