@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -47,8 +48,17 @@ public class HttpErrorHandler {
         return ResponseEntity.status(error.getStatus()).body(error);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        var errors = e.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> new ValidationErrorData(fieldError.getField(), fieldError.getDefaultMessage()))
+                .toList();
+
+        return ResponseEntity.badRequest().body(errors);
+    }
+
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<?> handleValidationErrors(HandlerMethodValidationException e) {
+    public ResponseEntity<?> handleHandlerMethodValidationException(HandlerMethodValidationException e) {
         var errors = e.getAllErrors().stream()
                 .map(error -> {
                     if (error instanceof FieldError fieldError) {

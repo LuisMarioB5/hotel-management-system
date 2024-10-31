@@ -20,7 +20,6 @@ public record CreatePersonDTO(
         String address,
 
         @NotNull(message = "La fecha de nacimiento no debe estar vacía")
-        @Past(message = "La fecha de nacimiento debe estar en el pasado")
         @Pattern(regexp = "\\d{2}-\\d{2}-\\d{4}", message = "Formato de la fecha de nacimiento no válido. Debe ser dd-MM-yyyy")
         String birthDate,
 
