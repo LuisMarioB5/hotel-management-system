@@ -1,7 +1,7 @@
 import { handleLoginNotification, parseJwt } from '../scripts/utils.js'
 
-async function loginIntegration() {
-    document.querySelector('.form-section form').addEventListener('submit', async function(event) {
+export async function loginIntegration() {
+    document.querySelector('.login-form-section form').addEventListener('submit', async function(event) {
         event.preventDefault();
         var username = document.getElementById('username').value;
         var password = document.getElementById('password').value;
@@ -33,4 +33,3 @@ async function loginIntegration() {
         }
     });
 }
-loginIntegration();

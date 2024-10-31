@@ -1,3 +1,8 @@
+export function validateFields() {
+    validateUsername();
+    validatePassword();
+}
+
 /*
     * Validación del nombre de usuario.
     * Requisitos:
@@ -11,7 +16,6 @@ function validateUsername() {
     username.addEventListener('input', () => {
         const value = username.value;
 
-        const regexp = new RegExp('A-Za-z0-9._');
         if (value.length < 3 || value.length > 15) {
             username.setCustomValidity("La longitud debe tener entre 3 y 15 caracteres");
         } else if (!/^[A-Za-z0-9._]+$/.test(value)) {
@@ -21,7 +25,6 @@ function validateUsername() {
         }
     });
 }
-validateUsername();
 
 /*
     * Clave del usuario.
@@ -42,7 +45,6 @@ function validatePassword() {
     password.addEventListener('input', () => {
         const value = password.value;
 
-        const regexp = new RegExp('A-Za-z0-9._');
         if (value.length < 8) {
             password.setCustomValidity("La longitud debe tener al menos 8 caracteres");
         } else if (value.length > 255) {
@@ -54,4 +56,3 @@ function validatePassword() {
         }
     });
 }
-validatePassword();
