@@ -42,7 +42,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         String requestMethod = request.getMethod();
 
         // Verifica si la ruta no necesita autenticación
-        if (permittedRoutesConfig.isPermitted(requestPath, requestMethod)) {
+        if (permittedRoutesConfig.isPermitted(requestPath, requestMethod) || requestMethod.equals("OPTIONS")) {
             filterChain.doFilter(request, response);
             return;
         }

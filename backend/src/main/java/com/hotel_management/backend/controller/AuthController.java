@@ -43,6 +43,8 @@ public class AuthController {
 
             var JWTToken = tokenService.generateToken((UserEntity) authUser.getPrincipal(), user.username());
 
+            logger.info("Token generado Satisfactoriamente");
+
             return ResponseEntity.ok()
                     .header("Authorization", "Bearer " + JWTToken)
                     .build();

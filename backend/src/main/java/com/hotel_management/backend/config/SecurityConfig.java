@@ -41,6 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         logger.info("Inicializando la configuración de la cadena de filtros de seguridad");
 
+        logger.info("Agregando rutas sin autenticación");
         for (Map.Entry<String, Set<String>> permittedRoute :
                 permittedRoutesConfig.getPermittedRoutes().entrySet()) {
             for (String method : permittedRoute.getValue()) {
@@ -48,12 +49,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.valueOf(method.toUpperCase()), permittedRoute.getKey()).permitAll());
             }
         }
+        logger.info("Finalizó el agregado de rutas sin autenticación");
 
         return http
                 .csrf(AbstractHttpConfigurer::disable)  // Deshabilitamos CSRF porque estamos usando tokens JWT
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless para trabajar con JWT
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())  // Cualquier otra solicitud requiere autenticación
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)  // Añadir nuestro filtro personalizado antes de UsernamePasswordAuthenticationFilter
                 .build();
