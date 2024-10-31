@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 @Entity
@@ -49,10 +51,16 @@ public class PersonEntity {
         this.lastName = dto.lastName();
         this.phoneNumber = dto.phoneNumber();
         this.address = dto.address();
-        this.birthDate = dto.birthDate();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        try {
+            this.birthDate = LocalDate.parse(dto.birthDate(), formatter);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Formato de fecha de nacimiento no válido. Debe ser dd-MM-yyyy.");
+        }
+
         this.idCard = dto.idCard();
         this.email = dto.email();
-        this.isActive = Optional.ofNullable(dto.isActive())
-                .orElse(true);
+        this.isActive = Optional.ofNullable(dto.isActive()).orElse(true);
     }
 }
