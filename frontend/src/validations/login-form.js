@@ -40,7 +40,7 @@ function validateUsername() {
 */
 function validatePassword() {
     const password = document.getElementById('password');
-    password.setCustomValidity("El nombre de usuario debe tener entre 3 y 15 caracteres");
+    password.setCustomValidity("La contraseña debe tener al menos 8 caracteres");
 
     password.addEventListener('input', () => {
         const value = password.value;

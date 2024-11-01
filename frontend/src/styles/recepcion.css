@@ -1,0 +1,202 @@
+/* Contenedor principal de habitaciones/ tambien se usa para R_recepcion y R_Productos*/
+.rooms-container { 
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    margin: 0 auto;
+}
+
+/* Selector de piso */
+.floor-selector {
+    width: 100%;
+    max-width: 300px;
+    
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Grid de habitaciones */
+.rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}
+
+/* Tarjeta de habitación */
+.room-card {
+    background: rgb(238, 235, 235);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.room-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+
+/* Encabezado de la tarjeta */
+.room-header {
+    padding: 15px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.room-number {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.room-icon {
+    font-size: 1.2em;
+}
+
+/* Categoría de la habitación */
+.room-category {
+    padding: 5px 15px;
+    font-size: 0.9em;
+    color: #666;
+    text-transform: uppercase;
+}
+
+/* Estado de la habitación */
+.room-status {
+    padding: 15px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Colores de borde para cada estado */
+.room-card.disponible {
+    border: 2px solid #00c853;
+}
+
+.room-card.ocupado {
+    border: 2px solid #ff3d00;
+}
+.room-card.ocupadoven {
+    border: 2px solid #ffb300;
+}
+.room-card.limpieza {
+    border: 2px solid #00b0ff;
+}
+.room-status.disponible {
+    background-color: #00c853;
+}
+
+.room-status.ocupado {
+    background-color: #ff3d00;
+}
+
+.room-status.ocupadoven {
+    background-color: #ffb300;
+}
+
+.room-status.limpieza {
+    background-color: #00b0ff;
+}
+
+.room-status:hover {
+    filter: brightness(95%);
+}
+
+.room-status i {
+    transition: transform 0.3s;
+}
+
+.room-status:hover i {
+    transform: translateX(5px);
+}
+.room-card.disponible .room-icon {
+    color: #00c853;
+}
+.room-card.disponible .room-icon {
+    color: #00c853;
+}
+.room-card.ocupado .room-icon {
+    color: #ff3d00;
+}
+
+.room-card.limpieza .room-icon {
+    color: #00b0ff;
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .rooms-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .rooms-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/*Esto es para el cotenido de R_recepcion y R_Productos*/
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 200px;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#room-number,
+.date-picker {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.download-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 150px;
+    align-self: flex-end; 
+}
+
+.download-btn i {
+    margin-right: 5px;
+    font-size: 16px;
+}
+
+.download-btn:hover {
+    background-color: #218838;
+}

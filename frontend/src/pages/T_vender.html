@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Hodelpa - Dashboard</title>
+    <title>Hotel Hodelpa - Venta</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -41,7 +42,7 @@
                             <a href="#" class="dropbtn"><i class="fas fa-chart-bar"></i> Reportes <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Recepciones</a>
-                                <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
+                                <a href="../pages/R_productos.html "><i class="fas fa-boxes"></i> Productos</a>
                             </div>
                         </li>
                         <li><a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a></li>
@@ -51,32 +52,34 @@
                 </div>
 
                 <div class="main-content">
-
-                <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
-                </div>
-                    <h1>Dashboard</h1>
+                    <div class="user-info">
+                        <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                    </div>
+                    <h1>Venta</h1>
                     <hr class="sidebar-divider my-0">
-                    <div class="dashboard-cards">
-                        <div class="card">
-                            <h3>Total Habitaciones</h3> 
-                            <p> 84  </p> 
-                            <i class="fas fa-hotel"></i> 
-                        </div >
-                        <div class="card">
-                            <h3>Habitaciones Disponibles</h3>
-                            <p>50   </p>
-                            <i class="fas fa-door-open"></i>
-                        </div>
-                        <div class="card">
-                            <h3>Habitaciones Ocupadas</h3>
-                            <p>30 </p>
-                            <i class="fas fa-bed"></i>
-                        </div>
-                        <div class="card">
-                            <h3>Habitaciones En Limpieza</h3>
-                            <p>4  </p>
-                            <i class="fas fa-broom"></i>
+
+                    <div class="rooms-container">
+                        <label>Seleccionar Piso</label>
+                        <select class="floor-selector" >
+                            <option value="">Todos</option>
+                            <option value="1">Piso 1</option>
+                            <option value="2">Piso 2</option>
+                            <option value="3">Piso 3</option>
+                        </select>
+                        <div class="rooms-grid">
+                            <div class="room-card ocupadoven">
+                                <div class="room-header">
+                                    <span class="room-number">NRO: 003</span>
+                                    <i class="fas fa-user-check room-icon"></i>
+                                </div>
+                                <div class="room-category">
+                                    CATEGORIA: MATRIMONIAL
+                                </div>
+                                <div class="room-status ocupadoven">
+                                    Iniciar Venta
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,24 +126,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const dropdowns = document.querySelectorAll('.dropdown');
+    const dropdowns = document.querySelectorAll('.dropdown');
 
-            dropdowns.forEach(dropdown => {
-                // Agregar el evento de clic solo al botón que despliega el menú
-                dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-                    e.preventDefault();
+    dropdowns.forEach(dropdown => {
+        // Agregar el evento de clic solo al botón que despliega el menú
+        dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+            e.preventDefault();
 
-                    // Cerrar otros menús abiertos
-                    dropdowns.forEach(d => {
-                        if (d !== dropdown) {
-                            d.classList.remove('active');
-                        }
-                    });
-                    // Alternar el menú actual
-                    dropdown.classList.toggle('active');
-                });
+            // Cerrar otros menús abiertos
+            dropdowns.forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('active');
+                }
             });
+
+            // Alternar el menú actual
+            dropdown.classList.toggle('active');
         });
+    });
+});
     </script>
 </body>
 </html>

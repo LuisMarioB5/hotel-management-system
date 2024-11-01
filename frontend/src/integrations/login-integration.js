@@ -1,4 +1,4 @@
-import { handleLoginNotification, parseJwt } from '../scripts/utils.js'
+import { handleLoginNotification } from '../scripts/utils.js'
 
 export async function loginIntegration() {
     document.querySelector('.login-form-section form').addEventListener('submit', async function(event) {
@@ -18,7 +18,7 @@ export async function loginIntegration() {
             if (response.ok) {
                 const token = response.headers.get('Authorization').replace('Bearer ', '');
                 localStorage.setItem('jwt', token);
-                console.log('Inicio de sesión exitoso', token);
+                console.log('Inicio de sesión exitoso. Token almacenado correctamente');
                 handleLoginNotification('success', username, 'dashboard.html');
             } 
             

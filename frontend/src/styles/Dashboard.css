@@ -4,8 +4,7 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f4f4f9;
+    font-family: Arial, sans-serif;
 }
 
 .dashboard-page {
@@ -21,10 +20,13 @@ body, html {
 }
 
 .sidebar {
-    width: 250px;
-    background: linear-gradient(135deg, #488ada, #ab2497);
+    width: 320px;
+    min-width: 320px; 
+    height: 100%;
+    background: linear-gradient(180deg, #4a7aff 0%, #9d4edd 100%);
     color: #fff;;
     padding: 20px;
+    
     overflow-y: auto;
 }
 
@@ -50,6 +52,7 @@ body, html {
     text-decoration: none;
     display: block;
     padding: 10px;
+    transition: background-color 0.3s;
  
 }
 
@@ -60,7 +63,7 @@ body, html {
 
 .dropdown-content {
     display: none;
-    background: linear-gradient(135deg, #488ada, #ab2497);
+    background-color: rgba(255, 255, 255, 0.1);
     padding-left: 20px;
 }
 
@@ -78,6 +81,7 @@ body, html {
 }
 
 .dropdown-content a {
+    
     padding: 10px;
     font-size: 15px;
 }
@@ -89,7 +93,9 @@ body, html {
 .dropbtn i {
     margin-left: 0px;
 }
-
+.dropdown.active .dropbtn i.fa-chevron-down {
+    transform: rotate(180deg);
+}
 
 .user-info {
     background: linear-gradient(135deg, #488ada, #ab2497);

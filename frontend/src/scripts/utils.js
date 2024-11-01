@@ -1,4 +1,5 @@
-import Swal from "sweetalert2";
+// Descomentar si el proyecto paso por completo a REACT
+// import Swal from "sweetalert2";
 
 export function handleLoginNotification(state, username, url) {
     switch(state) {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotel Hodelpa - Usuarios</title>
+  <title>Hotel Hodelpa - Categorias</title>
   <link rel="stylesheet" href="../styles/dashboard.css">
   <link rel="stylesheet" href="../styles/usuarios.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -57,13 +57,13 @@
                 </div>
                
                     <div class="user-list-header">
-                        <h2>Lista de Usuarios</h2>
+                        <h2>Lista de Categorias</h2>
                     </div>
                  
                     <!-- Botón "Crear Nuevo" y opciones de visualización -->
                     <div class="user-actions">
                         <button class="create-button" data-toggle="modal" data-target="#createUserModal">
-                            <i class="fas fa-user-plus"></i> Crear Nuevo
+                            <i class="fas fa-plus-square"></i> Crear Nuevo
                         </button>
                         
                         <div class="table-controls">
@@ -76,31 +76,23 @@
                             </select>
                             <span>Registros <i class="fas fa-search"></i> </span>
             
-                            <input type="text" id="searchUser" placeholder="Buscar usuario">
+                            <input type="text" id="searchUser" placeholder="Buscar Categoria">
                         </div>
                     </div>
 
-                    <!-- Tabla de Usuarios -->
+                    <!-- Tabla de Categorias -->
                     <div class="user-table">
                         <table>
                             <thead>
                                 <tr>
-                                    <th># Documento</th>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>Correo</th>
-                                    <th>Tipo</th>
+                                    <th>Descripcion</th>
                                     <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th> </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>4353434</td>
-                                    <td>Mizuki</td>
-                                    <td>Hayashi</td>
-                                    <td>mizuki@gmail.com</td>
-                                    <td>Mantenimiento</td>
+                                    <td>Individual</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
                                         <button class="edit-btn"><i class="fas fa-edit"></i></button>
@@ -108,22 +100,27 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>4545453</td>
-                                    <td>Naomi</td>
-                                    <td>Konoe</td>
-                                    <td>konoe@gmail.com</td>
-                                    <td>Administrador</td>
+                                    <td>Doble</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
                                         <button class="edit-btn"><i class="fas fa-edit"></i></button>
                                         <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>Matrimonial</td>
+                                    <td><span class="status active">Activo</span></td>
+                                    <td>
+                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                    </td>
+                                </tr>
+
                             </tbody>
                         </table>
                         <!-- Div de paginación y conteo de registros -->
                         <div class="pagination-info">
-                            <span>Mostrando registros del 1 al 2 de un total de 2 registros</span>
+                            <span>Mostrando registros del 1 al 3 de un total de 3 registros</span>
                                 <div class="pagination-buttons">
                                     <button class="pagination-btn">&lt;</button>
                                     <button class="pagination-btn">&gt;</button>
@@ -134,40 +131,18 @@
             </div>
         </div>
     </div>
-    <!-- Modal para Crear Usuario -->
+    <!-- Modal para Crear Categoria -->
     <div id="createUserModal" class="modalusu">
         <div class="modalusu-content">
             <div class="modalusu-header">
-                <h2>Crear Usuario</h2>
+                <h2>Crear Categoria</h2>
                 <span class="close-buttonusu" onclick="closeModal()">&times;</span>
             </div>
             <div class="modalusu-body">
-                <label for="documento"># Documento</label>
-                <input type="text" id="documento" required>
+                <label for="descripcion"># Descripcion</label>
+                <input type="text" id="descripcion" required>
 
-                <label for="nombre">Nombre</label>
-                <input type="text" id="nombre" required>
-
-                <label for="apellido">Apellido</label>
-                <input type="text" id="apellido" required>
-
-                <label for="correo">Correo</label>
-                <input type="email" id="correo" required>
-
-                <label for="contrasena">Contraseña</label>
-                <input type="password" id="contrasena" required>
-
-                <label for="confirmarContrasena">Confirmar Contraseña</label>
-                <input type="password" id="confirmarContrasena" required>
-
-                <label for="tipo">Tipo</label>
-                <select id="tipo">
-                    <option value="Administrador">Administrador</option>
-                    <option value="Recepcionista">Recepcionista</option>
-                    <option value="Mantenimiento">Mantenimiento</option>
-                    <option value="Otro">Otro</option>
-                </select>
-
+                
                 <label for="estado">Estado</label>
                 <select id="estado">
                     <option value="Activo">Activo</option>
@@ -176,7 +151,7 @@
             </div>
             <div class="modalusu-footer">
                 <button class="btn_cancelusu" onclick="closeModal()">Cerrar</button>
-                <button class="btn_saveusu" onclick="guardarUsuario()">Guardar</button>
+                <button class="btn_saveusu" onclick="guardarCategoria()">Guardar</button>
             </div>
         </div>
     </div>
@@ -255,61 +230,32 @@
 
     // Función para limpiar los campos del modal
     function limpiarCampos() {
-        document.getElementById('documento').value = '';
-        document.getElementById('nombre').value = '';
-        document.getElementById('apellido').value = '';
-        document.getElementById('correo').value = '';
-        document.getElementById('contrasena').value = '';
-        document.getElementById('confirmarContrasena').value = '';
-        document.getElementById('tipo').selectedIndex = 0;
+        document.getElementById('descripcion').value = '';
         document.getElementById('estado').selectedIndex = 0;
     }
 
-    // Validación de contraseñas y guardar usuario
-    function guardarUsuario() {
-        const contrasena = document.getElementById('contrasena').value;
-        const confirmarContrasena = document.getElementById('confirmarContrasena').value;
-        const tipo = document.getElementById('tipo').value;
-        const documento = document.getElementById('documento').value.trim();
-        const nombre = document.getElementById('nombre').value.trim();
-        const apellido = document.getElementById('apellido').value.trim();
-        const correo = document.getElementById('correo').value.trim();
-        const estado = document.getElementById('estado').value;
+    // Validación de contraseñas y guardar Categoria
+    function guardarCategoria() {
+        // Obtener los valores de los campos
+    const descripcion = document.getElementById('descripcion').value.trim();
+    const estado = document.getElementById('estado').value;
 
-        if (contrasena !== confirmarContrasena) {
-            alert("Las contraseñas no coinciden. Por favor, intenta de nuevo.");
-            return;
-        }
-        if (!documento) {
-            mensajeError += 'El # Documento es obligatorio.\n';
+    // Validar los campos
+    let mensajeError = '';
+
+    if (!descripcion) {
+            mensajeError += 'La descripcion es obligatoria.\n';
         }
 
-        if (!nombre) {
-            mensajeError += 'El campo Nombre es obligatorio.\n';
-        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombre)) {
-            mensajeError += 'El Nombre solo debe contener letras.\n';
-        }
-
-        if (!apellido) {
-            mensajeError += 'El campo Apellido es obligatorio.\n';
-        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(apellido)) {
-            mensajeError += 'El Apellido solo debe contener letras.\n';
-        }
-
-        if (!correo) {
-            mensajeError += 'El campo Correo es obligatorio.\n';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-            mensajeError += 'Ingrese un correo válido.\n';
-        }
-
-        // Si hay errores, mostrar el mensaje de error
-        if (mensajeError) {
-            alert(mensajeError);
-        } else {
-            // Si todos los campos son válidos, guardar el Usuario
-            alert("Usuario guardado con éxito.");
-            closeModal();
-        }
+    // Si hay errores, mostrar el mensaje de error
+    if (mensajeError) {
+        alert(mensajeError);
+    } else {
+        // Si todos los campos son válidos, guardar la Categoria
+        alert("Categoria guardada con éxito.");
+        closeModal();
+    }
+       
     }
 </script>
 </body>

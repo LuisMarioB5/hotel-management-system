@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Hodelpa - Dashboard</title>
+    <title>Hotel Hodelpa - Productos</title>
+    <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -55,33 +56,39 @@
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
-                    <h1>Dashboard</h1>
+                    <h1>Exportar Productos</h1>
                     <hr class="sidebar-divider my-0">
-                    <div class="dashboard-cards">
-                        <div class="card">
-                            <h3>Total Habitaciones</h3> 
-                            <p> 84  </p> 
-                            <i class="fas fa-hotel"></i> 
-                        </div >
-                        <div class="card">
-                            <h3>Habitaciones Disponibles</h3>
-                            <p>50   </p>
-                            <i class="fas fa-door-open"></i>
+                    <div class="rooms-container">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="room-number">Estado:</label>
+                                <select id="room-number">
+                                    <option value="all">Todos</option>
+                                    <option value="activo">Activo</option>
+                                    <option value="inactivo">Inactivo</option>
+                                    <!-- Añade más opciones aquí si es necesario -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="start-date">Fecha Inicio:</label>
+                                <input type="text" id="start-date" class="date-picker" placeholder="dd/mm/yyyy">
+                            </div>
+                            <div class="form-group">
+                                <label for="end-date">Fecha Fin:</label>
+                                <input type="text" id="end-date" class="date-picker" placeholder="dd/mm/yyyy">
+                            </div>
+                            <div class="form-group">
+                                <button class="download-btn">
+                                    <i class="fas fa-cloud-download-alt"></i> Descargar
+                                </button>
+                            </div>
                         </div>
-                        <div class="card">
-                            <h3>Habitaciones Ocupadas</h3>
-                            <p>30 </p>
-                            <i class="fas fa-bed"></i>
-                        </div>
-                        <div class="card">
-                            <h3>Habitaciones En Limpieza</h3>
-                            <p>4  </p>
-                            <i class="fas fa-broom"></i>
-                        </div>
+
                     </div>
                 </div>
             </div>
     </div>
+
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -98,6 +105,20 @@
             </div>
         </div>
     </div>
+
+    <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
+    <input type="date" id="start-date" placeholder="dd/mm/yyyy">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+
+    <script>
+        $(document).ready(function() {
+            $(".date-picker").datepicker({
+                dateFormat: "dd/mm/yy"
+            });
+        });
+    </script>
 
     <script>
         // Script para abrir y cerrar el modal
@@ -123,24 +144,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const dropdowns = document.querySelectorAll('.dropdown');
+    const dropdowns = document.querySelectorAll('.dropdown');
 
-            dropdowns.forEach(dropdown => {
-                // Agregar el evento de clic solo al botón que despliega el menú
-                dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-                    e.preventDefault();
+    dropdowns.forEach(dropdown => {
+        // Agregar el evento de clic solo al botón que despliega el menú
+        dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+            e.preventDefault();
 
-                    // Cerrar otros menús abiertos
-                    dropdowns.forEach(d => {
-                        if (d !== dropdown) {
-                            d.classList.remove('active');
-                        }
-                    });
-                    // Alternar el menú actual
-                    dropdown.classList.toggle('active');
-                });
+            // Cerrar otros menús abiertos
+            dropdowns.forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('active');
+                }
             });
+
+            // Alternar el menú actual
+            dropdown.classList.toggle('active');
         });
+    });
+});
     </script>
 </body>
 </html>

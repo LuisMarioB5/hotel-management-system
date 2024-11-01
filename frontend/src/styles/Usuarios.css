@@ -1,4 +1,4 @@
-/* usuarios.css */
+/* CSSS para USUARIOS/CLIENTES/T_PRODUCTOS*/
 
 .user-list-header {
     background-color: #007bff;
@@ -95,6 +95,8 @@
     border-radius: 15px;
     color: #fff;
     font-weight: bold;
+    text-align: center;
+    
 }
 
 .status.active {
@@ -103,6 +105,10 @@
 
 .status.inactive {
     background-color: #dc3545;
+}
+
+.status.low {
+    background-color: orange;
 }
 
 .edit-btn, .delete-btn {
