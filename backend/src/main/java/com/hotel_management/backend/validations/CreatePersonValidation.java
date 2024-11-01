@@ -1,8 +1,8 @@
 package com.hotel_management.backend.validations;
 
 import com.hotel_management.backend.dto.person.CreatePersonDTO;
-import com.hotel_management.backend.enums.Genders;
-import com.hotel_management.backend.enums.TypeDocuments;
+import com.hotel_management.backend.enums.person.Genders;
+import com.hotel_management.backend.enums.person.DocumentType;
 import com.hotel_management.backend.exceptions.specific.ValidationException;
 import org.springframework.stereotype.Component;
 
@@ -49,22 +49,22 @@ public class CreatePersonValidation implements CreatePersonValidator {
 
     private void typeDocumentValidation() {
         try {
-            TypeDocuments.valueOf(this.dto.typeDocument().toUpperCase());
+            DocumentType.valueOf(this.dto.typeDocument().toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new ValidationException("El tipo de documento ingresado no es válido");
         }
     }
 
     private void documentNumberValidation() {
-        TypeDocuments typeDocument = TypeDocuments.valueOf(dto.typeDocument().toUpperCase());
+        DocumentType typeDocument = DocumentType.valueOf(dto.typeDocument().toUpperCase());
 
-        if (typeDocument == TypeDocuments.CEDULA) {
+        if (typeDocument == DocumentType.CEDULA) {
             Pattern pattern = Pattern.compile("^\\d{3}-?\\d{7}-?\\d$");
             Matcher matcher = pattern.matcher(this.dto.documentNumber());
             if (!matcher.matches()) {
                 throw new ValidationException("Formato de cédula no válido. Debe ser XXX-XXXXXXX-X, XXXXXXXXX-X o XXXXXXXXXXX");
             }
-        } else if (typeDocument == TypeDocuments.PASAPORTE) {
+        } else if (typeDocument == DocumentType.PASAPORTE) {
             Pattern pattern = Pattern.compile("^[A-Z0-9]{6,11}$");
             Matcher matcher = pattern.matcher(this.dto.documentNumber());
             if (!matcher.matches()) {

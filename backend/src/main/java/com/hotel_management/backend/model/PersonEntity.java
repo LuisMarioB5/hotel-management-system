@@ -1,8 +1,8 @@
 package com.hotel_management.backend.model;
 
 import com.hotel_management.backend.dto.person.CreatePersonDTO;
-import com.hotel_management.backend.enums.Genders;
-import com.hotel_management.backend.enums.TypeDocuments;
+import com.hotel_management.backend.enums.person.Genders;
+import com.hotel_management.backend.enums.person.DocumentType;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -33,6 +33,7 @@ public class PersonEntity {
     @Column(name = "apellido", nullable = false)
     private String lastName;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "genero", nullable = false)
     private Genders gender;
 
@@ -45,8 +46,9 @@ public class PersonEntity {
     @Column(name = "f_nacimiento", nullable = false)
     private LocalDate birthDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_documento", nullable = false)
-    private TypeDocuments typeDocument;
+    private DocumentType typeDocument;
 
     @Column(name = "numero_documento", nullable = false)
     private String documentNumber;
@@ -71,7 +73,7 @@ public class PersonEntity {
             throw new IllegalArgumentException("Formato de fecha de nacimiento no válido. Debe ser dd-MM-yyyy.");
         }
 
-        this.typeDocument = TypeDocuments.valueOf(dto.typeDocument().toUpperCase());
+        this.typeDocument = DocumentType.valueOf(dto.typeDocument().toUpperCase());
         this.documentNumber = dto.documentNumber();
         this.email = dto.email();
         this.isActive = Optional.ofNullable(dto.isActive()).orElse(true);

@@ -8,7 +8,7 @@
     import com.hotel_management.backend.exceptions.specific.ResourceNotFoundException;
     import com.hotel_management.backend.exceptions.specific.ValidationException;
     import com.hotel_management.backend.model.UserEntity;
-    import com.hotel_management.backend.enums.Roles;
+    import com.hotel_management.backend.enums.user.Roles;
     import org.slf4j.Logger;
     import org.slf4j.LoggerFactory;
     import org.springframework.security.core.GrantedAuthority;

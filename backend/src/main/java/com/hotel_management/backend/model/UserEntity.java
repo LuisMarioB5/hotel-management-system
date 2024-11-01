@@ -1,6 +1,6 @@
 package com.hotel_management.backend.model;
 
-import com.hotel_management.backend.enums.Roles;
+import com.hotel_management.backend.enums.user.Roles;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
