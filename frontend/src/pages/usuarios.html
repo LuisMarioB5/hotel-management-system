@@ -276,6 +276,9 @@
         const correo = document.getElementById('correo').value.trim();
         const estado = document.getElementById('estado').value;
 
+        // Validar los campos
+        let mensajeError = '';
+
         if (contrasena !== confirmarContrasena) {
             alert("Las contraseñas no coinciden. Por favor, intenta de nuevo.");
             return;

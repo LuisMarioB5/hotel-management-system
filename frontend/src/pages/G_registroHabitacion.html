@@ -97,9 +97,9 @@
                         <div class="form-group">
                             <label for="tipo"><i class="fas fa-file-alt"></i> Tipo Documento:</label>
                             <select id="tipo">
-                                <option selected>DNI</option>
+                                <option selected>Cedula</option>
                                 <option>Pasaporte</option>
-                                <option>Carnet de Extranjería</option>
+                                <option>N/A</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -253,6 +253,113 @@
         </div>
     </div>
 
+    <!--MODAL De lista de clientes-->
+    <div class="climodal" id="clientListModal">
+        <div class="climodal-content climodal-large">
+            <div class="climodal-header">
+                <h2>Lista de Clientes</h2>
+                <span class="cliclose-button" id="closeClientList">&times;</span>
+            </div>
+            <div class="climodal-body">
+                <div class="table-controls">
+                    <div class="entries-control">
+                        Mostrar 
+                        <select>
+                            <option>10</option>
+                            <option>25</option>
+                            <option>50</option>
+                        </select>
+                        Registros
+                    </div>
+                    <div class="search-control">
+                        Buscar: 
+                        <input type="text" placeholder="Buscar cliente...">
+                    </div>
+                </div>
+    
+                <div class="table-container">
+                    <table class="clients-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Documento</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Correo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>34345656</td>
+                                <td>Benjamin</td>
+                                <td>Alva</td>
+                                <td>alva@gmail.com</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>55567878</td>
+                                <td>Hanan</td>
+                                <td>Bispo</td>
+                                <td>bispo@gmail.com</td>
+                            </tr>
+                            <!-- Agregar más filas según sea necesario -->
+                        </tbody>
+                    </table>
+                </div>
+    
+                <div class="table-footer">
+                    <div class="showing-entries">
+                        Mostrando registros del 1 al 2 de un total de 2 registros
+                    </div>
+                    <div class="pagination">
+                        <button class="pagination-btn" >Anterior</button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">Siguiente</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Fin modal-->
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const searchBtn = document.querySelector('.search-btn');
+        const clientListModal = document.getElementById('clientListModal');
+        const closeClientList = document.getElementById('closeClientList');
+
+        // Abrir modal al hacer clic en el botón de búsqueda
+        searchBtn.addEventListener('click', function() {
+            clientListModal.style.display = 'block';
+        });
+
+        // Cerrar modal
+        closeClientList.addEventListener('click', function() {
+            clientListModal.style.display = 'none';
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
+            if (event.target === clientListModal) {
+                clientListModal.style.display = 'none';
+            }
+        });
+
+        // Funcionalidad de búsqueda
+        const searchInput = document.querySelector('.search-control input');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.clients-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    });   
+    </script>
+    
     <script>
         // Script para abrir y cerrar el modal
         document.getElementById('logoutButton').addEventListener('click', function() {

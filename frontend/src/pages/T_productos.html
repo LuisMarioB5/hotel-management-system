@@ -334,9 +334,49 @@
     }
 
     // Validación de contraseñas y guardar usuario
-    function guardarUsuario() {
-        alert("Producto guardado con éxito.");
-        closeModal();
+    function guardarProducto() {
+        // Obtener los valores de los campos
+        
+        const nombre = document.getElementById('nombre').value.trim();
+        const detalle = document.getElementById('detalle').value.trim();
+        const precio = document.getElementById('precio').value.trim();
+        const cantidad = document.getElementById('cantidad').value.trim();
+   
+           // Validar los campos
+           let mensajeError = '';
+           
+           if (!nombre) {
+               mensajeError += 'El Nombre es obligatorio.\n';
+           }
+   
+           if (!detalle) {
+               mensajeError += 'El Detalle es obligatorio.\n';
+           } 
+   
+           if (!precio) {
+                mensajeError += 'El precio es obligatorio.\n';
+            } else if (!/^\d+$/.test(precio)) {
+                mensajeError += 'El precio solo debe contener números.\n';
+            }else if (precio <= 0) {
+                mensajeError += 'El precio debe ser mayor a cero.\n';
+            }
+
+            if (!cantidad) {
+                mensajeError += 'La cantidad es obligatorio.\n';
+            } else if (!/^\d+$/.test(cantidad)) {
+                mensajeError += 'La cantidad solo debe contener números.\n';
+            }else if (cantidad <= 0) {
+                mensajeError += 'Cantidad debe ser mayor a cero.\n';
+            }
+
+           // Si hay errores, mostrar el mensaje de error
+           if (mensajeError) {
+               alert(mensajeError);
+           } else {
+               // Si todos los campos son válidos, guardar el cliente
+               alert("Prodducto guardado con éxito.");
+               closeModal();
+           }
     }
 </script>
 </body>

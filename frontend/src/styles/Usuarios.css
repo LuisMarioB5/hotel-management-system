@@ -193,7 +193,8 @@
 }
 
 .modalusu-content {
-    background: linear-gradient(135deg, #488ada, #ab2497);
+    
+    background: linear-gradient(180deg, #4a7aff 0%, #9d4edd 100%);
     width: 500px;
     max-width: 90%;
     border-radius: 8px;
@@ -203,6 +204,7 @@
     animation: modalFadeIn 0.3s ease forwards; /* Animación de entrada */
 
 }
+
 
 @keyframes modalFadeIn {
     to { transform: scale(1); }
@@ -234,8 +236,11 @@
     transition: background-color 0.3s;
 }
 
-.close-buttonusu:hover {
-    background-color: #b52b3a; /* Color más oscuro al pasar el ratón */
+.close-buttonusu:hover,
+.close-buttonusu:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .modalusu-body {
