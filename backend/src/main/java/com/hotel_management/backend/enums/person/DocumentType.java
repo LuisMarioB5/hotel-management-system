@@ -1,15 +1,15 @@
-package com.hotel_management.backend.enums;
+package com.hotel_management.backend.enums.person;
 
 import lombok.Getter;
 
 @Getter
-public enum TypeDocuments {
+public enum DocumentType {
     CEDULA("Cédula"),
     PASAPORTE("Pasaporte");
 
     private final String displayName;
 
-    TypeDocuments(String displayName) {
+    DocumentType(String displayName) {
         this.displayName = displayName;
     }
 }

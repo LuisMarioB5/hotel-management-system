@@ -1,6 +1,6 @@
 package com.hotel_management.backend.service.user;
 
-import com.hotel_management.backend.enums.Roles;
+import com.hotel_management.backend.enums.user.Roles;
 import com.hotel_management.backend.model.EmployeeEntity;
 import com.hotel_management.backend.model.UserEntity;
 import com.hotel_management.backend.repository.UserRepository;
