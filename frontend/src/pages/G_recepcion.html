@@ -75,7 +75,7 @@
                             <div class="room-category">
                                 CATEGORIA: INDIVIDUAL
                             </div>
-                            <div class="room-status disponible">
+                            <div class="room-status disponible" onclick="redirectToRegistroHabitacion()">
                                 DISPONIBLE
                                 <i class="fas fa-chevron-right"></i>
                             </div>
@@ -112,6 +112,12 @@
             </div>
         </div>
     </div>
+
+    <script>   
+        function redirectToRegistroHabitacion() {
+            window.location.href = 'G_registroHabitacion.html';
+        }
+    </script> 
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">

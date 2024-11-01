@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recepcion | Registrar Habitacion</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/G_registroHabitacion.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-page">
+        <div class="dashboard-container">
+            <div class="sidebar">
+                    <h2>HODELPA</h2>
+                    <br><br>
+                    <ul>
+                        <li><a href="../pages/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropbtn"><i class="fas fa-hotel"></i> Gestion <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-content">
+                                <a href="../pages/G_recepcion.html"><i class="fas fa-concierge-bell"></i> Recepcion</a>
+                                <a href="../pages/G_salida.html"><i class="fas fa-door-open"></i> Salida</a>
+                            </div>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropbtn"><i class="fas fa-store"></i> Tienda <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-content">
+                                <a href="../pages/T_vender.html"><i class="fas fa-shopping-cart"></i> Vender</a>
+                                <a href="../pages/T_productos.html"><i class="fas fa-box"></i> Registrar productos</a>
+                            </div>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropbtn"><i class="fas fa-tools"></i> Mantenimiento <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-content">
+                                <a href="../pages/M_habitaciones.html"><i class="fas fa-bed"></i> Habitacion</a>
+                                <a href="../pages/M_categoria.html"><i class="fas fa-tags"></i> Categoria</a>
+                                <a href="../pages/M_pisos.html"><i class="fas fa-building"></i> Pisos</a>
+                            </div>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropbtn"><i class="fas fa-chart-bar"></i> Reportes <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-content">
+                                <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Recepciones</a>
+                                <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
+                            </div>
+                        </li>
+                        <li><a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a></li>
+                        <li><a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a></li>
+                        
+                    </ul>
+            </div>
+            <div class="main-content">
+                <div class="user-info">
+                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                </div>
+                 <!-- Detalles de la Habitación -->
+                 <div class="room-details-card">
+                    <h2><i class="fas fa-bed"></i> Detalles de la Habitación</h2>
+                    <div class="room-details-grid">
+                        <div class="details-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-hashtag"></i> Número:</label>
+                                <input type="text" value="001" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-list"></i> Detalles:</label>
+                                <input type="text" value="WIFI + BAÑO + TV + CABLE" readonly>
+                            </div>
+                        </div>
+                        <div class="details-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-tag"></i> Categoría:</label>
+                                <input type="text" value="Individual" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-building"></i> Piso:</label>
+                                <input type="text" value="PRIMERO" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalles Cliente y Reservación -->
+                <div class="reservation-details-card">
+                    <div class="client-details">
+                        <h2><i class="fas fa-user-circle"></i> Detalle Cliente</h2>
+                        <div class="search-group">
+                            <div class="form-group">
+                                <label><i class="fas fa-id-card"></i> Nro Documento:</label>
+                                <div class="search-container">
+                                    <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
+                                    <button class="search-btn"><i class="fas fa-search"></i> Buscar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo"><i class="fas fa-file-alt"></i> Tipo Documento:</label>
+                            <select id="tipo">
+                                <option selected>DNI</option>
+                                <option>Pasaporte</option>
+                                <option>Carnet de Extranjería</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Nombres:</label>
+                            <input type="text" id="nombres" placeholder="Ingrese nombres">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Apellidos:</label>
+                            <input type="text" id="apellidos" placeholder="Ingrese apellidos">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Correo:</label>
+                            <input type="email" id="correo" placeholder="Ingrese correo electrónico">
+                        </div>
+                    </div>
+
+                    <div class="reservation-details">
+                        <h2><i class="fas fa-calendar-alt"></i> Detalle Reservación</h2>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
+                                <input type="date" id="fechaEntrada" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-calendar-minus"></i> Fecha Salida:</label>
+                                <input type="date" id="fechaSalida" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-dollar-sign"></i> Precio:</label>
+                                <input type="number" id="precio" value="70.00" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-money-bill-wave"></i> Adelanto:</label>
+                                <input type="number" id="adelanto" value="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-comment-alt"></i> Observación:</label>
+                            <textarea id="observacion" rows="3" placeholder="Ingrese observaciones"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button id="registrarBtn" class="register-btn"><i class="fas fa-save"></i> Registrar</button>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+
+    <!--Manejo de fecha actual, validacion de formularios y evento del registro-->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer la fecha de entrada como la fecha actual
+            const fechaEntrada = document.getElementById('fechaEntrada');
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaEntrada.value = hoy;
+        
+            // Validación y registro
+            const registrarBtn = document.getElementById('registrarBtn');
+            registrarBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (validarFormulario()) {
+                    // Aquí iría el código para enviar los datos al servidor
+                    alert('Formulario válido. Datos listos para ser enviados.');
+                }
+            });
+        
+            function validarFormulario() {
+                const fechaSalida = document.getElementById('fechaSalida');
+                const adelanto = document.getElementById('adelanto');
+                const observacion = document.getElementById('observacion');
+                const nroDocumento = document.getElementById('nroDocumento');
+                const nombres = document.getElementById('nombres');
+                const apellidos = document.getElementById('apellidos');
+                const correo = document.getElementById('correo');
+        
+                let isValid = true;
+        
+                // Validar campos requeridos
+                [fechaSalida, adelanto, nroDocumento, nombres, apellidos, correo].forEach(campo => {
+                    if (!campo.value.trim()) {
+                        marcarError(campo, 'Este campo es requerido');
+                        isValid = false;
+                    } else {
+                        limpiarError(campo);
+                    }
+                });
+        
+                // Validar fecha de salida
+                if (fechaSalida.value <= fechaEntrada.value) {
+                    marcarError(fechaSalida, 'La fecha de salida debe ser posterior a la fecha de entrada');
+                    isValid = false;
+                }
+        
+                // Validar adelanto
+                if (adelanto.value < 0 || adelanto.value > parseFloat(document.getElementById('precio').value)) {
+                    marcarError(adelanto, 'El adelanto debe ser entre 0 y el precio total');
+                    isValid = false;
+                }
+        
+                // Validar correo
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(correo.value)) {
+                    marcarError(correo, 'Ingrese un correo electrónico válido');
+                    isValid = false;
+                }
+        
+                return isValid;
+            }
+        
+            function marcarError(campo, mensaje) {
+                campo.classList.add('is-invalid');
+                const errorDiv = campo.nextElementSibling;
+                if (errorDiv && errorDiv.classList.contains('error-message')) {
+                    errorDiv.textContent = mensaje;
+                } else {
+                    const div = document.createElement('div');
+                    div.className = 'error-message';
+                    div.textContent = mensaje;
+                    campo.parentNode.insertBefore(div, campo.nextSibling);
+                }
+            }
+        
+            function limpiarError(campo) {
+                campo.classList.remove('is-invalid');
+                const errorDiv = campo.nextElementSibling;
+                if (errorDiv && errorDiv.classList.contains('error-message')) {
+                    errorDiv.remove();
+                }
+            }
+        });
+    </script>
+    <!--Fin -->
+
+    <!-- Modal de Logout -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>¿Estás seguro de que deseas salir?</h5>
+                <span class="close-button" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel" id="cancelLogout">Cancelar</button>
+                <a href="../pages/login.html" class="btn logout">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Script para abrir y cerrar el modal
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'block';
+        });
+
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'none';
+        });
+
+        document.getElementById('cancelLogout').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'none';
+        });
+
+        // Cerrar el modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('logoutModal')) {
+                document.getElementById('logoutModal').style.display = 'none';
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdowns = document.querySelectorAll('.dropdown');
+
+            dropdowns.forEach(dropdown => {
+                // Agregar el evento de clic solo al botón que despliega el menú
+                dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Cerrar otros menús abiertos
+                    dropdowns.forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('active');
+                        }
+                    });
+                    // Alternar el menú actual
+                    dropdown.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
