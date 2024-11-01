@@ -11,11 +11,15 @@ public record ShowPersonDTO(
 
         String lastName,
 
+        String gender,
+
         String phoneNumber,
 
         String address,
 
         LocalDate birthDate,
+
+        String documentNumber,
 
         String idCard,
 
@@ -26,10 +30,12 @@ public record ShowPersonDTO(
         this(person.getId(),
              person.getName(),
              person.getLastName(),
+             person.getGender().getDisplayName(),
              person.getPhoneNumber(),
              person.getAddress(),
              person.getBirthDate(),
-             person.getIdCard(),
+             person.getTypeDocument().getDisplayName(),
+             person.getDocumentNumber(),
              person.getEmail(),
              person.getIsActive()
         );

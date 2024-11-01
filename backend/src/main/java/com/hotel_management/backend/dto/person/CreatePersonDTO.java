@@ -11,8 +11,11 @@ public record CreatePersonDTO(
         @Size(max = 50, message = "El apellido no puede exceder 50 caracteres")
         String lastName,
 
+        @NotBlank(message = "El género no debe estar vacío")
+        String gender,
+
         @NotBlank(message = "El teléfono no debe estar vacío")
-        @Pattern(regexp = "^(\\+\\d{1})?\\d{3}-?\\d{3}-?\\d{4}$", message = "Formato del número de teléfono no válido")
+        @Pattern(regexp = "^(\\+\\d)?\\d{3}-?\\d{3}-?\\d{4}$", message = "Formato del número de teléfono no válido")
         String phoneNumber,
 
         @NotBlank(message = "La dirección no debe estar vacía")
@@ -23,9 +26,11 @@ public record CreatePersonDTO(
         @Pattern(regexp = "\\d{2}-\\d{2}-\\d{4}", message = "Formato de la fecha de nacimiento no válido. Debe ser dd-MM-yyyy")
         String birthDate,
 
-                @NotBlank(message = "La cédula no debe estar vacía")
-        @Pattern(regexp = "^\\d{3}-?\\d{7}-?\\d$", message = "Formato de cédula no válido. Debe ser XXX-XXXXXXX-X, XXXXXXXXX-X o XXXXXXXXXXX")
-        String idCard,
+        @NotBlank(message = "El tipo de documento no debe estar vacío")
+        String typeDocument,
+
+        @NotBlank(message = "El número del documento no debe estar vacío")
+        String documentNumber,
 
         @NotBlank(message = "El email no debe estar vacío")
         @Email(message = "El email tiene un formato inválido")

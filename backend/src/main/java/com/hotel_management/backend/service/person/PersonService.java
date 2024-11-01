@@ -3,6 +3,7 @@ package com.hotel_management.backend.service.person;
 import com.hotel_management.backend.dto.person.CreatePersonDTO;
 import com.hotel_management.backend.model.PersonEntity;
 import com.hotel_management.backend.repository.PersonRepository;
+import com.hotel_management.backend.validations.CreatePersonValidation;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -15,16 +16,19 @@ import org.springframework.stereotype.Service;
 public class PersonService {
 
     private final PersonRepository repository;
+    private final CreatePersonValidation createPerson;
     private static final Logger logger = LoggerFactory.getLogger(PersonService.class);
 
     @Autowired
-    public PersonService(PersonRepository repository) {
+    public PersonService(PersonRepository repository, CreatePersonValidation createPerson) {
         this.repository = repository;
+        this.createPerson = createPerson;
     }
 
     // Guarda un nuevo usuario
     @Transactional
     public PersonEntity save(@Valid CreatePersonDTO personDTO) {
+        createPerson.validate(personDTO);
         PersonEntity person = new PersonEntity(personDTO);
 
         return repository.save(person);

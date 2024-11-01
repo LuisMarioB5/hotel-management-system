@@ -1,6 +1,8 @@
 package com.hotel_management.backend.model;
 
 import com.hotel_management.backend.dto.person.CreatePersonDTO;
+import com.hotel_management.backend.enums.Genders;
+import com.hotel_management.backend.enums.TypeDocuments;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,7 +14,10 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 @Entity
-@Table(name = "personas")
+@Table(name = "personas",
+        uniqueConstraints = {
+         @UniqueConstraint(columnNames = { "tipo_documento", "numero_documento" })
+        })
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -28,6 +33,9 @@ public class PersonEntity {
     @Column(name = "apellido", nullable = false)
     private String lastName;
 
+    @Column(name = "genero", nullable = false)
+    private Genders gender;
+
     @Column(name = "telefono", nullable = false, unique = true)
     private String phoneNumber;
 
@@ -37,8 +45,11 @@ public class PersonEntity {
     @Column(name = "f_nacimiento", nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "cedula", nullable = false, unique = true)
-    private String idCard;
+    @Column(name = "tipo_documento", nullable = false)
+    private TypeDocuments typeDocument;
+
+    @Column(name = "numero_documento", nullable = false)
+    private String documentNumber;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -49,6 +60,7 @@ public class PersonEntity {
     public PersonEntity(CreatePersonDTO dto) {
         this.name = dto.name();
         this.lastName = dto.lastName();
+        this.gender = Genders.valueOf(dto.gender().toUpperCase());
         this.phoneNumber = dto.phoneNumber();
         this.address = dto.address();
 
@@ -59,7 +71,8 @@ public class PersonEntity {
             throw new IllegalArgumentException("Formato de fecha de nacimiento no válido. Debe ser dd-MM-yyyy.");
         }
 
-        this.idCard = dto.idCard();
+        this.typeDocument = TypeDocuments.valueOf(dto.typeDocument().toUpperCase());
+        this.documentNumber = dto.documentNumber();
         this.email = dto.email();
         this.isActive = Optional.ofNullable(dto.isActive()).orElse(true);
     }
