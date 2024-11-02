@@ -22,13 +22,13 @@
 .room-details-grid {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0px;
 }
 
 .details-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 15px;
     align-items: start;
 }
 
@@ -77,7 +77,7 @@
 .room-details-card .form-group input[readonly] {
     background-color: #f8f9fa;
     color: #6c757d;
-    cursor: not-allowed;
+    cursor: default;
     opacity: 0.7;
     border: 1px solid #ced4da;
 }
@@ -223,7 +223,7 @@
 input[readonly] {
     background-color: #f8f9fa;
     color: #6c757d;
-    cursor: not-allowed;
+    cursor: default;
     opacity: 0.7;
     border: 1px solid #ced4da;
 }
@@ -412,6 +412,132 @@ input[readonly]:focus {
     from {
         opacity: 0;
         transform: translateY(-70px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/*ESTILOS PARA G_INFOHABITACION*/
+.info-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.info-card h2 {
+    color: #4a7aff;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-card h2 i {
+    color: #4a7aff;
+}
+
+/* Grid para la información */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.info-group label {
+    color: #333;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.info-group span,
+.info-group input {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    font-size: 0.9rem;
+    background-color: #f8f9fa;
+    color: #333;
+    cursor: default;
+}
+
+/* Quitar el borde al enfocar los inputs */
+.info-group input:focus {
+    outline: none;
+    border-color: #e0e0e0;
+}
+
+.info-group input:read-only,
+.info-group span {
+    background-color: #f8f9fa;
+}
+
+/* Tabla de servicios */
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.service-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.service-table th,
+.service-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.service-table th {
+    background-color: #333;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.service-table tbody tr {
+    background-color: white;
+}
+.service-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
     to {
         opacity: 1;

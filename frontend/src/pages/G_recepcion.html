@@ -102,7 +102,7 @@
                             <div class="room-category">
                                 CATEGORIA: MATRIMONIAL
                             </div>
-                            <div class="room-status ocupado">
+                            <div class="room-status ocupado" onclick="redirectToG_infoHabitacion()">
                                 OCUPADO
                                 <i class="fas fa-chevron-right"></i>
                             </div>
@@ -115,9 +115,13 @@
 
     <script>   
         function redirectToRegistroHabitacion() {
-            window.location.href = 'G_registroHabitacion.html';
+            window.location.href = '../pages/G_registroHabitacion.html';
         }
-    </script> 
+        function redirectToG_infoHabitacion() {
+            window.location.href = '../pages/G_infoHabitacion.html';
+        }
+    </script>
+
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
