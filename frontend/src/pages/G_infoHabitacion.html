@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Hodelpa | Dashboard</title>
+    <title>Recepcion | Registrar Habitacion</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/G_registroHabitacion.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="dashboard-page">
-            <div class="dashboard-container">
-                <div class="sidebar">
+        <div class="dashboard-container">
+            <div class="sidebar">
                     <h2>HODELPA</h2>
                     <br><br>
                     <ul>
@@ -48,40 +49,102 @@
                         <li><a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a></li>
                         
                     </ul>
-                </div>
-
-                <div class="main-content">
-
+            </div>
+            <div class="main-content">
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
-                    <h1>Dashboard</h1>
-                    <hr class="sidebar-divider my-0">
-                    <div class="dashboard-cards">
-                        <div class="card">
-                            <h3>Total Habitaciones</h3> 
-                            <p> 84  </p> 
-                            <i class="fas fa-hotel"></i> 
-                        </div >
-                        <div class="card">
-                            <h3>Habitaciones Disponibles</h3>
-                            <p>50   </p>
-                            <i class="fas fa-door-open"></i>
+                <!-- Resumen de la Habitación -->
+                <div class="info-card">
+                    <h2><i class="fas fa-bed"></i> Resumen de la Habitación</h2>
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <label>Número:</label>
+                            <input type="text" value="001" readonly>
                         </div>
-                        <div class="card">
-                            <h3>Habitaciones Ocupadas</h3>
-                            <p>30 </p>
-                            <i class="fas fa-bed"></i>
+                        <div class="info-group">
+                            <label>Detalles:</label>
+                            <input type="text" value="WIFI + BAÑO + TV + CABLE" readonly>
                         </div>
-                        <div class="card">
-                            <h3>Habitaciones En Limpieza</h3>
-                            <p>4  </p>
-                            <i class="fas fa-broom"></i>
+                        <div class="info-group">
+                            <label>Categoría:</label>
+                            <input type="text" value="Individual" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label>Piso:</label>
+                            <input type="text" value="PRIMERO" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label>Cliente:</label>
+                            <input type="text" value="CLIENTE PRUEBAS" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label>Nro. Documento:</label>
+                            <input type="text" value="60605050" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label>Correo:</label>
+                            <input type="text" value="PRUEBAS@GMAIL.COM" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label>Fecha Entrada:</label>
+                            <input type="text" value="17/07/2021" readonly>
                         </div>
                     </div>
                 </div>
+
+                <!-- Detalle de Hospedaje -->
+                <div class="info-card">
+                    <h2><i class="fas fa-concierge-bell"></i> Detalle de Hospedaje</h2>
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <label>Costo Habitación:</label>
+                            <span>70.00</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Cantidad Adelantado:</label>
+                            <span>0.00</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Cantidad Restante:</label>
+                            <span>70.00</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Fecha Salida:</label>
+                            <span>17/07/2021</span>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Servicio a la Habitación -->
+                <div class="info-card">
+                    <h2><i class="fas fa-bell"></i> Servicio a la Habitación</h2>
+                    <div class="table-container">
+                        <table class="service-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Estado Venta</th>
+                                    <th>Sub Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Jugo</th>
+                                    <th>1</th>
+                                    <th>$30</th>
+                                    <th>pagado</th>
+                                    <th>$35</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+        </div>
     </div>
+
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -98,7 +161,32 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const searchBtn = document.querySelector('.search-btn');
+        const clientListModal = document.getElementById('clientListModal');
+        const closeClientList = document.getElementById('closeClientList');
 
+        // Abrir modal al hacer clic en el botón de búsqueda
+        searchBtn.addEventListener('click', function() {
+            clientListModal.style.display = 'block';
+        });
+
+        // Cerrar modal
+        closeClientList.addEventListener('click', function() {
+            clientListModal.style.display = 'none';
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
+            if (event.target === clientListModal) {
+                clientListModal.style.display = 'none';
+            }
+        });
+    });   
+    </script>
+    
     <script>
         // Script para abrir y cerrar el modal
         document.getElementById('logoutButton').addEventListener('click', function() {
