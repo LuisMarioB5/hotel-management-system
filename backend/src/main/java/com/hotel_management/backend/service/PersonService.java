@@ -1,9 +1,9 @@
-package com.hotel_management.backend.service.person;
+package com.hotel_management.backend.service;
 
 import com.hotel_management.backend.dto.person.CreatePersonDTO;
 import com.hotel_management.backend.model.PersonEntity;
 import com.hotel_management.backend.repository.PersonRepository;
-import com.hotel_management.backend.validations.CreatePersonValidation;
+import com.hotel_management.backend.validations.person.CreatePersonValidation;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PersonService {
@@ -32,6 +34,11 @@ public class PersonService {
         PersonEntity person = new PersonEntity(personDTO);
 
         return repository.save(person);
+    }
+
+    // Busca a todas las personas
+    public List<PersonEntity> findAll() {
+        return repository.findAll();
     }
 
     // Busca a una persona por ID

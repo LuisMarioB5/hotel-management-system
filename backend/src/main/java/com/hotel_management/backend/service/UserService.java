@@ -1,11 +1,10 @@
-package com.hotel_management.backend.service.user;
+package com.hotel_management.backend.service;
 
 import com.hotel_management.backend.enums.user.Roles;
 import com.hotel_management.backend.model.EmployeeEntity;
 import com.hotel_management.backend.model.UserEntity;
 import com.hotel_management.backend.repository.UserRepository;
 import com.hotel_management.backend.dto.user.CreateUserDTO;
-import com.hotel_management.backend.service.employee.EmployeeService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,6 +49,11 @@ public class UserService {
         UserEntity user = new UserEntity(employee, role, userDTO.username(), encodedPassword, isActive);
 
         return repository.save(user);
+    }
+
+    // Busca a todos los usuarios
+    public List<UserEntity> findAll() {
+        return repository.findAll();
     }
 
     // Busca un usuario por ID

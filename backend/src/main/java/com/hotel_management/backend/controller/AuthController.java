@@ -32,6 +32,7 @@ public class AuthController {
         this.tokenService = tokenService;
     }
 
+    // Endpoint para autentificar a un usuario
     @PostMapping
     public ResponseEntity<?> authUser(@RequestBody @Valid AuthDTO user) {
         try {

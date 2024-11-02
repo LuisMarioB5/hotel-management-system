@@ -1,4 +1,4 @@
-package com.hotel_management.backend.validations;
+package com.hotel_management.backend.validations.person;
 
 import com.hotel_management.backend.dto.person.CreatePersonDTO;
 import com.hotel_management.backend.enums.person.Genders;
