@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recepcion | Registrar Habitacion</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
-    <link rel="stylesheet" href="../styles/G_recepcion_ocup.css">
+    <link rel="stylesheet" href="../styles/G_recepcion_ocup.css"> <!--Aqui tambien estaran los estilos de esta pagina-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -54,6 +54,7 @@
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
+                
                 <!-- Resumen de la Habitación -->
                 <div class="info-card">
                     <h2><i class="fas fa-bed"></i> Resumen de la Habitación</h2>
@@ -93,52 +94,82 @@
                     </div>
                 </div>
 
-                <!-- Detalle de Hospedaje -->
+                <!-- Detalle de venta -->
                 <div class="info-card">
-                    <h2><i class="fas fa-concierge-bell"></i> Detalle de Hospedaje</h2>
+                    <h2><i class="fas fa-cart-arrow-down"></i> Detalle de venta</h2>
                     <div class="info-grid">
                         <div class="info-group">
-                            <label><i class="fas fa-dollar-sign"></i> Costo Habitacion:</label>
-                            <input type="text" value="$70.00" readonly>
-                        </div>
+                            <label><i class="fas fa-utensils"></i> Producto:</label>
+                            <select>
+                                <option value="">Agua life</option>
+                                <option value="1">Cereales panda</option>
+                                <option value="2">Chocolate cdx</option>
+                                <option value="3">Cigarrillos DEM</option>
+                            </select>
+                        </div>    
                         <div class="info-group">
-                            <label><i class="fas fa-money-bill-wave"></i> Cantidad Adelanto:</label>
-                            <input type="text" value="0.00" readonly>
-                        </div>
+                            <label><i class="fas fa-dollar-sign"></i> Precio:</label>
+                            <input type="text" value="3.00" readonly>
+                            </div>
                         <div class="info-group">
-                            <label><i class="fas fa-money-bill"></i> Cantidad Restante:</label>
-                            <input type="text" value="$70.00" readonly>
+                            <label><i class="fas fa-th-list"></i> Cantidad:</label>
+                            <input class="cant" type="number" value="1" min="1" oninput="this.value = Math.max(1, this.value)">
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-calendar-minus"></i> Fecha Salida:</label>
-                            <input type="text" value="17/07/2021" readonly>
+                        <div class="">
+                            <label class="info-group">‎</label>
+                            <button class="add-btn"><i class="fas fa-chevron-down"></i> Agregar</button>                            
                         </div>
                     </div>
-                </div>
-                 <!-- Servicio a la Habitación -->
-                <div class="info-card">
-                    <h2><i class="fas fa-bell"></i> Servicio a la Habitación</h2>
-                    <div class="table-container">
-                        <table class="service-table">
-                            <thead>
-                                <tr>
-                                    <th>Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio Unitario</th>
-                                    <th>Estado Venta</th>
-                                    <th>Sub Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Jugo</td>
-                                    <td>1</td>
-                                    <td>$30</td>
-                                    <td>Pendiente</td>
-                                    <td>$35</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="table-container">
+                            <table class="service-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Unitario</th>
+                                        <th>Sub Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <button class="del-btn">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                        <td>AGUA LIFE</td>
+                                        <td>1</td>
+                                        <td>3.00</td>
+                                        <td>3.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <button class="del-btn">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                        <td>PAPAS DORADAS</td>
+                                        <td>1</td>
+                                        <td>2.60</td>
+                                        <td>2.60</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    <div class="total-section">
+                        <div class="total-label">Total Pagar</div>
+                        <div class="total-amount">5.60</div>
+                    </div>
+                    <div class="sale-actions">
+                        <div class="sale-status">
+                            <label>Estado Venta</label>
+                            <select>
+                                <option>Pendiente</option>
+                                <option>Separado</option>
+                            </select>
+                        </div>
+                        <button class="finish-sale-btn">Finalizar Venta</button>
                     </div>
                 </div>
             </div>
