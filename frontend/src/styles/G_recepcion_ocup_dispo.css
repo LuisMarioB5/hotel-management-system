@@ -1,0 +1,583 @@
+/*ESTILO COMPARTIDOS ENTRE G_INFOHABITACION Y T_VENTAHABITACION*/
+
+/*ESTILOS PARA GENERALES PARA TODO */
+    .info-card, .reservation-details-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .info-card h2, .reservation-details-card h2 {
+        color: #4a7aff;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+     .info-group i, .form-group label i{
+        color: #4a7aff;
+        width: 15px;
+    }
+     
+    /* Grid para la información */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .info-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .info-group label, .form-group label {
+        color: #000000;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .info-group input {
+        padding: 8px 12px;
+        width: 90%;
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+        font-size: 0.9rem;
+        background-color: #f8f9fa;
+        color: #6c757d;;
+        cursor: default;
+    }
+
+    /* Quitar el borde al enfocar los inputs */
+        .info-group input:focus,
+        .info-group select:focus,
+        .form-group input[type="date"]:focus,
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #e0e0e0;
+        }
+
+    /* Tabla de servicios */
+    .table-container {
+        overflow-x: auto;
+        margin-top: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .service-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+    }
+
+    .service-table th,
+    .service-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .service-table th {
+        background-color: #3f3e3e;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .service-table tbody tr {
+        background-color: white;
+    }
+    .service-table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+  
+    @media (max-width: 1200px) {
+        .info-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Animaciones */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    /*Fin estilos generales*/
+
+/*FIN ESTILOS PARA G_INFOHABITACION*/
+
+/*ESTILOS PARA T_VENTAHABITACION para la parte de detalle venta*/
+.info-group select{
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    font-size: 0.9rem;
+    background-color: #f8f9fa;
+    color: #000000;;
+    cursor: pointer;
+}
+
+.info-group input.cant, .form-group input.cant{
+    color: #000000;
+}
+
+.add-btn {
+    background-color: #106db9;
+    color: white;
+    border: none;
+    padding: 9px 25px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.add-btn:hover {
+    background-color: #083459;
+}
+
+.del-btn {
+    background: none;
+    color: red;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.del-btn:hover {
+    opacity: 0.5;
+}
+
+.total-section {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background-color: white;
+    border-top: 1px solid #e0e0e0;
+}
+
+.total-label {
+    font-weight: 500;
+    color: white;
+    background-color: #3f3e3e;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+.total-amount {
+    min-width: 100px;
+    text-align: right;
+    font-weight: 500;
+    background-color: white;
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.sale-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+}
+
+.sale-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.sale-status label {
+    color: #000000;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.sale-status select {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: white;
+    min-width: 150px;
+}
+.sale-status select:focus {
+    outline: none;
+    border-color: #e0e0e0;
+}
+
+.finish-sale-btn {
+    background-color: #10B981;
+    color: white;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.finish-sale-btn:hover {
+    background-color: #0b7451;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sale-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .sale-status {
+        width: 100%;
+    }
+    
+    .finish-sale-btn {
+        width: 100%;
+    }
+}
+/*FIN */
+
+/*ESTILOS PARA G_REGISTROHABITACION*/
+
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        transition: border-color 0.3s;
+        /* Ajustes adicionales para evitar desbordamiento de texto */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 90%;
+        color: #6c757d;;
+        cursor: default;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus,
+    .form-group input.cant:focus {
+        border-color: #4a7aff;
+        outline: none;
+    }
+
+    .search-container {
+        display: flex;
+        gap: 10px;
+    }
+        
+    .search-container input {
+        flex: 1;
+    }
+
+    .search-btn {
+        background-color: #3a6ae0;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: background-color 0.3s;
+        font-size: 0.9rem;
+    }
+        
+    .search-btn:hover {
+        background-color: #1e3c8a;
+    }
+
+    .reservation-details-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .register-btn {
+        background-color: #2c8a41;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+        
+    .register-btn:hover {
+        background-color: #133c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(74, 122, 255, 0.2);
+    }
+      /* Estilos responsivos */
+      @media (max-width: 1200px) {
+        .reservation-details-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .reservation-details-card {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .reservation-details-grid,
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .search-container {
+            flex-direction: column;
+        }
+
+        .search-btn {
+            width: 100%;
+        }
+    }
+    /*modal de buscar cliente*/
+    
+.climodal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease; /* Suaviza la aparición del modal */
+    }
+    
+    .climodal-content {
+    background: linear-gradient(180deg, #4a7aff 0%, #9d4edd 100%);
+    width: 500px;
+    max-width: 90%;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    animation: modalFadeIn 0.3s ease forwards; /* Animación de entrada */
+    
+    }
+    
+    .climodal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    margin-bottom: 10px;
+    }
+    
+    .climodal-header h2 {
+    margin: 0;
+    }
+    
+    .cliclose-button {
+    cursor: pointer;
+    padding: 6px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    background-color: #dc3545;
+    transition: background-color 0.3s;
+    }
+    
+    .cliclose-button:hover,
+    .cliclose-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+    }
+    
+    .climodal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: rgb(0, 0, 0);
+    margin-top: 15px;
+    }
+    
+    .climodal-large {
+    width: 90%;
+    max-width: 900px;
+    margin: 30px auto;
+    
+    }
+    .climodal-body input,
+    .climodal-body select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+    
+    }
+    .climodal-body input:focus,
+    .climodal-body select:focus {
+    border-color: #488ada; /* Cambio de color al enfocar */
+    outline: none;
+    }
+    
+    .table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    background-color: slver;
+    border-radius: 4px;
+    color: white;
+    }
+    
+    .entries-control select {
+    margin: 0 10px;
+    padding: 5px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    }
+    
+    .search-control input {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 200px;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .clients-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: white;
+    }
+    
+    .clients-table th,
+    .clients-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    }
+    
+    .clients-table th {
+        background-color: #3f3e3e;
+        color: white;
+        font-weight: 600;
+    }
+    
+    .clients-table tbody tr:hover {
+    background-color: #4a7aff;
+    }
+    
+    
+    .table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    color: white;
+    }
+    
+    .pagination {
+    display: flex;
+    gap: 5px;
+    }
+    
+    .pagination-btn {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+    }
+    
+    .pagination-btn:hover {
+    background-color: silver;
+    }
+    
+    .pagination-btn.active {
+    background: #4a7aff;
+    color: white;
+    border-color: #4a7aff;
+    }
+    
+    
+    @keyframes modalSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-70px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+    
+ 
+
