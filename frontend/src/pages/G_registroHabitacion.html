@@ -144,6 +144,86 @@
         </div>
     </div>
 
+    <!-- Modal de Logout -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>¿Estás seguro de que deseas salir?</h5>
+                <span class="close-button" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel" id="cancelLogout">Cancelar</button>
+                <a href="../pages/login.html" class="btn logout">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <!--MODAL De lista de clientes-->
+    <div class="climodal" id="clientListModal">
+        <div class="climodal-content climodal-large">
+            <div class="climodal-header">
+                <h2>Lista de Clientes</h2>
+                <span class="cliclose-button" id="closeClientList">&times;</span>
+            </div>
+
+            <div class="user-actions">
+                <div class="table-controls">
+                    <label for="recordsPerPage">Mostrar:</label>
+                    <select id="recordsPerPage">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <label>Registros:</label>
+                    <input type="text" id="searchUser" placeholder="Buscar producto">
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="service-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Documento</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Correo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>34345656</td>
+                            <td>Benjamin</td>
+                            <td>Alva</td>
+                            <td>alva@gmail.com</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>55567878</td>
+                            <td>Hanan</td>
+                            <td>Bispo</td>
+                            <td>bispo@gmail.com</td>
+                        </tr>
+                            <!-- Agregar más filas según sea necesario -->
+                     </tbody>
+                </table>
+                    <!-- Div de paginación y conteo de registros -->
+                <div class="pagination-info">
+                    <label>Mostrando registros del 1 al 2 de un total de 2 registros</label>
+                    <div class="pagination-buttons">
+                        <button class="pagination-btn">&lt;</button>
+                        <button class="pagination-btn">&gt;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Fin modal-->
+
     <!--Manejo de fecha actual, validacion de formularios y evento del registro-->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -243,93 +323,6 @@
         });
     </script>
     <!--Fin -->
-
-    <!-- Modal de Logout -->
-    <div class="modal" id="logoutModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>¿Estás seguro de que deseas salir?</h5>
-                <span class="close-button" id="closeModal">&times;</span>
-            </div>
-            <div class="modal-body">
-                Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
-            </div>
-            <div class="modal-footer">
-                <button class="btn cancel" id="cancelLogout">Cancelar</button>
-                <a href="../pages/login.html" class="btn logout">Cerrar sesión</a>
-            </div>
-        </div>
-    </div>
-
-    <!--MODAL De lista de clientes-->
-    <div class="climodal" id="clientListModal">
-        <div class="climodal-content climodal-large">
-            <div class="climodal-header">
-                <h2>Lista de Clientes</h2>
-                <span class="cliclose-button" id="closeClientList">&times;</span>
-            </div>
-            <div class="climodal-body">
-                <div class="table-controls">
-                    <div class="entries-control">
-                        Mostrar 
-                        <select>
-                            <option>10</option>
-                            <option>25</option>
-                            <option>50</option>
-                        </select>
-                        Registros
-                    </div>
-                    <div class="search-control">
-                        Buscar: 
-                        <input type="text" placeholder="Buscar cliente...">
-                    </div>
-                </div>
-    
-                <div class="table-container">
-                    <table class="clients-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Documento</th>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
-                                <th>Correo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>34345656</td>
-                                <td>Benjamin</td>
-                                <td>Alva</td>
-                                <td>alva@gmail.com</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>55567878</td>
-                                <td>Hanan</td>
-                                <td>Bispo</td>
-                                <td>bispo@gmail.com</td>
-                            </tr>
-                            <!-- Agregar más filas según sea necesario -->
-                        </tbody>
-                    </table>
-                </div>
-    
-                <div class="table-footer">
-                    <div class="showing-entries">
-                        Mostrando registros del 1 al 2 de un total de 2 registros
-                    </div>
-                    <div class="pagination">
-                        <button class="pagination-btn" >Anterior</button>
-                        <button class="pagination-btn active">1</button>
-                        <button class="pagination-btn">Siguiente</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Fin modal-->
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
