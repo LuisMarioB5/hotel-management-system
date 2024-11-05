@@ -28,6 +28,10 @@
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+.rooms-container select:focus{
+    border-color: #225fb9; /* Cambio de color al enfocar */
+    outline: none;
+}
 
 /* Grid de habitaciones */
 .rooms-grid {
@@ -175,6 +179,7 @@
 .form-group label {
     font-weight: bold;
     margin-bottom: 5px;
+    font-size: 14px;
 }
 
 #room-number,
@@ -182,9 +187,21 @@
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 12px;
     width: 100%;
     box-sizing: border-box;
+}
+
+.form-group input[type="date"]:focus {
+    outline: none;
+    border-color: #518de1;
+    box-shadow: 0 0 5px #518de1; 
+}
+
+.form-group select:focus{
+    outline: none;
+    border-color: #518de1;
+    box-shadow: 0 0 5px #518de1; 
 }
 
 .download-btn {

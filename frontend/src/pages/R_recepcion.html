@@ -56,12 +56,12 @@
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
-                    <h1>Exportar Recepciones</h1>
-                    <hr class="sidebar-divider my-0">
+                    <h2>Exportar Recepciones</h2>
+                    <hr>
                     <div class="rooms-container">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="room-number">Número Habitación:</label>
+                                <label for="room-number"><i class="fas fa-hashtag" style="color: #007bff;"></i> Número Habitación:</label>
                                 <select id="room-number">
                                     <option value="all">Todos</option>
                                     <option value="1">1</option>
@@ -73,12 +73,12 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="start-date">Fecha Inicio:</label>
-                                <input type="text" id="start-date" class="date-picker" placeholder="dd/mm/yyyy">
+                                <label for="start-date"><i class="fas fa-calendar-plus" style="color: #007bff;"></i> Fecha Inicio:</label>
+                                <input type="date" id="fechaEntrada" class="date-picker" placeholder="dd/mm/yyyy">
                             </div>
                             <div class="form-group">
-                                <label for="end-date">Fecha Fin:</label>
-                                <input type="text" id="end-date" class="date-picker" placeholder="dd/mm/yyyy">
+                                <label for="end-date"><i class="fas fa-calendar-minus " style="color: #007bff;"></i> Fecha Fin:</label>
+                                <input type="date" id="fechaSalida" class="date-picker" placeholder="dd/mm/yyyy">
                             </div>
                             <div class="form-group">
                                 <button class="download-btn">
@@ -86,12 +86,34 @@
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer la fecha de entrada como la fecha actual
+            const fechaEntrada = document.getElementById('fechaEntrada');
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaEntrada.value = hoy;
+
+            // Establecer la fecha de entrada como la fecha actual
+            const fechaSalida = document.getElementById('fechaSalida');
+            
+            // Set min date for checkout to be today
+            const today = new Date().toISOString().split('T')[0];
+            fechaSalida.setAttribute('min', today);
+
+            // Update min date for checkout when check-in date changes
+            fechaEntrada.addEventListener('change', function() {
+                fechaSalida.setAttribute('min', this.value);
+                if(fechaSalida.value && fechaSalida.value < this.value) {
+                    fechaSalida.value = this.value;
+                }
+            });
+        });
+    </script>
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -109,19 +131,6 @@
         </div>
     </div>
 
-    <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
-    <input type="date" id="start-date" placeholder="dd/mm/yyyy">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-
-    <script>
-        $(document).ready(function() {
-            $(".date-picker").datepicker({
-                dateFormat: "dd/mm/yy"
-            });
-        });
-    </script>
 
     <script>
         // Script para abrir y cerrar el modal
