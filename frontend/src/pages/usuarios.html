@@ -220,11 +220,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-        const dropdowns = document.querySelectorAll('.dropdown');
-        dropdowns.forEach(dropdown => {
-        // Agregar el evento de clic solo al botón que despliega el menú
-        dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-            e.preventDefault();
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach(dropdown => {
+            // Agregar el evento de clic solo al botón que despliega el menú
+            dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                e.preventDefault();
 
             // Cerrar otros menús abiertos
             dropdowns.forEach(d => {
@@ -232,12 +232,11 @@
                     d.classList.remove('active');
                 }
             });
-
             // Alternar el menú actual
             dropdown.classList.toggle('active');
+            });
         });
     });
-});
     </script>
 
 <script>

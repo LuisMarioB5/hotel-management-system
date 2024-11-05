@@ -84,7 +84,7 @@
                             <label><i class="fas fa-id-card"></i> Nro Documento:</label>
                             <div class="search-container">
                                 <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
-                                <button class="search-btn"><i class="fas fa-search"></i> Buscar</button>
+                                <button class="search-btn" data-toggle="modal" data-target="#createUserModal" ><i class="fas fa-search"></i> Buscar</button>
                             </div>
                         </div>
                         <div class="form-group">
@@ -162,11 +162,11 @@
     </div>
 
     <!--MODAL De lista de clientes-->
-    <div class="climodal" id="clientListModal">
-        <div class="climodal-content climodal-large">
+    <div class="climodal" id="createUserModal">
+        <div class="climodal-content">
             <div class="climodal-header">
                 <h2>Lista de Clientes</h2>
-                <span class="cliclose-button" id="closeClientList">&times;</span>
+                <span class="cliclose-button" onclick="closeModal()">&times;</span>
             </div>
 
             <div class="user-actions">
@@ -323,44 +323,46 @@
         });
     </script>
     <!--Fin -->
-    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        const searchBtn = document.querySelector('.search-btn');
-        const clientListModal = document.getElementById('clientListModal');
-        const closeClientList = document.getElementById('closeClientList');
+        // Abrir modal
+       document.querySelector('.search-btn').addEventListener('click', function() {
+           document.getElementById('createUserModal').style.display = 'flex';
+       });
+   
+       // Cerrar modal
+       function closeModal() {
+           document.getElementById('createUserModal').style.display = 'none';
+       }
 
-        // Abrir modal al hacer clic en el botón de búsqueda
-        searchBtn.addEventListener('click', function() {
-            clientListModal.style.display = 'block';
-        });
-
-        // Cerrar modal
-        closeClientList.addEventListener('click', function() {
-            clientListModal.style.display = 'none';
-        });
-
-        // Cerrar modal al hacer clic fuera de él
-        window.addEventListener('click', function(event) {
-            if (event.target === clientListModal) {
-                clientListModal.style.display = 'none';
+       // Cerrar modal al hacer clic fuera de él
+       window.addEventListener('click', function(event) {
+            if (event.target === createUserModal) {
+                createUserModal.style.display = 'none';
             }
         });
+    </script>
 
-        // Funcionalidad de búsqueda
-        const searchInput = document.querySelector('.search-control input');
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('.clients-table tbody tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach(dropdown => {
+            // Agregar el evento de clic solo al botón que despliega el menú
+            dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                e.preventDefault();
+
+            // Cerrar otros menús abiertos
+            dropdowns.forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('active');
+                }
+            });
+            // Alternar el menú actual
+            dropdown.classList.toggle('active');
             });
         });
-    });   
+    });
     </script>
-    
+
     <script>
         // Script para abrir y cerrar el modal
         document.getElementById('logoutButton').addEventListener('click', function() {
@@ -380,28 +382,6 @@
             if (event.target === document.getElementById('logoutModal')) {
                 document.getElementById('logoutModal').style.display = 'none';
             }
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const dropdowns = document.querySelectorAll('.dropdown');
-
-            dropdowns.forEach(dropdown => {
-                // Agregar el evento de clic solo al botón que despliega el menú
-                dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    // Cerrar otros menús abiertos
-                    dropdowns.forEach(d => {
-                        if (d !== dropdown) {
-                            d.classList.remove('active');
-                        }
-                    });
-                    // Alternar el menú actual
-                    dropdown.classList.toggle('active');
-                });
-            });
         });
     </script>
 </body>
