@@ -7,7 +7,15 @@ export class UpdateRoomDTO {
 
   @IsString()
   @IsOptional()
-  type?: string;
+  details?: string;
+  
+  @IsString()
+  @IsOptional()
+  floor: string;
+
+  @IsString()
+  @IsOptional()
+  type: string;
 
   @IsString()
   @IsOptional()
