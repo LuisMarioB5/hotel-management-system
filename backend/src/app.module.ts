@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { EnvConfig } from './config/env.config';
 import { AuthModule } from './auth/auth.module';
 import { RoomsModule } from './rooms/rooms.module';
+import { CustomersModule } from './customers/customers.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RoomsModule } from './rooms/rooms.module';
     UsersModule,
     AuthModule,
     RoomsModule,
+    CustomersModule,
   ],
 })
 export class AppModule {}
