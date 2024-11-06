@@ -9,6 +9,12 @@ export class RoomEntity {
   number: number;
 
   @Column()
+  details: string;
+
+  @Column()
+  floor: string;
+  
+  @Column()
   type: string;
 
   @Column({ default: 'DISPONIBLE' })

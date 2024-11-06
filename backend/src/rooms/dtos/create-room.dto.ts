@@ -6,6 +6,14 @@ export class CreateRoomDTO {
   number: number;
 
   @IsString()
+  @IsOptional()
+  details?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  floor: string;
+
+  @IsString()
   @IsNotEmpty()
   type: string;
 
