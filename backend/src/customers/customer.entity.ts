@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { BookingEntity } from 'src/bookings/booking.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 
 @Entity('customers')
 export class CustomerEntity {
@@ -40,4 +41,7 @@ export class CustomerEntity {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany(() => BookingEntity, booking => booking.customer)
+  bookings: BookingEntity[];
 }
