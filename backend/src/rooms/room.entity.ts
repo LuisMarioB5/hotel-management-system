@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BookingEntity } from 'src/bookings/booking.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity('rooms')
 export class RoomEntity {
@@ -25,4 +26,7 @@ export class RoomEntity {
 
   @Column({ default: true })
   isAvailable: boolean;
+
+  @OneToMany(() => BookingEntity, booking => booking.room)
+  bookings: BookingEntity[];
 }
