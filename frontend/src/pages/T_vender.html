@@ -75,7 +75,7 @@
                                 <div class="room-category">
                                     CATEGORIA: MATRIMONIAL
                                 </div>
-                                <div class="room-status ocupadoven">
+                                <div class="room-status ocupadoven" onclick="redirectToT_ventaHabitacion()">
                                     Iniciar Venta
                                     <i class="fas fa-chevron-right"></i>
                                 </div>
@@ -85,6 +85,12 @@
                 </div>
             </div>
     </div>
+
+    <script>   
+        function redirectToT_ventaHabitacion() {
+            window.location.href = '../pages/T_ventaHabitacion.html';
+        }
+    </script>
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">

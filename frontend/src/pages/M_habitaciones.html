@@ -55,7 +55,7 @@
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
-               
+                <div class="contenido">
                     <div class="user-list-header">
                         <h2>Lista de Habitaciones</h2>
                     </div>
@@ -63,19 +63,17 @@
                     <!-- Botón "Crear Nuevo" y opciones de visualización -->
                     <div class="user-actions">
                         <button class="create-button" data-toggle="modal" data-target="#createUserModal">
-                            <i class="fas fa-user-plus"></i> Crear Nuevo
+                            <i class="fas fa-user-plus"></i> Nuevo
                         </button>
-                        
                         <div class="table-controls">
-                            <label for="recordsPerPage">Mostrar</label>
+                            <label for="recordsPerPage">Mostrar:</label>
                             <select id="recordsPerPage">
                                 <option value="10">10</option>
                                 <option value="25">25</option>
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                             </select>
-                            <span>Registros <i class="fas fa-search"></i> </span>
-            
+                            <label>Registros: </label>
                             <input type="text" id="searchUser" placeholder="Buscar habitacion">
                         </div>
                     </div>
@@ -98,7 +96,7 @@
                                 <tr>
                                     <td>001</td>
                                     <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>70</td>
+                                    <td>70.00</td>
                                     <td>Individual</td>
                                     <td>PRIMERO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -110,7 +108,7 @@
                                 <tr>
                                     <td>002</td>
                                     <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>80</td>
+                                    <td>80.00</td>
                                     <td>Doble</td>
                                     <td>PRIMERO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -122,7 +120,7 @@
                                 <tr>
                                     <td>003</td>
                                     <td>BAÑO + TV + CABLE</td>
-                                    <td>60</td>
+                                    <td>60.00</td>
                                     <td>Individual</td>
                                     <td>PRIMERO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -134,7 +132,7 @@
                                 <tr>
                                     <td>004</td>
                                     <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>80</td>
+                                    <td>80.00</td>
                                     <td>Doble</td>
                                     <td>PRIMERO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -146,7 +144,7 @@
                                 <tr>
                                     <td>005</td>
                                     <td>WIFI + BAÑO</td>
-                                    <td>50</td>
+                                    <td>50.00</td>
                                     <td>Individual</td>
                                     <td>PRIMERO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -158,7 +156,7 @@
                                 <tr>
                                     <td>006</td>
                                     <td>WIFI + BAÑO + TV 4K + CABLE</td>
-                                    <td>80</td>
+                                    <td>80.00</td>
                                     <td>Individual</td>
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -170,7 +168,7 @@
                                 <tr>
                                     <td>007</td>
                                     <td>WIFI + BAÑO + TV 4K + CABLE</td>
-                                    <td>90</td>
+                                    <td>90.00</td>
                                     <td>Doble</td>
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -182,7 +180,7 @@
                                 <tr>
                                     <td>008</td>
                                     <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>70</td>
+                                    <td>70.00</td>
                                     <td>Individual</td>
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -194,7 +192,7 @@
                                 <tr>
                                     <td>009</td>
                                     <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>80</td>
+                                    <td>80.00</td>
                                     <td>Doble</td>
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -206,7 +204,7 @@
                                 <tr>
                                     <td>010</td>
                                     <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>70</td>
+                                    <td>70.00</td>
                                     <td>Individual</td>
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
@@ -219,7 +217,7 @@
                         </table>
                         <!-- Div de paginación y conteo de registros -->
                         <div class="pagination-info">
-                            <span>Mostrando registros del 1 al 10 de un total de 10 registros</span>
+                            <label>Mostrando registros del 1 al 10 de un total de 10 registros</label>
                                 <div class="pagination-buttons">
                                     <button class="pagination-btn">&lt;</button>
                                     <button class="pagination-btn">&gt;</button>

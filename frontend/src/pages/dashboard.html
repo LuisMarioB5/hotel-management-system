@@ -51,12 +51,11 @@
                 </div>
 
                 <div class="main-content">
-
-                <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
-                </div>
-                    <h1>Dashboard</h1>
-                    <hr class="sidebar-divider my-0">
+                    <div class="user-info">
+                        <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                    </div>
+                    <h2>Dashboard</h2>
+                    <hr>
                     <div class="dashboard-cards">
                         <div class="card">
                             <h3>Total Habitaciones</h3> 
@@ -64,24 +63,233 @@
                             <i class="fas fa-hotel"></i> 
                         </div >
                         <div class="card">
-                            <h3>Habitaciones Disponibles</h3>
+                            <h3> Disponibles</h3>
                             <p>50   </p>
                             <i class="fas fa-door-open"></i>
                         </div>
                         <div class="card">
-                            <h3>Habitaciones Ocupadas</h3>
+                            <h3> Ocupadas</h3>
                             <p>30 </p>
                             <i class="fas fa-bed"></i>
                         </div>
                         <div class="card">
-                            <h3>Habitaciones En Limpieza</h3>
+                            <h3> En Limpieza</h3>
                             <p>4  </p>
                             <i class="fas fa-broom"></i>
                         </div>
                     </div>
+
+                    <div class="metrics-cards">
+                        <div class="metric-card green">
+                           <div class="metric-content">
+                                <p class="metric-value">RD$10.457.850</p> 
+                                <h3>Ventas Totales</h3>
+                            </div>
+                            <div class="more-info">
+                                <label>Más información </label>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <i class="fas fa-dollar-sign metric-icon"></i>
+                        </div>
+                        <div class="metric-card blue">
+                            <div class="metric-content">
+                                <p class="metric-value">18</p>
+                                <h3>Reservas</h3>
+                            </div>
+                            <div class="more-info">
+                                <label>Más información </label>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <i class="fas fa-calendar metric-icon"></i>
+                        </div>
+                        <div class="metric-card yellow">
+                            <div class="metric-content">
+                                <p class="metric-value">8</p>
+                                <h3>Usuarios</h3>
+                            </div>
+                            <div class="more-info">
+                                <label>Más información </label>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <i class="fas fa-users metric-icon"></i>
+                        </div>
+                        <div class="metric-card red">
+                            <div class="metric-content">
+                                <p class="metric-value">5</p>
+                                <h3>Categorias</h3>
+                            </div>
+                            <div class="more-info">
+                                <label>Más información </label>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <i class="fas fa-folder-open metric-icon"></i>
+                        </div>
+                    </div>
+                    <!--Grafico de ventas-->
+                    <div class="sales-chart-container">
+                        <h3><i class="fas fa-chart-line"></i> LINEA DE VENTAS</h3>
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                    <!--ULTIMOS CLIENTES EETC-->
+                    <div class="latest-sections-container">
+                        <div class="latest-section">
+                            <div class="latest-header">
+                                <h3>Últimos Usuarios</h3>
+                                <button class="view-all-btn">VER MAS</button>
+                            </div>
+                            <div class="latest-content">
+                                <div class="item">
+                                    <div class="item-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Junior Castillo</div>
+                                        <div class="item-subtitle">Ingreso directo</div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="item-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Yenmy Guizado Zuñiga</div>
+                                        <div class="item-subtitle">Ingreso directo</div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="item-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Hector Tuesta Pereda</div>
+                                        <div class="item-subtitle">Ingreso directo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="section-divider"></div>
+                    
+                        <div class="latest-section">
+                            <div class="latest-header">
+                                <h3>Últimos Clientes</h3>
+                                <button class="view-all-btn">VER MAS</button>
+                            </div>
+                            <div class="latest-content">
+                                <div class="item">
+                                    <div class="item-avatar">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">María González</div>
+                                        <div class="item-subtitle"><span>DNI:</span> 45678912</div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="item-avatar">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Carlos Rodríguez</div>
+                                        <div class="item-subtitle"><span>DNI:</span> 78912345</div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="item-avatar">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Ana Martínez</div>
+                                        <div class="item-subtitle"><span>DNI:</span> 32165498</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="section-divider"></div>
+                    
+                        <div class="latest-section">
+                            <div class="latest-header">
+                                <h3>Últimas Reservas</h3>
+                                <button class="view-all-btn">VER MAS</button>
+                            </div>
+                            <div class="latest-content">
+                                <div class="item">
+                                    <div class="item-avatar">
+                                        <i class="fas fa-bed"></i>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Habitación 101 - Suite</div>
+                                        <div class="item-subtitle"><span>Check-in:</span> 07/11/2024</div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="item-avatar">
+                                        <i class="fas fa-bed"></i>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Habitación 205 - Doble</div>
+                                        <div class="item-subtitle"><span>Check-in:</span> 08/11/2024</div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="item-avatar">
+                                        <i class="fas fa-bed"></i>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Habitación 304 - Individual</div>
+                                        <div class="item-subtitle"><span>Check-in:</span> 08/11/2024</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+
+
                 </div>
             </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Configuración del gráfico de ventas
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['2024-04', '2024-05', '2024-06', '2024-07', '2024-08'],
+                datasets: [{
+                    label: 'Ventas',
+                    data: [0, 125000, 200000, 150000, 500000],
+                    borderColor: '#ab2497',
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'RD$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+
+
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -122,6 +330,7 @@
     </script>
 
     <script>
+        //Esto es para que el contenido del sidebar baje
         document.addEventListener('DOMContentLoaded', () => {
             const dropdowns = document.querySelectorAll('.dropdown');
 
