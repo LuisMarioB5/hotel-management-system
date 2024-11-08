@@ -20,6 +20,7 @@
                             <a href="#" class="dropbtn"><i class="fas fa-hotel"></i> Gestion <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/G_recepcion.html"><i class="fas fa-concierge-bell"></i> Recepcion</a>
+                                <a href="../pages/G_reservas.html"><i class="fas fa-calendar-check"></i>  Reservas</a>
                                 <a href="../pages/G_salida.html"><i class="fas fa-door-open"></i> Salida</a>
                             </div>
                         </li>
@@ -34,8 +35,10 @@
                             <a href="#" class="dropbtn"><i class="fas fa-tools"></i> Mantenimiento <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/M_habitaciones.html"><i class="fas fa-bed"></i> Habitacion</a>
+                                <a href="../pages/M_limpieza.html"><i class="fas fa-broom"></i> Limpieza</a>
                                 <a href="../pages/M_categoria.html"><i class="fas fa-tags"></i> Categoria</a>
                                 <a href="../pages/M_pisos.html"><i class="fas fa-building"></i> Pisos</a>
+    
                             </div>
                         </li>
                         <li class="dropdown">
@@ -75,7 +78,7 @@
                                 <div class="room-category">
                                     CATEGORIA: MATRIMONIAL
                                 </div>
-                                <div class="room-status ocupado">
+                                <div class="room-status ocupado" onclick="redirectTosalidaHabitacion()">
                                     OCUPADO
                                     <i class="fas fa-chevron-right"></i>
                                 </div>
@@ -85,6 +88,13 @@
                 </div>
             </div>
     </div>
+
+    <script>   
+        function redirectTosalidaHabitacion() {
+            window.location.href = '../pages/G_salidaHabitacion.html';
+        }
+        
+    </script>
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
