@@ -119,7 +119,7 @@ body, html {
     animation: fadeIn 0.5s ease-out;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 20px;
     justify-content: space-between;
 }
 /* Animaciones */
@@ -139,7 +139,7 @@ body, html {
     border-radius: 8px;
     padding: 10px;
     width: 100%;
-    height: 40px;
+    height: 50px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     flex: 1;
     position: relative;
@@ -165,7 +165,7 @@ body, html {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 0px;
-    top:30%;
+    top:40%;
     position: absolute;
     left: 12px;
 }
@@ -191,35 +191,32 @@ body, html {
     }
 }
 
+/* Ajustes para barra lateral en pantallas pequeñas */
 @media (max-width: 768px) {
     .dashboard-container {
         flex-direction: column;
+        position: relative; /* Añadido */
+        min-height: 100vh;
     }
-    .sidebar {
-        width: 100%;
-        position: relative;
-        padding: 15px;
-    }
+   
     .main-content {
         order: 1;
+        
+        position: relative; /* Añadido */
+        z-index: 1; /* Añadido */
     }
     
-}
-
-/* Ajustes para barra lateral en pantallas pequeñas */
-@media (max-width: 768px) {
     .sidebar {
-        position: fixed;
+        width: 100%;
+        position: fixed; /* Cambiado de relative a fixed */
         bottom: 0;
         left: 0;
         right: 0;
-        width: 100%;
         height: auto;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
+        z-index: 1000; /* Añadido */
         padding: 10px;
         box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center
     }
     .sidebar ul {
         flex-direction: row;
@@ -230,12 +227,21 @@ body, html {
     }
     .sidebar li {
         margin: 0;
+        flex: 0 1 auto; 
     }
     .sidebar a {
         padding: 5px;
         text-align: center;
         font-size: 14px;
     }
+
+    /* Ocultar elementos innecesarios en móvil */
+    .sidebar h2 {
+        display: inline; /* o inline, según necesites */
+        transform: scale(0.5);
+        
+    }
+
 }
 
 /* Estilo para el botón de usuario */
@@ -341,4 +347,153 @@ body, html {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+
+
+
+/* Metric Cards */
+.metrics-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+    animation: fadeIn 0.5s ease-out;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+
+.metric-card {
+    border-radius: 8px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.metric-card.green { background-color: #28a745; }
+.metric-card.blue { background-color: #007bff; }
+.metric-card.yellow { background-color: #c98531; }
+.metric-card.red { background-color: #dc3545; }
+
+.metric-content {
+    padding: 6px;
+    position: relative;
+    z-index: 1;
+}
+
+.metric-card h3 {
+    font-size: 0.8rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.metric-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.more-info {
+    color: black;
+    text-decoration: none;
+    font-size: 0.9rem;
+    justify-content: space-between;
+    display: flex;
+    cursor: pointer;
+     align-items: center;
+    padding: 6px;
+    opacity: 0.9;
+    transition: opacity 0.9s ease;
+    background-color: rgb(238, 235, 235);
+}
+
+.more-info:hover {
+    filter: brightness(95%);
+}
+
+.more-info i, .more-info label {
+    transition: transform 0.3s;
+}
+
+.more-info:hover i, .more-info:hover label {
+    transform: translateX(5px);
+    color:  rgb(23, 23, 23);
+}
+
+.metric-icon {
+    position: absolute;
+    right: 8px;
+    bottom: 45px;
+    font-size: 3.5rem;
+    opacity: 0.4;
+}
+
+/* Sales Chart */
+.sales-chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.sales-chart-container h3 {
+    color: #333;
+   
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+}
+
+
+#salesChart {
+    margin-top: 50PX;
+    width: 100%;
+    height: 300px;
+}
+
+.sales-chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 5px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 400px; /* Altura fija para el contenedor */
+    position: relative; /* Necesario para el posicionamiento absoluto del canvas */
+}
+
+#salesChart {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .metrics-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .metrics-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .metric-value {
+        font-size: 1.5rem;
+    }
 }
