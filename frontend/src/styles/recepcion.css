@@ -3,7 +3,7 @@
     background: white;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 15px;
     margin-bottom: 20px;
     animation: fadeIn 0.5s ease-out;
 }
@@ -21,7 +21,7 @@
 /* Selector de piso */
 .floor-selector {
     width: 100%;
-    max-width: 300px;
+    max-width: 150px;
     
     padding: 8px;
     margin-bottom: 10px;
@@ -36,8 +36,8 @@
 /* Grid de habitaciones */
 .rooms-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
     padding: 10px;
 }
 
@@ -58,7 +58,7 @@
 
 /* Encabezado de la tarjeta */
 .room-header {
-    padding: 15px;
+    padding: 10px;
 
     display: flex;
     justify-content: space-between;
@@ -78,7 +78,7 @@
 
 /* Categoría de la habitación */
 .room-category {
-    padding: 5px 15px;
+    padding: 8px 15px;
     font-size: 0.9em;
     color: #666;
     text-transform: uppercase;
@@ -86,7 +86,7 @@
 
 /* Estado de la habitación */
 .room-status {
-    padding: 15px;
+    padding: 10px;
     color: white;
     display: flex;
     justify-content: space-between;
@@ -96,34 +96,15 @@
 }
 
 /* Colores de borde para cada estado */
-.room-card.disponible {
-    border: 2px solid #00c853;
-}
+.room-card.disponible {border: 2px solid #00c853;}
+.room-card.ocupado {border: 2px solid #ff3d00;}
+.room-card.reservado {border: 2px solid orange;}
+.room-card.limpieza {border: 2px solid #00b0ff; }
 
-.room-card.ocupado {
-    border: 2px solid #ff3d00;
-}
-.room-card.ocupadoven {
-    border: 2px solid #ffb300;
-}
-.room-card.limpieza {
-    border: 2px solid #00b0ff;
-}
-.room-status.disponible {
-    background-color: #00c853;
-}
-
-.room-status.ocupado {
-    background-color: #ff3d00;
-}
-
-.room-status.ocupadoven {
-    background-color: #ffb300;
-}
-
-.room-status.limpieza {
-    background-color: #00b0ff;
-}
+.room-status.disponible {background-color: #00c853;}
+.room-status.ocupado {background-color: #ff3d00;}
+.room-status.reservado {background-color: orange;}
+.room-status.limpieza {background-color: #00b0ff;}
 
 .room-status:hover {
     filter: brightness(95%);
@@ -136,19 +117,12 @@
 .room-status:hover i {
     transform: translateX(5px);
 }
-.room-card.disponible .room-icon {
-    color: #00c853;
-}
-.room-card.disponible .room-icon {
-    color: #00c853;
-}
-.room-card.ocupado .room-icon {
-    color: #ff3d00;
-}
 
-.room-card.limpieza .room-icon {
-    color: #00b0ff;
-}
+.room-card.disponible .room-icon {color: #00c853;}
+.room-card.reservado .room-icon {color: orange;}
+.room-card.ocupado .room-icon {color: #ff3d00;}
+.room-card.limpieza .room-icon {color: #00b0ff;}
+
 /* Responsive */
 @media (max-width: 768px) {
     .rooms-grid {
