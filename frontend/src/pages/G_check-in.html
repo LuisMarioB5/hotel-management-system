@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Hodelpa - Recepcion</title>
+    <title>Recepcion | Check-in</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
-    <link rel="stylesheet" href="../styles/recepcion.css"> <!--Se usara para el css del content-->
+    <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -57,93 +57,75 @@
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
-                <h2>Recepcion</h2>
-                <hr class="sidebar-divider my-0">
-                <div class="rooms-container">
-                    <label>Seleccionar Piso</label>
-                    <select class="floor-selector" >
-                        <option value="">Todos</option>
-                        <option value="1">Piso 1</option>
-                        <option value="2">Piso 2</option>
-                        <option value="3">Piso 3</option>
-                    </select>
-                    
-                    <div class="rooms-grid">
-                        <!-- Repetir este bloque para cada habitación -->
-                        <div class="room-card disponible">
-                            <div class="room-header">
-                                <span class="room-number">NRO: 001</span>
-                                <i class="fas fa-bed room-icon"></i>
-                            </div>
-                            <div class="room-category">
-                                CATEGORIA: INDIVIDUAL
-                            </div>
-                            <div class="room-status disponible" onclick="redirectToRegistroHabitacion()">
-                                DISPONIBLE
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
+                <!-- Resumen de la Habitación -->
+                <div class="info-card">
+                    <h2><i class="fas fa-bed"></i> Resumen de la Habitación</h2>
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <label><i class="fas fa-hashtag"></i> Habitacion:</label>
+                            <input type="text" value="001" readonly>
                         </div>
-                        <!-- Fin del bloque de habitación -->
-                        <div class="room-card limpieza">
-                            <div class="room-header">
-                                <span class="room-number">NRO: 002</span>
-                                <i class="fas fa-broom room-icon"></i>
-                            </div>
-                            <div class="room-category">
-                                CATEGORIA: DOBLE
-                            </div>
-                            <div class="room-status limpieza">
-                                LIMPIEZA
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-list"></i> Detalles:</label>
+                            <input type="text" value="WIFI + BAÑO + TV + CABLE" readonly>
                         </div>
-                        
-                        <div class="room-card ocupado">
-                            <div class="room-header">
-                                <span class="room-number">NRO: 003</span>
-                                <i class="fas fa-user-check room-icon"></i>
-                            </div>
-                            <div class="room-category">
-                                CATEGORIA: MATRIMONIAL
-                            </div>
-                            <div class="room-status ocupado" onclick="redirectToG_infoHabitacion()">
-                                OCUPADO
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-tag"></i> Categoría:</label>
+                            <input type="text" value="Individual" readonly>
                         </div>
-
-                        <div class="room-card reservado">
-                            <div class="room-header">
-                                <span class="room-number">NRO: 004</span>
-                                <i class="fas fa-calendar-check room-icon"></i>
-                            </div>
-                            <div class="room-category">
-                                CATEGORIA: INDIVIDUAL   
-                            </div>
-                            <div class="room-status reservado" onclick="redirectToG_checkin()">
-                                RESERVADO
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-building"></i> Piso:</label>
+                            <input type="text" value="PRIMERO" readonly>
                         </div>
-
-                        
+                        <div class="info-group">
+                            <label><i class="fas fa-user"></i> Cliente:</label>
+                            <input type="text" value="Willy Reyes" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
+                            <input type="text" value="60605050" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-envelope"></i> Correo:</label>
+                            <input type="text" value="WillyR@gmail.com" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
+                            <input type="text" value="17/07/2021" readonly>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Detalle de Hospedaje -->
+                <div class="info-card">
+                    <h2><i class="fas fa-concierge-bell"></i> Detalle de Hospedaje</h2>
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <label><i class="fas fa-dollar-sign"></i> Costo Habitacion:</label>
+                            <input type="text" value="$70.00" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-money-bill-wave"></i> Cantidad Adelanto:</label>
+                            <input type="text" value="0.00" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-money-bill"></i> Cantidad Restante:</label>
+                            <input type="text" value="$70.00" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-calendar-minus"></i> Fecha Salida:</label>
+                            <input type="text" value="17/07/2021" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="registrarBtn" class="register-btn"><i class="fas fa-save"></i> Confirmar</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
-
-    <script>   
-        function redirectToRegistroHabitacion() {
-            window.location.href = '../pages/G_registroHabitacion.html';
-        }
-        function redirectToG_infoHabitacion() {
-            window.location.href = '../pages/G_infoHabitacion.html';
-        }
-        function redirectToG_checkin() {
-            window.location.href = '../pages/G_check-in.html';
-        }
-    </script>
 
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
@@ -161,7 +143,32 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const searchBtn = document.querySelector('.search-btn');
+        const clientListModal = document.getElementById('clientListModal');
+        const closeClientList = document.getElementById('closeClientList');
 
+        // Abrir modal al hacer clic en el botón de búsqueda
+        searchBtn.addEventListener('click', function() {
+            clientListModal.style.display = 'block';
+        });
+
+        // Cerrar modal
+        closeClientList.addEventListener('click', function() {
+            clientListModal.style.display = 'none';
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
+            if (event.target === clientListModal) {
+                clientListModal.style.display = 'none';
+            }
+        });
+    });   
+    </script>
+    
     <script>
         // Script para abrir y cerrar el modal
         document.getElementById('logoutButton').addEventListener('click', function() {
@@ -186,25 +193,24 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-    const dropdowns = document.querySelectorAll('.dropdown');
+            const dropdowns = document.querySelectorAll('.dropdown');
 
-    dropdowns.forEach(dropdown => {
-        // Agregar el evento de clic solo al botón que despliega el menú
-        dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-            e.preventDefault();
+            dropdowns.forEach(dropdown => {
+                // Agregar el evento de clic solo al botón que despliega el menú
+                dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                    e.preventDefault();
 
-            // Cerrar otros menús abiertos
-            dropdowns.forEach(d => {
-                if (d !== dropdown) {
-                    d.classList.remove('active');
-                }
+                    // Cerrar otros menús abiertos
+                    dropdowns.forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('active');
+                        }
+                    });
+                    // Alternar el menú actual
+                    dropdown.classList.toggle('active');
+                });
             });
-
-            // Alternar el menú actual
-            dropdown.classList.toggle('active');
         });
-    });
-});
     </script>
 </body>
 </html>

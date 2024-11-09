@@ -58,7 +58,7 @@
                     <div class="user-info">
                         <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                     </div>
-                    <h1>Reservar</h1>
+                    <h1>Reservacion</h1>
                     <hr>
 
                     <div class="rooms-container">
@@ -83,7 +83,7 @@
                         </div>
                         </div>
                         <div class="rooms-grid">
-                            <div class="room-card disponible">
+                            <div class="room-card reservado ">
                                 <div class="room-header">
                                     <span class="room-number">NRO: 001</span>
                                     <i class="fas fa-bed room-icon"></i>
@@ -91,8 +91,8 @@
                                 <div class="room-category">
                                     CATEGORIA: INDIVIDUAL
                                 </div>
-                                <div class="room-status disponible" onclick="redirectToRegistroHabitacion()">
-                                    DISPONIBLE
+                                <div class="room-status reservado" onclick="redirectToRegistroReserva()">
+                                    RESERVAR
                                     <i class="fas fa-chevron-right"></i>
                                 </div>
                             </div>
@@ -101,6 +101,12 @@
                 </div>
             </div>
     </div>
+
+    <script>
+         function redirectToRegistroReserva() {
+            window.location.href = '../pages/G_registroReserva.html';
+        }
+    </script>
 
     <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
     <script>
