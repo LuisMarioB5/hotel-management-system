@@ -1,11 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BookingEntity } from './booking.entity';
-import { Repository, ReturningStatementNotSupportedError } from 'typeorm';
+import { BookingEntity, BookingStatus } from './booking.entity';
+import { In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { CustomersService } from 'src/customers/customers.service';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { CreateBookingDTO } from './dtos/create-booking.dto';
 import { UpdateBookingDTO } from './dtos/update-booking.dto';
+import { RoomEntity, RoomStatus } from 'src/rooms/room.entity';
+import { CreateCheckInDTO } from './dtos/create-checkin.dto';
 
 @Injectable()
 export class BookingsService {
@@ -17,21 +19,22 @@ export class BookingsService {
     ) {}
 
     async create(b: CreateBookingDTO): Promise<BookingEntity> {
-        const customer = await this.customersService.findById(b.customerId);
-        const room = await this.roomsService.findById(b.roomId);
+        this.verifyDatesAreFuture(b.checkInDate, b.checkOutDate);
 
+        await this.isRoomAvailableWithException(b.roomId, b.checkInDate, b.checkOutDate);
+        
         const booking = this.repository.create({
-            customer,
-            room,
+            customer: await this.customersService.findById(b.customerId),
+            room: await this.roomsService.findById(b.roomId),
             checkInDate: b.checkInDate,
             checkOutDate: b.checkOutDate,
-            status: "CONFIRMADA",
-            isActive: b.isActive,
+            status: BookingStatus.PENDIENTE,
+            isActive: true
         });
-
+    
         return this.repository.save(booking);
     }
-
+    
     async findAll(): Promise<BookingEntity[]> {
         return this.repository.find({ relations: ['customer', 'room'] });
     }
@@ -41,17 +44,85 @@ export class BookingsService {
         if (!booking) this.throwBookingNotFoundException(id);
         return booking;
     }
+
+    async update(id: number, newBooking: UpdateBookingDTO): Promise<BookingEntity> {
+        const oldBooking = await this.findById(id);
+        
+        const actualCheckIn = newBooking.checkInDate ?? oldBooking.checkInDate;
+        const actualCheckOut = newBooking.checkOutDate ?? oldBooking.checkOutDate;
     
-        async update(id: number, booking: UpdateBookingDTO): Promise<BookingEntity> {
-            const newBooking = await this.findById(id);
-            Object.assign(newBooking, booking);
-            return this.repository.save(newBooking);
+        this.verifyDatesAreFuture(actualCheckIn, actualCheckOut);
+        await this.isRoomAvailableWithException(oldBooking.room.id, actualCheckIn, actualCheckOut);
+    
+        Object.assign(oldBooking, newBooking);
+        return this.repository.save(oldBooking);
+    }
+
+    async confirm(id: number): Promise<BookingEntity> {
+        const booking = await this.findById(id);
+        if (booking.status !== BookingStatus.PENDIENTE) {
+            throw new BadRequestException('Solo las reservas pendientes pueden ser confirmadas.');
         }
+
+        booking.status = BookingStatus.CONFIRMADA;
+        return this.repository.save(booking);
+    }
+
+    async checkIn(id: number, createCheckInDTO: CreateCheckInDTO): Promise<BookingEntity> {
+        const booking = await this.findById(id);
+        if (booking.status !== BookingStatus.CONFIRMADA) {
+            throw new BadRequestException('Solo las reservas confirmadas pueden realizar check-in.');
+        }
+
+        if (booking.room.status === RoomStatus.LIMPIEZA) {
+            throw new BadRequestException('La habitación está en limpieza. Asigne otra habitación o espere a que termine');
+        }
+
+        if (booking.room.status === RoomStatus.FUERA_DE_SERVICIO) {
+            throw new BadRequestException('La habitación está en fuera de servicio. Asigne otra habitación o espere a que termine');
+        }
+
+        if (createCheckInDTO.cashAdvance <= 0 || createCheckInDTO.cashAdvance === null) {
+            throw new BadRequestException('Se debe depositar un adelanto de efectivo para poder realizar el check-in');
+        }
+
+        await this.roomsService.updateRoomStatus(booking.room.id, RoomStatus.OCUPADA);
+        booking.room.status = RoomStatus.OCUPADA;
+        booking.actualCheckInDate = new Date();
+        booking.cashAdvance = createCheckInDTO.cashAdvance;
+        booking.status = BookingStatus.CHECKED_IN;
+
+        return this.repository.save(booking);
+    }
+
+    async checkOut(id: number): Promise<BookingEntity> {
+        const booking = await this.findById(id);
+        if (booking.status !== BookingStatus.CHECKED_IN) {
+            throw new BadRequestException('Solo las reservas en estado CHECKED_IN pueden realizar check-out.');
+        }
+
+        await this.roomsService.updateRoomStatus(booking.room.id, RoomStatus.LIMPIEZA);
+        booking.room.status = RoomStatus.LIMPIEZA;
+        booking.actualCheckOutDate = new Date();
+        booking.status = BookingStatus.CHECKED_OUT;
+
+        return this.repository.save(booking);
+    }
 
     async cancel(id: number): Promise<BookingEntity> {
         const booking = await this.findById(id);
-        booking.status = 'CANCELADA';
+        
+        if (booking.status === BookingStatus.CHECKED_OUT) {
+            throw new BadRequestException('No se puede cancelar una reserva ya finalizada.');
+        }
+
+        if (booking.status === BookingStatus.CONFIRMADA || booking.status === BookingStatus.CHECKED_IN) {
+            await this.roomsService.updateRoomStatus(booking.room.id, RoomStatus.DISPONIBLE);
+        }
+    
+        booking.status = BookingStatus.CANCELADA;
         booking.isActive = false;
+    
         return this.repository.save(booking);
     }
 
@@ -62,8 +133,50 @@ export class BookingsService {
         }
     }
 
+    async findAllAvailableRooms(checkInDate: Date, checkOutDate: Date): Promise<RoomEntity[]> {
+      const rooms = await this.roomsService.findByStatus(RoomStatus.DISPONIBLE);
+      const availableRooms: RoomEntity[] = [];
+      for (const room of rooms) {
+          const isAvailable = await this.isRoomAvailable(room.id, checkInDate, checkOutDate);
+          if (isAvailable) {
+              availableRooms.push(room);
+          }
+      }
+  
+      return availableRooms;
+    }
+    
+    private async isRoomAvailable(roomId: number, checkInDate: Date, checkOutDate: Date, bookingId?: number): Promise<boolean> {
+        const overlappingBookings = await this.repository.find({
+            where: {
+                room: { id: roomId },
+                status: In([BookingStatus.CONFIRMADA, BookingStatus.PENDIENTE]),
+                checkInDate: LessThanOrEqual(checkOutDate),
+                checkOutDate: MoreThanOrEqual(checkInDate),
+                ...(bookingId && { id: Not(bookingId) })
+            },
+        });
+    
+        return overlappingBookings.length === 0;
+    }
+    
+    private async isRoomAvailableWithException(roomId: number, checkInDate: Date, checkOutDate: Date, bookingId?: number): Promise<void> {
+        if (!await this.isRoomAvailable(roomId, checkInDate, checkOutDate)) {
+            throw new BadRequestException('La habitación ya tiene reservas en las fechas seleccionadas.');
+        }
+    }
+    
+    private verifyDatesAreFuture(firstDate: Date, secondDate: Date) {
+        const newFistDate = new Date(firstDate);
+        const newSecondDate = new Date(secondDate);
+        const today = new Date();
+    
+        if (newFistDate < today || newSecondDate <= newFistDate) {
+            throw new BadRequestException('Las fechas proporcionadas deben estar en el futuro y en un orden válido (la primera antes que la segunda).');
+        }
+    }
+
     private throwBookingNotFoundException(id: number) {
-        throw new NotFoundException(`Reseva con ID ${id} no encontrada`);
+        throw new NotFoundException(`Reserva con ID ${id} no encontrada`);
     }
 }
-      

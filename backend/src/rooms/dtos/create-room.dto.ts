@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty, IsBoolean, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsBoolean, IsNumber, IsOptional, IsEnum, IsPositive } from 'class-validator';
+import { RoomFloor, RoomStatus, RoomType } from '../room.entity';
 
 export class CreateRoomDTO {
   @IsNumber()
@@ -9,20 +10,27 @@ export class CreateRoomDTO {
   @IsOptional()
   details?: string;
 
-  @IsString()
+  @IsEnum(RoomFloor, {
+    message: 'El piso debe ser un valor válido (PRIMER, SEGUNDO, TERCER, CUARTO, QUINTO)',
+  })
   @IsNotEmpty()
-  floor: string;
+  floor: RoomFloor;
 
-  @IsString()
+  @IsEnum(RoomType, {
+    message: 'El tipo (categoria) debe ser un valor válido (INDIVIDUAL, DOBLE, TRIPLE, MATRIMONIAL)',
+  })
   @IsNotEmpty()
-  type: string;
+  type: RoomType;
 
-  @IsString()
+  @IsEnum(RoomStatus, {
+    message: 'El estado debe ser un valor válido (DISPONIBLE, RESERVADA, OCUPADA, FUERA_DE_SERVICIO, LIMPIEZA, PENDIENTE_DE_CHECKOUT)',
+  })
   @IsOptional()
-  status?: string;
+  status?: RoomStatus;
 
   @IsNumber()
   @IsNotEmpty()
+  @IsPositive()
   price: number;
 
   @IsBoolean()

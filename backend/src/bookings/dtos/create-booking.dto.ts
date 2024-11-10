@@ -19,8 +19,5 @@ export class CreateBookingDTO {
   
   @IsString()
   @IsOptional()
-  status?: string;
-
-  @IsBoolean()
-  isActive?: boolean;
+  details?: string;
 }

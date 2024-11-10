@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RoomEntity } from './room.entity';
+import { RoomEntity, RoomStatus } from './room.entity';
 import { UpdateRoomDTO } from './dtos/update-room.dto';
 import { CreateRoomDTO } from './dtos/create-room.dto';
 
@@ -48,6 +48,19 @@ export class RoomsService {
     if (result.affected === 0) {
       this.throwRoomNotFoundException(id);
     }
+  }
+
+  async updateRoomStatus(id: number, status: RoomStatus): Promise<RoomEntity> {
+    const room = await this.findById(id);
+    room.status = status;
+    room.isAvailable = room.status === RoomStatus.DISPONIBLE;
+    return await this.repository.save(room);
+  }
+
+  async findByStatus(s: RoomStatus): Promise<RoomEntity[]> {
+    return this.repository.find({
+      where: { status: s }
+    });
   }
 
   private throwRoomNotFoundException(id: number) {
