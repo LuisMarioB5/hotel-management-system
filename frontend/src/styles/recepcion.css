@@ -7,6 +7,7 @@
     margin-bottom: 20px;
     animation: fadeIn 0.5s ease-out;
 }
+
 /* Animaciones */
 @keyframes fadeIn {
     from {
@@ -193,12 +194,24 @@
     max-width: 150px;
     align-self: flex-end; 
 }
-
-.download-btn i {
+.reservar-btn{
+    padding: 8px 5px;  
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 150px; 
+    justify-content: flex-end;
+}
+.download-btn i,.reservar-btn i {
     margin-right: 5px;
     font-size: 16px;
 }
 
-.download-btn:hover {
+.download-btn:hover, .reservar-btn:hover  {
     background-color: #218838;
 }
+
