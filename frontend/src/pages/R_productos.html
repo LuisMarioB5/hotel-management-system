@@ -20,6 +20,7 @@
                             <a href="#" class="dropbtn"><i class="fas fa-hotel"></i> Gestion <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/G_recepcion.html"><i class="fas fa-concierge-bell"></i> Recepcion</a>
+                                <a href="../pages/G_reservas.html"><i class="fas fa-calendar-check"></i>  Reservas</a>
                                 <a href="../pages/G_salida.html"><i class="fas fa-door-open"></i> Salida</a>
                             </div>
                         </li>
@@ -34,6 +35,7 @@
                             <a href="#" class="dropbtn"><i class="fas fa-tools"></i> Mantenimiento <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/M_habitaciones.html"><i class="fas fa-bed"></i> Habitacion</a>
+                                <a href="../pages/M_limpieza.html"><i class="fas fa-broom"></i> Limpieza</a>
                                 <a href="../pages/M_categoria.html"><i class="fas fa-tags"></i> Categoria</a>
                                 <a href="../pages/M_pisos.html"><i class="fas fa-building"></i> Pisos</a>
                             </div>
@@ -57,7 +59,7 @@
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
                     <h2>Exportar Productos</h2>
-                    <hr class="sidebar-divider my-0">
+                    <hr>
                     <div class="rooms-container">
                         <div class="form-row">
                             <div class="form-group">
@@ -66,7 +68,7 @@
                                     <option value="all">Todos</option>
                                     <option value="activo">Activo</option>
                                     <option value="inactivo">Inactivo</option>
-                                    <!-- Añade más opciones aquí si es necesario -->
+                                    
                                 </select>
                             </div>
                             <div class="form-group">
@@ -88,6 +90,8 @@
                 </div>
             </div>
     </div>
+    
+    <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Establecer la fecha de entrada como la fecha actual
@@ -127,8 +131,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
     
 
     <script>

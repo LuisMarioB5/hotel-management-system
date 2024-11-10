@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Hodelpa - Salida</title>
+    <title>Hotel Hodelpa - Reservacion</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -58,28 +58,41 @@
                     <div class="user-info">
                         <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                     </div>
-                    <h1>Salida</h1>
-                    <hr class="sidebar-divider my-0">
+                    <h1>Reservacion</h1>
+                    <hr>
 
                     <div class="rooms-container">
-                        <label>Seleccionar Piso</label>
-                        <select class="floor-selector" >
-                            <option value="">Todos</option>
-                            <option value="1">Piso 1</option>
-                            <option value="2">Piso 2</option>
-                            <option value="3">Piso 3</option>
-                        </select>
+                       <div class="form-row">
+                        <div class="form-group">
+                            <label>Seleccionar Piso</label>
+                            <select id="room-number" >
+                                <option value="">Todos</option>
+                                <option value="1">Piso 1</option>
+                                <option value="2">Piso 2</option>
+                                <option value="3">Piso 3</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="start-date"><i class="fas fa-calendar-plus" style="color: #007bff;"></i> Fecha Inicio:</label>
+                            <input type="date" id="fechaEntrada" class="date-picker" placeholder="dd/mm/yyyy">
+                        </div>
+                        <div class="form-group">
+                            <label for="end-date"><i class="fas fa-calendar-minus " style="color: #007bff;"></i> Fecha Fin:</label>
+                            <input type="date" id="fechaSalida" class="date-picker" placeholder="dd/mm/yyyy">
+                        </div>
+                        </div>
                         <div class="rooms-grid">
-                            <div class="room-card ocupado">
+                            <div class="room-card reservado ">
                                 <div class="room-header">
-                                    <span class="room-number">NRO: 003</span>
-                                    <i class="fas fa-user-check room-icon"></i>
+                                    <span class="room-number">NRO: 001</span>
+                                    <i class="fas fa-bed room-icon"></i>
                                 </div>
                                 <div class="room-category">
-                                    CATEGORIA: MATRIMONIAL
+                                    CATEGORIA: INDIVIDUAL
                                 </div>
-                                <div class="room-status ocupado" onclick="redirectTosalidaHabitacion()">
-                                    OCUPADO
+                                <div class="room-status reservado" onclick="redirectToRegistroReserva()">
+                                    RESERVAR
                                     <i class="fas fa-chevron-right"></i>
                                 </div>
                             </div>
@@ -88,6 +101,40 @@
                 </div>
             </div>
     </div>
+
+    <script>
+         function redirectToRegistroReserva() {
+            window.location.href = '../pages/G_registroReserva.html';
+        }
+    </script>
+
+    <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Establecer la fecha actual como el mínimo para la fecha de entrada y salida
+    const fechaEntrada = document.getElementById('fechaEntrada');
+    const fechaSalida = document.getElementById('fechaSalida');
+    const hoy = new Date().toISOString().split('T')[0];
+    
+    // Establecer valor y mínimo en la fecha de entrada
+    fechaEntrada.value = hoy;
+    fechaEntrada.setAttribute('min', hoy);
+
+    // Establecer el mínimo en la fecha de salida
+    fechaSalida.setAttribute('min', hoy);
+
+    // Actualizar el mínimo de la fecha de salida al cambiar la fecha de entrada
+    fechaEntrada.addEventListener('change', function() {
+        fechaSalida.setAttribute('min', this.value);
+        
+        // Ajustar la fecha de salida si es anterior a la fecha de entrada
+        if (fechaSalida.value && fechaSalida.value < this.value) {
+            fechaSalida.value = this.value;
+        }
+    });
+});
+
+    </script>
 
     <script>   
         function redirectTosalidaHabitacion() {
