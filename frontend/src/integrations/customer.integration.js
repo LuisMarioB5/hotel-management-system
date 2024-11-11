@@ -1,4 +1,5 @@
 import { BACKEND_ROUTES } from '../config/backend.routes.js';
+import { validateParamIsNotNull } from '../scripts/utils.js';
 
 /**
  * Obtiene todos los clientes.
@@ -200,19 +201,6 @@ export async function deleteCustomer(id) {
         }
     } catch (error) {
         console.error('Error de red', error);
-    }
-}
-
-/**
- * Valida que un parámetro no sea nulo o indefinido.
- * @function validateParamIsNotNull
- * @param {string} paramName - El nombre del parámetro.
- * @param {*} paramValue - El valor del parámetro.
- * @throws {TypeError} Lanza un error si el parámetro es nulo o indefinido.
- */
-function validateParamIsNotNull(paramName, paramValue) {
-    if (paramValue === null || paramValue === undefined) {
-        throw new TypeError(`El parámetro '${paramName}' es obligatorio y no puede ser nulo o indefinido.`);
     }
 }
 

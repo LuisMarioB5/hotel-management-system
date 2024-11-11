@@ -46,3 +46,16 @@ export function parseJwt(token) {
     // Convierte el payload JSON a un objeto JavaScript
     return JSON.parse(jsonPayload);
 }
+
+/**
+ * Valida que un parámetro no sea nulo o indefinido.
+ * @function validateParamIsNotNull
+ * @param {string} paramName - El nombre del parámetro.
+ * @param {*} paramValue - El valor del parámetro.
+ * @throws {TypeError} Lanza un error si el parámetro es nulo o indefinido.
+ */
+export function validateParamIsNotNull(paramName, paramValue) {
+    if (paramValue === null || paramValue === undefined) {
+        throw new TypeError(`El parámetro '${paramName}' es obligatorio y no puede ser nulo o indefinido.`);
+    }
+}
