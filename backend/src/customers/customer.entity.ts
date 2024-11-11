@@ -32,12 +32,12 @@ export class CustomerEntity {
   @CreateDateColumn()
   registrationDate: Date;
 
-  @Column({ default: false })
+  @Column({ default: false, nullable: true })
   isFrequentGuest: boolean;
 
   @Column({ type: 'text', nullable: true })
   notes: string;
 
-  @Column({ default: true })
+  @Column({ default: true, nullable: true })
   isActive: boolean;
 }

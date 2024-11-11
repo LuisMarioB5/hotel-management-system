@@ -18,15 +18,14 @@ export class CustomersController {
     return this.service.findAll();
   }
 
-  @Get(':param')
-  async findCustomer(@Param('param') param: string): Promise<CustomerEntity> {
-    if (!isNaN(Number(param))) {
-      // Es un número, tratar como ID
-      return this.service.findById(Number(param));
-    } else {
-      // Es una cadena, tratar como el número de documento
-      return this.service.findByDocumentNumber(param);
-    }
+  @Get(':id')
+  async findById(@Param('id') id: number): Promise<CustomerEntity> {
+    return this.service.findById(id);
+  }
+
+  @Get('document/:documentNumber')
+  async findByDocumentNumber(@Param('documentNumber') documentNumber: string): Promise<CustomerEntity> {
+    return this.service.findByDocumentNumber(documentNumber);
   }
 
   @Patch(':id')
