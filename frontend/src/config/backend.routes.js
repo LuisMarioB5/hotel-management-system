@@ -12,4 +12,12 @@ export const BACKEND_ROUTES = {
     getById: (id) => `${BASE_URL}/customers/${id}`,
     getByDocumentNumber: (documentNumber) => `${BASE_URL}/customers/document/${documentNumber}`, 
   },
+  users: {
+    create: `${BASE_URL}/users/register`,
+    update: (id) => `${BASE_URL}/users/${id}`,
+    delete: (id) => `${BASE_URL}/users/${id}`,
+    getAll: `${BASE_URL}/users`,
+    getById: (id) => `${BASE_URL}/users/${id}`,
+    getByUsername: (username) => `${BASE_URL}/users/username/${username}`, 
+  },
 };
