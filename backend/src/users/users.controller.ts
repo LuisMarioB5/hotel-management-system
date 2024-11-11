@@ -17,15 +17,14 @@ export class UsersController {
     return this.service.findAll();
   }
 
-  @Get(':param')
-  async findUser(@Param('param') param: string): Promise<UserEntity> {
-    if (!isNaN(Number(param))) {
-      // Es un número, tratar como ID
-      return this.service.findById(Number(param));
-    } else {
-      // Es una cadena, tratar como nombre de usuario
-      return this.service.findByUsername(param);
-    }
+  @Get(':id')
+  async findById(@Param('id') id: number): Promise<UserEntity> {
+    return this.service.findById(id);
+  }
+
+  @Get('username/:username')
+  async findUser(@Param('username') username: string): Promise<UserEntity> {
+    return this.service.findByUsername(username);
   }
 
   @Patch(':id')
