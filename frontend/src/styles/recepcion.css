@@ -1,28 +1,44 @@
 /* Contenedor principal de habitaciones/ tambien se usa para R_recepcion y R_Productos*/
 .rooms-container { 
-    padding: 20px;
-    background-color: white;
-    border: 1px solid #000000;
-    border-radius: 8px;
-    margin: 0 auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.5s ease-out;
 }
 
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 /* Selector de piso */
 .floor-selector {
     width: 100%;
-    max-width: 300px;
+    max-width: 150px;
     
     padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+.rooms-container select:focus{
+    border-color: #225fb9; /* Cambio de color al enfocar */
+    outline: none;
+}
 
 /* Grid de habitaciones */
 .rooms-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
     padding: 10px;
 }
 
@@ -43,7 +59,7 @@
 
 /* Encabezado de la tarjeta */
 .room-header {
-    padding: 15px;
+    padding: 10px;
 
     display: flex;
     justify-content: space-between;
@@ -63,7 +79,7 @@
 
 /* Categoría de la habitación */
 .room-category {
-    padding: 5px 15px;
+    padding: 8px 15px;
     font-size: 0.9em;
     color: #666;
     text-transform: uppercase;
@@ -71,7 +87,7 @@
 
 /* Estado de la habitación */
 .room-status {
-    padding: 15px;
+    padding: 10px;
     color: white;
     display: flex;
     justify-content: space-between;
@@ -81,34 +97,15 @@
 }
 
 /* Colores de borde para cada estado */
-.room-card.disponible {
-    border: 2px solid #00c853;
-}
+.room-card.disponible {border: 2px solid #00c853;}
+.room-card.ocupado {border: 2px solid #ff3d00;}
+.room-card.reservado {border: 2px solid orange;}
+.room-card.limpieza {border: 2px solid #00b0ff; }
 
-.room-card.ocupado {
-    border: 2px solid #ff3d00;
-}
-.room-card.ocupadoven {
-    border: 2px solid #ffb300;
-}
-.room-card.limpieza {
-    border: 2px solid #00b0ff;
-}
-.room-status.disponible {
-    background-color: #00c853;
-}
-
-.room-status.ocupado {
-    background-color: #ff3d00;
-}
-
-.room-status.ocupadoven {
-    background-color: #ffb300;
-}
-
-.room-status.limpieza {
-    background-color: #00b0ff;
-}
+.room-status.disponible {background-color: #00c853;}
+.room-status.ocupado {background-color: #ff3d00;}
+.room-status.reservado {background-color: orange;}
+.room-status.limpieza {background-color: #00b0ff;}
 
 .room-status:hover {
     filter: brightness(95%);
@@ -121,19 +118,12 @@
 .room-status:hover i {
     transform: translateX(5px);
 }
-.room-card.disponible .room-icon {
-    color: #00c853;
-}
-.room-card.disponible .room-icon {
-    color: #00c853;
-}
-.room-card.ocupado .room-icon {
-    color: #ff3d00;
-}
 
-.room-card.limpieza .room-icon {
-    color: #00b0ff;
-}
+.room-card.disponible .room-icon {color: #00c853;}
+.room-card.reservado .room-icon {color: orange;}
+.room-card.ocupado .room-icon {color: #ff3d00;}
+.room-card.limpieza .room-icon {color: #00b0ff;}
+
 /* Responsive */
 @media (max-width: 768px) {
     .rooms-grid {
@@ -164,6 +154,7 @@
 .form-group label {
     font-weight: bold;
     margin-bottom: 5px;
+    font-size: 14px;
 }
 
 #room-number,
@@ -171,9 +162,21 @@
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 12px;
     width: 100%;
     box-sizing: border-box;
+}
+
+.form-group input[type="date"]:focus {
+    outline: none;
+    border-color: #518de1;
+    box-shadow: 0 0 5px #518de1; 
+}
+
+.form-group select:focus{
+    outline: none;
+    border-color: #518de1;
+    box-shadow: 0 0 5px #518de1; 
 }
 
 .download-btn {
@@ -191,12 +194,24 @@
     max-width: 150px;
     align-self: flex-end; 
 }
-
-.download-btn i {
+.reservar-btn{
+    padding: 8px 5px;  
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 150px; 
+    justify-content: flex-end;
+}
+.download-btn i,.reservar-btn i {
     margin-right: 5px;
     font-size: 16px;
 }
 
-.download-btn:hover {
+.download-btn:hover, .reservar-btn:hover  {
     background-color: #218838;
 }
+

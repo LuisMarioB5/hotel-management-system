@@ -20,6 +20,7 @@
                             <a href="#" class="dropbtn"><i class="fas fa-hotel"></i> Gestion <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/G_recepcion.html"><i class="fas fa-concierge-bell"></i> Recepcion</a>
+                                <a href="../pages/G_reservaciones.html"><i class="fas fa-calendar-check"></i>  Reservas</a>
                                 <a href="../pages/G_salida.html"><i class="fas fa-door-open"></i> Salida</a>
                             </div>
                         </li>
@@ -33,21 +34,20 @@
                         <li class="dropdown">
                             <a href="#" class="dropbtn"><i class="fas fa-tools"></i> Mantenimiento <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
+                                <a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a>
+                                <a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a>
                                 <a href="../pages/M_habitaciones.html"><i class="fas fa-bed"></i> Habitacion</a>
-                                <a href="../pages/M_categoria.html"><i class="fas fa-tags"></i> Categoria</a>
-                                <a href="../pages/M_pisos.html"><i class="fas fa-building"></i> Pisos</a>
+                                <a href="../pages/M_limpieza.html"><i class="fas fa-broom"></i> Limpieza</a>
+    
                             </div>
                         </li>
                         <li class="dropdown">
                             <a href="#" class="dropbtn"><i class="fas fa-chart-bar"></i> Reportes <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Recepciones</a>
-                                <a href="../pages/R_productos.html "><i class="fas fa-boxes"></i> Productos</a>
+                                <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
                             </div>
                         </li>
-                        <li><a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a></li>
-                        <li><a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a></li>
-                        
                     </ul>
                 </div>
 
@@ -67,7 +67,7 @@
                             <option value="3">Piso 3</option>
                         </select>
                         <div class="rooms-grid">
-                            <div class="room-card ocupadoven">
+                            <div class="room-card ocupado">
                                 <div class="room-header">
                                     <span class="room-number">NRO: 003</span>
                                     <i class="fas fa-user-check room-icon"></i>
@@ -75,7 +75,7 @@
                                 <div class="room-category">
                                     CATEGORIA: MATRIMONIAL
                                 </div>
-                                <div class="room-status ocupadoven">
+                                <div class="room-status ocupado" onclick="redirectToT_ventaHabitacion()">
                                     Iniciar Venta
                                     <i class="fas fa-chevron-right"></i>
                                 </div>
@@ -85,6 +85,12 @@
                 </div>
             </div>
     </div>
+
+    <script>   
+        function redirectToT_ventaHabitacion() {
+            window.location.href = '../pages/T_ventaHabitacion.html';
+        }
+    </script>
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">

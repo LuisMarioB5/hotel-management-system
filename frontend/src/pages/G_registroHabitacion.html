@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recepcion | Registrar Habitacion</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
-    <link rel="stylesheet" href="../styles/G_registroHabitacion.css">
+    <link rel="stylesheet" href="../styles/calendar-modal.css">
+    <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -20,6 +21,7 @@
                             <a href="#" class="dropbtn"><i class="fas fa-hotel"></i> Gestion <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/G_recepcion.html"><i class="fas fa-concierge-bell"></i> Recepcion</a>
+                                <a href="../pages/G_reservaciones.html"><i class="fas fa-calendar-check"></i>  Reservas</a>
                                 <a href="../pages/G_salida.html"><i class="fas fa-door-open"></i> Salida</a>
                             </div>
                         </li>
@@ -33,9 +35,11 @@
                         <li class="dropdown">
                             <a href="#" class="dropbtn"><i class="fas fa-tools"></i> Mantenimiento <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
+                                <a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a>
+                                <a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a>
                                 <a href="../pages/M_habitaciones.html"><i class="fas fa-bed"></i> Habitacion</a>
-                                <a href="../pages/M_categoria.html"><i class="fas fa-tags"></i> Categoria</a>
-                                <a href="../pages/M_pisos.html"><i class="fas fa-building"></i> Pisos</a>
+                                <a href="../pages/M_limpieza.html"><i class="fas fa-broom"></i> Limpieza</a>
+    
                             </div>
                         </li>
                         <li class="dropdown">
@@ -45,9 +49,6 @@
                                 <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
                             </div>
                         </li>
-                        <li><a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a></li>
-                        <li><a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a></li>
-                        
                     </ul>
             </div>
             <div class="main-content">
@@ -55,28 +56,23 @@
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
                  <!-- Detalles de la Habitación -->
-                 <div class="room-details-card">
+                <div class="info-card">
                     <h2><i class="fas fa-bed"></i> Detalles de la Habitación</h2>
-                    <div class="room-details-grid">
-                        <div class="details-row">
-                            <div class="form-group">
-                                <label><i class="fas fa-hashtag"></i> Número:</label>
-                                <input type="text" value="001" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-list"></i> Detalles:</label>
-                                <input type="text" value="WIFI + BAÑO + TV + CABLE" readonly>
-                            </div>
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <label><i class="fas fa-hashtag"></i> Número:</label>
+                            <input type="text" value="001" readonly>
                         </div>
-                        <div class="details-row">
-                            <div class="form-group">
-                                <label><i class="fas fa-tag"></i> Categoría:</label>
-                                <input type="text" value="Individual" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-building"></i> Piso:</label>
-                                <input type="text" value="PRIMERO" readonly>
-                            </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-list"></i> Detalles:</label>
+                            <input type="text" value="WIFI + BAÑO + TV + CABLE" readonly>
+                        </div>        
+                        <div class="info-group">
+                            <label><i class="fas fa-tag"></i> Categoría:</label>
+                            <input type="text" value="Individual" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-building"></i> Piso:</label><input type="text" value="PRIMERO" readonly>
                         </div>
                     </div>
                 </div>
@@ -85,13 +81,11 @@
                 <div class="reservation-details-card">
                     <div class="client-details">
                         <h2><i class="fas fa-user-circle"></i> Detalle Cliente</h2>
-                        <div class="search-group">
-                            <div class="form-group">
-                                <label><i class="fas fa-id-card"></i> Nro Documento:</label>
-                                <div class="search-container">
-                                    <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
-                                    <button class="search-btn"><i class="fas fa-search"></i> Buscar</button>
-                                </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
+                            <div class="search-container">
+                                <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
+                                <button class="search-btn" data-toggle="modal" data-target="#createUserModal" ><i class="fas fa-search"></i> Buscar</button>
                             </div>
                         </div>
                         <div class="form-group">
@@ -125,7 +119,12 @@
                             </div>
                             <div class="form-group">
                                 <label><i class="fas fa-calendar-minus"></i> Fecha Salida:</label>
-                                <input type="date" id="fechaSalida" required>
+                                <div class="date-container">
+                                    <input class="icon-date" type="date" id="fechaSalida" required>
+                                    <button type="button" class="availability-btn" id="showCalendarBtn">
+                                        <i class="fas fa-calendar-check"></i> Ver disponibilidad
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="form-row">
@@ -135,7 +134,7 @@
                             </div>
                             <div class="form-group">
                                 <label><i class="fas fa-money-bill-wave"></i> Adelanto:</label>
-                                <input type="number" id="adelanto" value="0">
+                                <input id="adelanto" class="cant" type="number" value="0" min="0" oninput="this.value = Math.max(0, this.value)">
                             </div>
                         </div>
                         <div class="form-group">
@@ -151,6 +150,133 @@
         </div>
     </div>
 
+    <!-- MODULO DE DISPONIBILIDAD -->
+    <div class="calendar-modal" id="calendarModal">
+        <div class="calendar-modal-content">
+            <div class="calendar-modal-header">
+                <div class="calendar-nav">
+                    <button class="nav-btn" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="currentMonth">Noviembre de 2024</h3>
+                    <button class="nav-btn" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="view-options">
+                    <button class="view-btn active">Mes</button>
+                    <button class="view-btn">Semana</button>
+                    <button class="view-btn">Día</button>
+                </div>
+                <button class="close-calendar-btn" id="closeCalendarBtn">&times;</button>
+            </div>
+            <div class="calendar-body">
+                <div class="calendar-weekdays">
+                    <div>lun</div>
+                    <div>mar</div>
+                    <div>mié</div>
+                    <div>jue</div>
+                    <div>vie</div>
+                    <div>sáb</div>
+                    <div>dom</div>
+                </div>
+                <div class="calendar-days" id="calendarDays">
+                    <!-- Los días se generarán dinámicamente con JavaScript -->
+                </div>
+            </div>
+            <div class="calendar-footer">
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-color reserved"></span>
+                        <span>Reservado</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color available"></span>
+                        <span>Disponible</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Logout -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>¿Estás seguro de que deseas salir?</h5>
+                <span class="close-button" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel" id="cancelLogout">Cancelar</button>
+                <a href="../pages/login.html" class="btn logout">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/calendar.js"></script>
+
+    <!--MODAL De lista de clientes-->
+    <div class="climodal" id="createUserModal">
+        <div class="climodal-content">
+            <div class="climodal-header">
+                <h2>Lista de Clientes</h2>
+                <span class="cliclose-button" onclick="closeModal()">&times;</span>
+            </div>
+
+            <div class="user-actions">
+                <div class="table-controls">
+                    <label for="recordsPerPage">Mostrar:</label>
+                    <select id="recordsPerPage">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <label>Registros:</label>
+                    <input type="text" id="searchUser" placeholder="Buscar producto">
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="service-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Documento</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Correo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>34345656</td>
+                            <td>Benjamin</td>
+                            <td>Alva</td>
+                            <td>alva@gmail.com</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>55567878</td>
+                            <td>Hanan</td>
+                            <td>Bispo</td>
+                            <td>bispo@gmail.com</td>
+                        </tr>
+                            <!-- Agregar más filas según sea necesario -->
+                     </tbody>
+                </table>
+                    <!-- Div de paginación y conteo de registros -->
+                <div class="pagination-info">
+                    <label>Mostrando registros del 1 al 2 de un total de 2 registros</label>
+                    <div class="pagination-buttons">
+                        <button class="pagination-btn">&lt;</button>
+                        <button class="pagination-btn">&gt;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Fin modal-->
+
     <!--Manejo de fecha actual, validacion de formularios y evento del registro-->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -158,6 +284,21 @@
             const fechaEntrada = document.getElementById('fechaEntrada');
             const hoy = new Date().toISOString().split('T')[0];
             fechaEntrada.value = hoy;
+
+            // Establecer la fecha de entrada como la fecha actual
+            const fechaSalida = document.getElementById('fechaSalida');
+            
+            // Set min date for checkout to be today
+            const today = new Date().toISOString().split('T')[0];
+            fechaSalida.setAttribute('min', today);
+            
+            // Update min date for checkout when check-in date changes
+            fechaEntrada.addEventListener('change', function() {
+                fechaSalida.setAttribute('min', this.value);
+                if(fechaSalida.value && fechaSalida.value < this.value) {
+                    fechaSalida.value = this.value;
+                }
+            });
         
             // Validación y registro
             const registrarBtn = document.getElementById('registrarBtn');
@@ -235,131 +376,46 @@
         });
     </script>
     <!--Fin -->
-
-    <!-- Modal de Logout -->
-    <div class="modal" id="logoutModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>¿Estás seguro de que deseas salir?</h5>
-                <span class="close-button" id="closeModal">&times;</span>
-            </div>
-            <div class="modal-body">
-                Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
-            </div>
-            <div class="modal-footer">
-                <button class="btn cancel" id="cancelLogout">Cancelar</button>
-                <a href="../pages/login.html" class="btn logout">Cerrar sesión</a>
-            </div>
-        </div>
-    </div>
-
-    <!--MODAL De lista de clientes-->
-    <div class="climodal" id="clientListModal">
-        <div class="climodal-content climodal-large">
-            <div class="climodal-header">
-                <h2>Lista de Clientes</h2>
-                <span class="cliclose-button" id="closeClientList">&times;</span>
-            </div>
-            <div class="climodal-body">
-                <div class="table-controls">
-                    <div class="entries-control">
-                        Mostrar 
-                        <select>
-                            <option>10</option>
-                            <option>25</option>
-                            <option>50</option>
-                        </select>
-                        Registros
-                    </div>
-                    <div class="search-control">
-                        Buscar: 
-                        <input type="text" placeholder="Buscar cliente...">
-                    </div>
-                </div>
-    
-                <div class="table-container">
-                    <table class="clients-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Documento</th>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
-                                <th>Correo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>34345656</td>
-                                <td>Benjamin</td>
-                                <td>Alva</td>
-                                <td>alva@gmail.com</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>55567878</td>
-                                <td>Hanan</td>
-                                <td>Bispo</td>
-                                <td>bispo@gmail.com</td>
-                            </tr>
-                            <!-- Agregar más filas según sea necesario -->
-                        </tbody>
-                    </table>
-                </div>
-    
-                <div class="table-footer">
-                    <div class="showing-entries">
-                        Mostrando registros del 1 al 2 de un total de 2 registros
-                    </div>
-                    <div class="pagination">
-                        <button class="pagination-btn" >Anterior</button>
-                        <button class="pagination-btn active">1</button>
-                        <button class="pagination-btn">Siguiente</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Fin modal-->
-    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        const searchBtn = document.querySelector('.search-btn');
-        const clientListModal = document.getElementById('clientListModal');
-        const closeClientList = document.getElementById('closeClientList');
+        // Abrir modal
+       document.querySelector('.search-btn').addEventListener('click', function() {
+           document.getElementById('createUserModal').style.display = 'flex';
+       });
+   
+       // Cerrar modal
+       function closeModal() {
+           document.getElementById('createUserModal').style.display = 'none';
+       }
 
-        // Abrir modal al hacer clic en el botón de búsqueda
-        searchBtn.addEventListener('click', function() {
-            clientListModal.style.display = 'block';
-        });
-
-        // Cerrar modal
-        closeClientList.addEventListener('click', function() {
-            clientListModal.style.display = 'none';
-        });
-
-        // Cerrar modal al hacer clic fuera de él
-        window.addEventListener('click', function(event) {
-            if (event.target === clientListModal) {
-                clientListModal.style.display = 'none';
+       // Cerrar modal al hacer clic fuera de él
+       window.addEventListener('click', function(event) {
+            if (event.target === createUserModal) {
+                createUserModal.style.display = 'none';
             }
         });
+    </script>
 
-        // Funcionalidad de búsqueda
-        const searchInput = document.querySelector('.search-control input');
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('.clients-table tbody tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach(dropdown => {
+            // Agregar el evento de clic solo al botón que despliega el menú
+            dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                e.preventDefault();
+
+            // Cerrar otros menús abiertos
+            dropdowns.forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('active');
+                }
+            });
+            // Alternar el menú actual
+            dropdown.classList.toggle('active');
             });
         });
-    });   
+    });
     </script>
-    
+
     <script>
         // Script para abrir y cerrar el modal
         document.getElementById('logoutButton').addEventListener('click', function() {
@@ -379,28 +435,6 @@
             if (event.target === document.getElementById('logoutModal')) {
                 document.getElementById('logoutModal').style.display = 'none';
             }
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const dropdowns = document.querySelectorAll('.dropdown');
-
-            dropdowns.forEach(dropdown => {
-                // Agregar el evento de clic solo al botón que despliega el menú
-                dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    // Cerrar otros menús abiertos
-                    dropdowns.forEach(d => {
-                        if (d !== dropdown) {
-                            d.classList.remove('active');
-                        }
-                    });
-                    // Alternar el menú actual
-                    dropdown.classList.toggle('active');
-                });
-            });
         });
     </script>
 </body>

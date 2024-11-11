@@ -1,6 +1,7 @@
-import { IsString, IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsString, IsNotEmpty, IsBoolean, IsEnum } from 'class-validator';
+import { UserRole } from '../user.entity';
 
-export class LoginUserDto {
+export class CreateUserDTO {
   @IsString()
   @IsNotEmpty()
   username: string;
@@ -9,9 +10,11 @@ export class LoginUserDto {
   @IsNotEmpty()
   password: string;
   
-  @IsString()
+  @IsEnum(UserRole, {
+    message: 'El rol debe ser un valor válido (ADMINISTRADOR, RECEPCIONISTA, GERENTE, MANTENIMIENTO)',
+  })
   @IsNotEmpty()
-  role: string;
+  role: UserRole;
 
   @IsBoolean()
   isActive: boolean;

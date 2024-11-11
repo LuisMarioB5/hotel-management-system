@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recepcion | Registrar Habitacion</title>
+    <title>Recepcion | Habitacion</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
-    <link rel="stylesheet" href="../styles/G_registroHabitacion.css">
+    <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -20,6 +20,7 @@
                             <a href="#" class="dropbtn"><i class="fas fa-hotel"></i> Gestion <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/G_recepcion.html"><i class="fas fa-concierge-bell"></i> Recepcion</a>
+                                <a href="../pages/G_reservaciones.html"><i class="fas fa-calendar-check"></i>  Reservas</a>
                                 <a href="../pages/G_salida.html"><i class="fas fa-door-open"></i> Salida</a>
                             </div>
                         </li>
@@ -33,9 +34,11 @@
                         <li class="dropdown">
                             <a href="#" class="dropbtn"><i class="fas fa-tools"></i> Mantenimiento <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
+                                <a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a>
+                                <a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a>
                                 <a href="../pages/M_habitaciones.html"><i class="fas fa-bed"></i> Habitacion</a>
-                                <a href="../pages/M_categoria.html"><i class="fas fa-tags"></i> Categoria</a>
-                                <a href="../pages/M_pisos.html"><i class="fas fa-building"></i> Pisos</a>
+                                <a href="../pages/M_limpieza.html"><i class="fas fa-broom"></i> Limpieza</a>
+    
                             </div>
                         </li>
                         <li class="dropdown">
@@ -45,9 +48,6 @@
                                 <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
                             </div>
                         </li>
-                        <li><a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a></li>
-                        <li><a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a></li>
-                        
                     </ul>
             </div>
             <div class="main-content">
@@ -59,36 +59,36 @@
                     <h2><i class="fas fa-bed"></i> Resumen de la Habitación</h2>
                     <div class="info-grid">
                         <div class="info-group">
-                            <label>Número:</label>
+                            <label><i class="fas fa-hashtag"></i> Habitacion:</label>
                             <input type="text" value="001" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Detalles:</label>
+                            <label><i class="fas fa-list"></i> Detalles:</label>
                             <input type="text" value="WIFI + BAÑO + TV + CABLE" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Categoría:</label>
+                            <label><i class="fas fa-tag"></i> Categoría:</label>
                             <input type="text" value="Individual" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Piso:</label>
+                            <label><i class="fas fa-building"></i> Piso:</label>
                             <input type="text" value="PRIMERO" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Cliente:</label>
-                            <input type="text" value="CLIENTE PRUEBAS" readonly>
+                            <label><i class="fas fa-user"></i> Cliente:</label>
+                            <input type="text" value="Willy Reyes" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Nro. Documento:</label>
+                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
                             <input type="text" value="60605050" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Correo:</label>
-                            <input type="text" value="PRUEBAS@GMAIL.COM" readonly>
+                            <label><i class="fas fa-envelope"></i> Correo:</label>
+                            <input type="text" value="WillyR@gmail.com" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Fecha Entrada:</label>
-                            <input type="text" value="17/07/2021" readonly>
+                            <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
+                            <input type="date" id="fechaEntrada" readonly>
                         </div>
                     </div>
                 </div>
@@ -98,22 +98,28 @@
                     <h2><i class="fas fa-concierge-bell"></i> Detalle de Hospedaje</h2>
                     <div class="info-grid">
                         <div class="info-group">
-                            <label>Costo Habitación:</label>
-                            <span>70.00</span>
+                            <label><i class="fas fa-dollar-sign"></i> Costo Habitacion:</label>
+                            <input type="text" value="$70.00" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Cantidad Adelantado:</label>
-                            <span>0.00</span>
+                            <label><i class="fas fa-money-bill-wave"></i> Cantidad Adelanto:</label>
+                            <input type="text" value="0.00" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Cantidad Restante:</label>
-                            <span>70.00</span>
+                            <label><i class="fas fa-money-bill"></i> Cantidad Restante:</label>
+                            <input type="text" value="$70.00" readonly>
                         </div>
                         <div class="info-group">
-                            <label>Fecha Salida:</label>
-                            <span>17/07/2021</span>
+                            <label><i class="fas fa-calendar-minus"></i> Fecha Salida:</label>  
+                            <div class="date-container">
+                                <input class="icon-date" type="date" id="fechaSalida" required>
+                                <button class="postpone-btn"><i class="fas fa-clock"></i> Aplazar</button>
+                            </div>
+                
                         </div>
+                        
                     </div>
+                    
                 </div>
                  <!-- Servicio a la Habitación -->
                 <div class="info-card">
@@ -131,11 +137,11 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <th>Jugo</th>
-                                    <th>1</th>
-                                    <th>$30</th>
-                                    <th>pagado</th>
-                                    <th>$35</th>
+                                    <td>Jugo</td>
+                                    <td>1</td>
+                                    <td>$30</td>
+                                    <td><label>Pendiente</label></td>
+                                    <td>$35</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -161,7 +167,31 @@
             </div>
         </div>
     </div>
-    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer la fecha de entrada como la fecha actual
+            const fechaEntrada = document.getElementById('fechaEntrada');
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaEntrada.value = hoy;
+
+            // Establecer la fecha de entrada como la fecha actual
+            const fechaSalida = document.getElementById('fechaSalida');
+            
+            // Set min date for checkout to be today
+            const today = new Date().toISOString().split('T')[0];
+            fechaSalida.setAttribute('min', today);
+            
+            // Update min date for checkout when check-in date changes
+            fechaEntrada.addEventListener('change', function() {
+                fechaSalida.setAttribute('min', this.value);
+                if(fechaSalida.value && fechaSalida.value < this.value) {
+                    fechaSalida.value = this.value;
+                }
+            });
+        });
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
         const searchBtn = document.querySelector('.search-btn');

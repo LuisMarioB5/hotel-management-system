@@ -20,6 +20,7 @@
                             <a href="#" class="dropbtn"><i class="fas fa-hotel"></i> Gestion <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/G_recepcion.html"><i class="fas fa-concierge-bell"></i> Recepcion</a>
+                                <a href="../pages/G_reservaciones.html"><i class="fas fa-calendar-check"></i>  Reservas</a>
                                 <a href="../pages/G_salida.html"><i class="fas fa-door-open"></i> Salida</a>
                             </div>
                         </li>
@@ -33,9 +34,11 @@
                         <li class="dropdown">
                             <a href="#" class="dropbtn"><i class="fas fa-tools"></i> Mantenimiento <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
+                                <a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a>
+                                <a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a>
                                 <a href="../pages/M_habitaciones.html"><i class="fas fa-bed"></i> Habitacion</a>
-                                <a href="../pages/M_categoria.html"><i class="fas fa-tags"></i> Categoria</a>
-                                <a href="../pages/M_pisos.html"><i class="fas fa-building"></i> Pisos</a>
+                                <a href="../pages/M_limpieza.html"><i class="fas fa-broom"></i> Limpieza</a>
+    
                             </div>
                         </li>
                         <li class="dropdown">
@@ -45,9 +48,6 @@
                                 <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
                             </div>
                         </li>
-                        <li><a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a></li>
-                        <li><a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a></li>
-                        
                     </ul>
                 </div>
 
@@ -56,26 +56,26 @@
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
-                    <h1>Exportar Productos</h1>
-                    <hr class="sidebar-divider my-0">
+                    <h2>Exportar Productos</h2>
+                    <hr>
                     <div class="rooms-container">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="room-number">Estado:</label>
+                                <label for="room-number"><i class="fas fa-check-circle" style="color: green;"></i> Estado:</label>
                                 <select id="room-number">
                                     <option value="all">Todos</option>
                                     <option value="activo">Activo</option>
                                     <option value="inactivo">Inactivo</option>
-                                    <!-- Añade más opciones aquí si es necesario -->
+                                    
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="start-date">Fecha Inicio:</label>
-                                <input type="text" id="start-date" class="date-picker" placeholder="dd/mm/yyyy">
+                                <label for="start-date"><i class="fas fa-calendar-plus" style="color: #007bff;"></i> Fecha Inicio:</label>
+                                <input type="date" id="fechaEntrada" class="date-picker" placeholder="dd/mm/yyyy">
                             </div>
                             <div class="form-group">
-                                <label for="end-date">Fecha Fin:</label>
-                                <input type="text" id="end-date" class="date-picker" placeholder="dd/mm/yyyy">
+                                <label for="end-date"><i class="fas fa-calendar-minus " style="color: #007bff;"></i> Fecha Fin:</label>
+                                <input type="date" id="fechaSalida" class="date-picker" placeholder="dd/mm/yyyy">
                             </div>
                             <div class="form-group">
                                 <button class="download-btn">
@@ -88,7 +88,31 @@
                 </div>
             </div>
     </div>
+    
+    <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer la fecha de entrada como la fecha actual
+            const fechaEntrada = document.getElementById('fechaEntrada');
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaEntrada.value = hoy;
 
+            // Establecer la fecha de entrada como la fecha actual
+            const fechaSalida = document.getElementById('fechaSalida');
+            
+            // Set min date for checkout to be today
+            const today = new Date().toISOString().split('T')[0];
+            fechaSalida.setAttribute('min', today);
+
+            // Update min date for checkout when check-in date changes
+            fechaEntrada.addEventListener('change', function() {
+                fechaSalida.setAttribute('min', this.value);
+                if(fechaSalida.value && fechaSalida.value < this.value) {
+                    fechaSalida.value = this.value;
+                }
+            });
+        });
+    </script>
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -105,20 +129,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
-    <input type="date" id="start-date" placeholder="dd/mm/yyyy">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-
-    <script>
-        $(document).ready(function() {
-            $(".date-picker").datepicker({
-                dateFormat: "dd/mm/yy"
-            });
-        });
-    </script>
+    
 
     <script>
         // Script para abrir y cerrar el modal

@@ -1,5 +1,14 @@
+import { BACKEND_ROUTES } from '../config/backend.routes.js';
 import { handleLoginNotification } from '../scripts/utils.js'
 
+/**
+ * Inicializa el detector de eventos de envío del formulario de inicio de sesión.
+ * Esta función intercepta el envío del formulario, envía las credenciales de inicio de sesión al backend y almacena el token JWT si el inicio de sesión es exitoso.
+ * En caso de éxito o fracaso, se muestran las notificaciones correspondientes al usuario.
+ * 
+ * @async
+ * @function loginIntegration
+ */
 export async function loginIntegration() {
     document.querySelector('.login-form-section form').addEventListener('submit', async function(event) {
         event.preventDefault();
@@ -7,7 +16,7 @@ export async function loginIntegration() {
         var password = document.getElementById('password').value;
 
         try {
-            const response = await fetch('http://localhost:8080/login', {
+            const response = await fetch(BACKEND_ROUTES.auth.login, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -16,8 +25,8 @@ export async function loginIntegration() {
             });
 
             if (response.ok) {
-                const token = response.headers.get('Authorization').replace('Bearer ', '');
-                localStorage.setItem('jwt', token);
+                const token = await response.json();
+                localStorage.setItem('jwt', token.access_token);
                 console.log('Inicio de sesión exitoso. Token almacenado correctamente');
                 handleLoginNotification('success', username, 'dashboard.html');
             } 

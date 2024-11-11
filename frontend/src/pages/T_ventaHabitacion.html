@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recepcion | Registrar Habitacion</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css"> <!--Aqui tambien estaran los estilos de esta pagina-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-page">
+        <div class="dashboard-container">
+            <div class="sidebar">
+                    <h2>HODELPA</h2>
+                    <br><br>
+                    <ul>
+                        <li><a href="../pages/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropbtn"><i class="fas fa-hotel"></i> Gestion <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-content">
+                                <a href="../pages/G_recepcion.html"><i class="fas fa-concierge-bell"></i> Recepcion</a>
+                                <a href="../pages/G_reservaciones.html"><i class="fas fa-calendar-check"></i>  Reservas</a>
+                                <a href="../pages/G_salida.html"><i class="fas fa-door-open"></i> Salida</a>
+                            </div>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropbtn"><i class="fas fa-store"></i> Tienda <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-content">
+                                <a href="../pages/T_vender.html"><i class="fas fa-shopping-cart"></i> Vender</a>
+                                <a href="../pages/T_productos.html"><i class="fas fa-box"></i> Registrar productos</a>
+                            </div>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropbtn"><i class="fas fa-tools"></i> Mantenimiento <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-content">
+                                <a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a>
+                                <a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a>
+                                <a href="../pages/M_habitaciones.html"><i class="fas fa-bed"></i> Habitacion</a>
+                                <a href="../pages/M_limpieza.html"><i class="fas fa-broom"></i> Limpieza</a>
+    
+                            </div>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropbtn"><i class="fas fa-chart-bar"></i> Reportes <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-content">
+                                <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Recepciones</a>
+                                <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
+                            </div>
+                        </li>
+                    </ul>
+            </div>
+            <div class="main-content">
+                <div class="user-info">
+                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                </div>
+                
+                <!-- Resumen de la Habitación -->
+                <div class="info-card">
+                    <h2><i class="fas fa-bed"></i> Resumen de la Habitación</h2>
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <label><i class="fas fa-hashtag"></i> Habitacion:</label>
+                            <input type="text" value="001" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-list"></i> Detalles:</label>
+                            <input type="text" value="WIFI + BAÑO + TV + CABLE" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-tag"></i> Categoría:</label>
+                            <input type="text" value="Individual" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-building"></i> Piso:</label>
+                            <input type="text" value="PRIMERO" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-user"></i> Cliente:</label>
+                            <input type="text" value="Willy Reyes" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
+                            <input type="text" value="60605050" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-envelope"></i> Correo:</label>
+                            <input type="text" value="WillyR@gmail.com" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
+                            <input type="text" value="17/07/2021" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalle de venta -->
+                <div class="info-card">
+                    <h2><i class="fas fa-cart-arrow-down"></i> Detalle de venta</h2>
+                    <div class="info-grid" style="margin-bottom: 10px;">
+                        <div class="info-group">
+                            <label><i class="fas fa-utensils"></i> Producto:</label>
+                            <select>
+                                <option value="">Agua life</option>
+                                <option value="1">Cereales panda</option>
+                                <option value="2">Chocolate cdx</option>
+                                <option value="3">Cigarrillos DEM</option>
+                            </select>
+                        </div>    
+                        <div class="info-group">
+                            <label><i class="fas fa-dollar-sign"></i> Precio:</label>
+                            <input type="text" value="3.00" readonly>
+                            </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-th-list"></i> Cantidad:</label>
+                            <input class="cant" type="number" value="1" min="1" oninput="this.value = Math.max(1, this.value)">
+                        </div>
+                        <div class="">
+                            <label class="info-group">‎</label>
+                            <button class="add-btn"><i class="fas fa-chevron-down"></i> Agregar</button>                            
+                        </div>
+                    </div>
+                        <div class="table-container">
+                            <table class="service-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Unitario</th>
+                                        <th>Sub Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <button class="del-btn">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                        <td>Agua life</td>
+                                        <td>1</td>
+                                        <td>3.00</td>
+                                        <td>3.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <button class="del-btn">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                        <td>Papas doradas</td>
+                                        <td>1</td>
+                                        <td>2.60</td>
+                                        <td>2.60</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    <div class="total-section">
+                        <div class="total-label">Total Pagar</div>
+                        <div class="total-amount">$5.60</div>
+                    </div>
+                    <div class="sale-actions">
+                        <div class="sale-status">
+                            <label>Estado Venta</label>
+                            <select>
+                                <option>Pendiente</option>
+                                <option>Separado</option>
+                            </select>
+                        </div>
+                        <button class="finish-sale-btn">Finalizar Venta</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Logout -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>¿Estás seguro de que deseas salir?</h5>
+                <span class="close-button" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel" id="cancelLogout">Cancelar</button>
+                <a href="../pages/login.html" class="btn logout">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const searchBtn = document.querySelector('.search-btn');
+        const clientListModal = document.getElementById('clientListModal');
+        const closeClientList = document.getElementById('closeClientList');
+
+        // Abrir modal al hacer clic en el botón de búsqueda
+        searchBtn.addEventListener('click', function() {
+            clientListModal.style.display = 'block';
+        });
+
+        // Cerrar modal
+        closeClientList.addEventListener('click', function() {
+            clientListModal.style.display = 'none';
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
+            if (event.target === clientListModal) {
+                clientListModal.style.display = 'none';
+            }
+        });
+    });   
+    </script>
+    
+    <script>
+        // Script para abrir y cerrar el modal
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'block';
+        });
+
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'none';
+        });
+
+        document.getElementById('cancelLogout').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'none';
+        });
+
+        // Cerrar el modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('logoutModal')) {
+                document.getElementById('logoutModal').style.display = 'none';
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdowns = document.querySelectorAll('.dropdown');
+
+            dropdowns.forEach(dropdown => {
+                // Agregar el evento de clic solo al botón que despliega el menú
+                dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Cerrar otros menús abiertos
+                    dropdowns.forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('active');
+                        }
+                    });
+                    // Alternar el menú actual
+                    dropdown.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
