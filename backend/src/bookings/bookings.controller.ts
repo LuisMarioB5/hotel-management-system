@@ -55,6 +55,11 @@ export class BookingsController {
         await this.service.delete(id);
         return { message: `Reserva con ID ${id} eliminada exitosamente` }
     }
+
+    @Get('enums/values')
+    getEnumValues() {
+        return this.service.getEnumValues();
+    }
     
     @Get('rooms/available')
     async findAvailableRooms(
