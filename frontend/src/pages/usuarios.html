@@ -81,52 +81,27 @@
 
                     <!-- Tabla de Usuarios -->
                     <div class="user-table">
-                        <table>
+                        <table id="userTable">
                             <thead>
                                 <tr>
-                                    <th># Documento</th>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>Correo</th>
-                                    <th>Tipo</th>
+                                    <th>ID</th>
+                                    <th>Usuario</th>
+                                    <th>Rol</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>4353434</td>
-                                    <td>Mizuki</td>
-                                    <td>Hayashi</td>
-                                    <td>mizuki@gmail.com</td>
-                                    <td>Mantenimiento</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>4545453</td>
-                                    <td>Naomi</td>
-                                    <td>Konoe</td>
-                                    <td>konoe@gmail.com</td>
-                                    <td>Administrador</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
-                                    </td>
-                                </tr>
+                                <!-- Los datos se cargarán dinámicamente aquí -->
                             </tbody>
                         </table>
                         <!-- Div de paginación y conteo de registros -->
                         <div class="pagination-info">
                             <label></label>
-                                <div class="pagination-buttons">
-                                    <button class="pagination-btn">&lt;</button>
-                                    <button class="pagination-btn">&gt;</button>
-                                </div>
+                            <div class="pagination-buttons">
+                                <button class="pagination-btn">&lt;</button>
+                                <button class="pagination-btn">&gt;</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -141,17 +116,9 @@
                 <span class="close-buttonusu" onclick="closeModal()">&times;</span>
             </div>
             <div class="modalusu-body">
-                <label for="documento"># Documento</label>
-                <input type="text" id="documento" required>
-
-                <label for="nombre">Nombre</label>
-                <input type="text" id="nombre" required>
-
-                <label for="apellido">Apellido</label>
-                <input type="text" id="apellido" required>
-
-                <label for="correo">Correo</label>
-                <input type="email" id="correo" required>
+    
+                <label for="username">Nombre de usuario</label>
+                <input type="text" id="username" required>
 
                 <label for="contrasena">Contraseña</label>
                 <input type="password" id="contrasena" required>
@@ -159,11 +126,12 @@
                 <label for="confirmarContrasena">Confirmar Contraseña</label>
                 <input type="password" id="confirmarContrasena" required>
 
-                <label for="tipo">Tipo</label>
-                <select id="tipo">
-                    <option value="Administrador">Administrador</option>
-                    <option value="Recepcionista">Recepcionista</option>
-                    <option value="Mantenimiento">Mantenimiento</option>
+                <label for="tipo">Rol</label>   
+                <select id="tipo">S
+                    <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+                    <option value="RECEPCIONISTA">RECEPCIONISTA</option>
+                    <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+                    <option value="GERENTE">GERENTE</option>
                     <option value="Otro">Otro</option>
                 </select>
 
@@ -255,10 +223,7 @@
 
     // Función para limpiar los campos del modal
     function limpiarCampos() {
-        document.getElementById('documento').value = '';
-        document.getElementById('nombre').value = '';
-        document.getElementById('apellido').value = '';
-        document.getElementById('correo').value = '';
+        document.getElementById('username').value = '';
         document.getElementById('contrasena').value = '';
         document.getElementById('confirmarContrasena').value = '';
         document.getElementById('tipo').selectedIndex = 0;
@@ -270,10 +235,7 @@
         const contrasena = document.getElementById('contrasena').value;
         const confirmarContrasena = document.getElementById('confirmarContrasena').value;
         const tipo = document.getElementById('tipo').value;
-        const documento = document.getElementById('documento').value.trim();
-        const nombre = document.getElementById('nombre').value.trim();
-        const apellido = document.getElementById('apellido').value.trim();
-        const correo = document.getElementById('correo').value.trim();
+        const nombre = document.getElementById('username').value.trim();
         const estado = document.getElementById('estado').value;
 
         // Validar los campos
@@ -283,28 +245,12 @@
             alert("Las contraseñas no coinciden. Por favor, intenta de nuevo.");
             return;
         }
-        if (!documento) {
-            mensajeError += 'El # Documento es obligatorio.\n';
-        }
 
         if (!nombre) {
-            mensajeError += 'El campo Nombre es obligatorio.\n';
+            mensajeError += 'El campo Usuario es obligatorio.\n';
         } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombre)) {
-            mensajeError += 'El Nombre solo debe contener letras.\n';
+            mensajeError += 'El usuario solo debe contener letras.\n';
         }
-
-        if (!apellido) {
-            mensajeError += 'El campo Apellido es obligatorio.\n';
-        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(apellido)) {
-            mensajeError += 'El Apellido solo debe contener letras.\n';
-        }
-
-        if (!correo) {
-            mensajeError += 'El campo Correo es obligatorio.\n';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-            mensajeError += 'Ingrese un correo válido.\n';
-        }
-
         // Si hay errores, mostrar el mensaje de error
         if (mensajeError) {
             alert(mensajeError);
@@ -316,6 +262,6 @@
     }
 </script>
 
-<script type="module" src="../integrations/user.integration.js"></script>
+<script src="../scripts/usuario.js" type="module"></script>
 </body>
 </html>

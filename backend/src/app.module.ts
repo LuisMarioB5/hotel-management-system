@@ -13,11 +13,11 @@ import { BookingsModule } from './bookings/bookings.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: EnvConfig.DB_HOST,
+      host: 'localhost',
       port: EnvConfig.DB_PORT,
       username: EnvConfig.DB_USER,
       password: EnvConfig.DB_PWD,
-      database: EnvConfig.DB_NAME,
+      database: 'hotel_management',//database: EnvConfig.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
     }),
