@@ -44,5 +44,6 @@ export const BACKEND_ROUTES = {
     cancel: (id) => `${BASE_URL}/bookings/${id}/cancel`,
     checkIn: (id) => `${BASE_URL}/bookings/${id}/check-in`,
     checkOut: (id) => `${BASE_URL}/bookings/${id}/check-out`,
+    desactive: (id) => `${BASE_URL}/bookings/${id}/desactive`
   },
 };

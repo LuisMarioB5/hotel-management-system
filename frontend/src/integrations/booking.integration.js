@@ -9,7 +9,7 @@ import { validateParamIsNotNull } from '../scripts/utils.js';
  */
 export async function getAllBookings() {
     try {
-        const response = await fetch(BACKEND_ROUTES.rooms.getAll, {
+        const response = await fetch(BACKEND_ROUTES.bookings.getAll, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -25,17 +25,17 @@ export async function getAllBookings() {
 }
 
 /**
- * Obtiene una habitación por su ID.
+ * Obtiene una reserva por su ID.
  * @async
- * @function getRoomById
- * @param {number} id - El ID de la habitación.
- * @returns {Promise<Object>} Los datos de la habitación en formato JSON.
+ * @function getBookingById
+ * @param {number} id - El ID de la reserva.
+ * @returns {Promise<Object>} Los datos de la reserva en formato JSON.
  */
-export async function getRoomById(id) {
+export async function getBookingById(id) {
     validateParamIsNotNull('id', id);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.rooms.getById(id), {
+        const response = await fetch(BACKEND_ROUTES.bookings.getById(id), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -51,88 +51,34 @@ export async function getRoomById(id) {
 }
 
 /**
- * Obtiene una habitación por su número.
+ * Crea una nueva reserva.
  * @async
- * @function getRoomByRoomNumber
- * @param {string} roomNumber - El número de la habitación.
- * @returns {Promise<Object>} Los datos de la habitación en formato JSON.
+ * @function createBooking
+ * @param {Object} params - Datos de la reserva.
+ * @param {number} params.customerId - ID del cliente vinculado a la reserva (requerido).
+ * @param {number} params.roomId - ID de la habitación vinculada a la reserva (requerido).
+ * @param {Date} params.checkInDate - Fecha en la que se espera iniciar la estadía (requerido).
+ * @param {Date} params.checkOutDate - Fecha en la que se espera concluir la estadía (requerido).
+ * @param {string} [params.details] - Detalles relacionados a la reserva.
+ * @returns {Promise<Object>} Los datos de la reserva recién creada en formato JSON.
  */
-export async function getRoomByRoomNumber(roomNumber) {
-    validateParamIsNotNull('roomNumber', roomNumber);
-
-    try {
-        const response = await fetch(BACKEND_ROUTES.rooms.getByRoomNumber(roomNumber), {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-/**
- * Obtiene todas las reservas disponibles para reservar.
- * @async
- * @function getRoomsAvailable
- * @returns {Promise<Object[]>} Una lista con las reservas en formato JSON.
- */
-export async function getRoomsAvailable() {
-
-    try {
-        const response = await fetch(BACKEND_ROUTES.rooms.getRoomsAvailable, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-/**
- * Crea una nueva habitación.
- * @async
- * @function createRoom
- * @param {Object} params - Datos de la habitación.
- * @param {number} params.number - Número de habitación (requerido).
- * @param {string} params.floor - Piso de la habitación (requerido).
- * @param {string} params.type - Tipo o categoría de la habitación (requerido).
- * @param {number} params.price - Precio por noche de la habitación (requerido).
- * @param {string} [params.details] - Detalles o comentarios de la habitación.
- * @param {string} [params.status] - Estado actual de la habitación.
- * @param {boolean} [params.isAvailable] - Disponibilidad de la habitación.
- * @returns {Promise<Object>} Los datos de la habitación recién creado en formato JSON.
- */
-export async function createRoom({ number = null, details = null, floor = null, type = null, status = null, price = null, isAvailable = null} = {}) {
-    validateParamIsNotNull('number', number);
-    validateParamIsNotNull('floor', floor);
-    validateParamIsNotNull('type', type);
-    validateParamIsNotNull('price', price);
+export async function createBooking({ customerId = null, roomId = null, checkInDate = null, checkOutDate = null, details = null} = {}) {
+    validateParamIsNotNull('customerId', customerId);
+    validateParamIsNotNull('roomId', roomId);
+    validateParamIsNotNull('checkInDate', checkInDate);
+    validateParamIsNotNull('checkOutDate', checkOutDate);
 
     const body = { 
-        number,
-        floor: floor.toUpperCase(),
-        type: type.toUpperCase(),
-        price,
+        customerId,
+        roomId,
+        checkInDate,
+        checkOutDate
      };
     
      if(details !== null) body.details = details;
-     if(status !== null) body.status = status.toUpperCase();
-     if(isAvailable !== null) body.isAvailable = isAvailable;
 
     try {
-        const response = await fetch(BACKEND_ROUTES.rooms.create, {
+        const response = await fetch(BACKEND_ROUTES.bookings.create, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -151,34 +97,28 @@ export async function createRoom({ number = null, details = null, floor = null, 
 }
 
 /**
- * Actualiza los datos de una habitación.
+ * Actualiza los datos de una reserva.
  * @async
- * @function updateRoom
- * @param {Object} params - Datos de la habitación.
- * @param {number} params.id -ID de la habitación (requerido).
- * @param {number} [params.number] - Número de habitación.
- * @param {string} [params.floor] - Piso de la habitación.
- * @param {string} [params.type] - Tipo o categoría de la habitación.
- * @param {number} [params.price] - Precio por noche de la habitación.
- * @param {string} [params.details] - Detalles o comentarios de la habitación.
- * @param {string} [params.status] - Estado actual de la habitación.
- * @param {boolean} [params.isAvailable] - Disponibilidad de la habitación.
- * @returns {Promise<Object>} Los datos de la habitación actualizados en formato JSON.
+ * @function updateBooking
+ * @param {Object} params - Datos de la reserva.
+ * @param {number} params.id -ID de la reserva (requerido).
+ * @param {number} [params.roomId] - ID de la habitación vinculada a la reserva.
+ * @param {Date} [params.checkInDate] - Fecha en la que se espera iniciar la estadía.
+ * @param {Date} [params.checkOutDate] - Fecha en la que se espera concluir la estadía.
+ * @param {string} [params.details] - Detalles relacionados a la reserva.
+ * @returns {Promise<Object>} Los datos de la reserva actualizados en formato JSON.
  */
-export async function updateRoom({ id = null, number = null, details = null, floor = null, type = null, status = null, price = null, isAvailable = null} = {}) {
+export async function updateBooking({ id = null, customerId = null, roomId = null, checkInDate = null, checkOutDate = null, details = null} = {}) {
     validateParamIsNotNull('id', id);
 
     const body = {};
-     if(number !== null) body.number = number;
-     if(floor !== null) body.floor = floor.toUpperCase();
-     if(type !== null) body.type = type.toUpperCase();
-     if(price !== null) body.price = price;
-     if(details !== null) body.details = details;
-     if(status !== null) body.status = status.toUpperCase();
-     if(isAvailable !== null) body.isAvailable = isAvailable;
+    if(roomId !== null) body.roomId = roomId;
+    if(checkInDate !== null) body.checkInDate = checkInDate;
+    if(checkOutDate !== null) body.checkOutDate = checkOutDate;
+    if(details !== null) body.details = details;
 
     try {
-        const response = await fetch(BACKEND_ROUTES.rooms.update(id), {
+        const response = await fetch(BACKEND_ROUTES.bookings.update(id), {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -195,17 +135,16 @@ export async function updateRoom({ id = null, number = null, details = null, flo
 }
 
 /**
- * Cambia el estado de la habitación a DISPONIBLE.
+ * Desactiva una reserva por su ID.
  * @async
- * @function changeRoomStatusToAvailable
- * @param {number} id -ID de la habitación.
- * @returns {Promise<Object>} Los datos de la habitación actualizados en formato JSON.
+ * @function desactiveBooking
+ * @param {number} id - El ID de la reserva.
  */
-export async function changeRoomStatusToAvailable(id) {
+export async function desactiveBooking(id) {
     validateParamIsNotNull('id', id);
-
+    
     try {
-        const response = await fetch(BACKEND_ROUTES.rooms.changeStatusToAvailable(id), {
+        const response = await fetch(BACKEND_ROUTES.bookings.desactive(id), {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -221,26 +160,121 @@ export async function changeRoomStatusToAvailable(id) {
 }
 
 /**
- * Desactiva la disponibilidad de una habitación por su ID.
+ * Confirma una reserva por su ID.
  * @async
- * @function updateRoomNotAvailable
- * @param {number} id - El ID de la habitación.
+ * @function confirmBooking
+ * @param {number} id - El ID de la reserva.
  */
-export async function updateRoomNotAvailable(id) {
+export async function confirmBooking(id) {
     validateParamIsNotNull('id', id);
     
-    return await updateRoom({ id, isAvailable: false });
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.confirm(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
 }
 
 /**
- * Muestra todos los enums (variables constantes) que se emplean en la habitación.
+ * Cancela una reserva por su ID.
  * @async
- * @function getRoomEnumsValues
+ * @function cancelBooking
+ * @param {number} id - El ID de la reserva.
+ */
+export async function cancelBooking(id) {
+    validateParamIsNotNull('id', id);
+    
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.cancel(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Realiza el check-in (entrada o inicio) de una reserva por su ID.
+ * @async
+ * @function checkInBooking
+ * @param {number} id - El ID de la reserva.
+ * @param {number} cashAdvance - El adelanto que se debe depositar para iniciar la estadía.
+ */
+export async function checkInBooking(id, cashAdvance) {
+    validateParamIsNotNull('id', id);
+    validateParamIsNotNull('cashAdvance', cashAdvance);
+    
+    const body = {
+        cashAdvance,
+    };
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.checkIn(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Realiza el check-out (salida o finalización) de una reserva por su ID.
+ * @async
+ * @function checkOutBooking
+ * @param {number} id - El ID de la reserva.
+ */
+export async function checkOutBooking(id) {
+    validateParamIsNotNull('id', id);
+    
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.checkOut(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Muestra todos los enums (variables constantes) que se emplean en la reserva.
+ * @async
+ * @function getBookingEnumsValues
  * @returns {Promise<Object>} Lista de los enums en formato JSON.
  */
-export async function getRoomEnumsValues() {
+export async function getBookingEnumsValues() {
     try {
-        const response = await fetch(BACKEND_ROUTES.rooms.getEnumsValues, {
+        const response = await fetch(BACKEND_ROUTES.bookings.getEnumsValues, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -256,37 +290,35 @@ export async function getRoomEnumsValues() {
 }
 
 /* PRUEBAS DE LOS METODOS PARA LA CRUD DE LAS HABITACIONES (Rooms) */
-const roomDataRequired = {
-    number: 202,
-    floor: 'SEGUndO',
-    type: 'doble',
-    price: 2000,
+const bookingDataRequired = {
+    customerId: 8,
+    roomId: 9,
+    checkInDate: '2024-11-17T12:00Z',
+    checkOutDate: '2024-11-18T14:00Z',
 };
-const roomDataAll = {
-    number: 101,
-    details: 'Habitación con vista al mar',
-    floor: 'PRIMER',
-    type: 'MATRIMONIAL',
-    status: 'Disponible',
-    price: 15000,
-    isAvailable: true
+const bookingDataAll = {
+    customerId: 6,
+    roomId: 7,
+    checkInDate: '2024-11-18T12:00Z',
+    checkOutDate: '2024-11-19T14:00Z',
+    details: 'Ojo con la persona parece sospechosa'
 };
-const updatedRoomData = {
-    id: 7, // Se debe utilizar un id válido
-    number: 303,
-    details: 'Habitación sencilla para pasar la noche',
-    floor: 'TERCER',
-    type: 'INdividual',
-    status: 'ocuPada',
-    price: 900,
-    isAvailable: false
+const updatedBookingData = {
+    id: 17, // Se debe utilizar un id válido
+    roomId: 8,
+    checkInDate: '2024-11-20T12:00Z',
+    checkOutDate: '2024-11-22T14:00Z',
+    details: 'Se actualizaron los datos de la habitación'
 }
-    
-// console.log(await getAllRooms());
-// console.log(await getRoomById(1)); // Se debe utilizar un id válido
-// console.log(await getRoomByRoomNumber(40)); // Se debe utilizar un nomber de habitación válido
-// console.log(await createRoom(roomDataRequired));
-// console.log(await createRoom(roomDataAll));
-// console.log(await updateRoom(updatedRoomData));
-// console.log(await notAvailableRoom(8)); // Se debe utilizar un id válido
-console.log(await getRoomEnumsValues());
+
+console.log(await getAllBookings());
+// console.log(await getBookingById(2)); // Se debe utilizar un id válido
+// console.log(await createBooking(bookingDataRequired));
+// console.log(await createBooking(bookingDataAll));
+// console.log(await updateBooking(updatedBookingData));
+// console.log(await desactiveBooking(8)); // Se debe utilizar un id válido
+// console.log(await confirmBooking(18));
+// console.log(await checkInBooking(18, 1000));
+// console.log(await checkOutBooking(18));
+// console.log(await cancelBooking(19));
+// console.log(await getBookingEnumsValues());
