@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RoomEntity, RoomStatus } from './room.entity';
+import { RoomEntity, RoomFloor, RoomStatus, RoomType } from './room.entity';
 import { UpdateRoomDTO } from './dtos/update-room.dto';
 import { CreateRoomDTO } from './dtos/create-room.dto';
+import { getEnumValues } from 'src/utils/showEnum.values';
 
 @Injectable()
 export class RoomsService {
@@ -61,6 +62,10 @@ export class RoomsService {
     return this.repository.find({
       where: { status: s }
     });
+  }
+
+  getEnumValues() {
+    return getEnumValues({ RoomStatus, RoomFloor, RoomType });
   }
 
   private throwRoomNotFoundException(id: number) {
