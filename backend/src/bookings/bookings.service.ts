@@ -29,10 +29,11 @@ export class BookingsService {
             room: await this.roomsService.findById(b.roomId),
             checkInDate: b.checkInDate,
             checkOutDate: b.checkOutDate,
+            details: b.details,
             status: BookingStatus.PENDIENTE,
             isActive: true
         });
-    
+
         return this.repository.save(booking);
     }
     
@@ -188,6 +189,12 @@ export class BookingsService {
         if (newFistDate < today || newSecondDate <= newFistDate) {
             throw new BadRequestException('Las fechas proporcionadas deben estar en el futuro y en un orden válido (la primera antes que la segunda).');
         }
+    }
+
+    async desactiveBooking(id: number) {
+        const booking = await this.findById(id);
+        booking.isActive = false;
+        return this.repository.save(booking);
     }
 
     getEnumValues() {
