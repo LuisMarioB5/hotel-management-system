@@ -33,4 +33,17 @@ export const BACKEND_ROUTES = {
     getRoomsAvailable: `${BASE_URL}/bookings/rooms/available`,
     getEnumsValues: `${BASE_URL}/rooms/enums/values`,
   },
+  bookings: {
+    create: `${BASE_URL}/bookings/register`,
+    update: (id) => `${BASE_URL}/bookings/${id}`,
+    delete: (id) => `${BASE_URL}/bookings/${id}`,
+    getAll: `${BASE_URL}/bookings`,
+    getById: (id) => `${BASE_URL}/bookings/${id}`,
+    getEnumsValues: `${BASE_URL}/bookings/enums/values`,
+    confirm: (id) => `${BASE_URL}/bookings/${id}/confirm`,
+    cancel: (id) => `${BASE_URL}/bookings/${id}/cancel`,
+    checkIn: (id) => `${BASE_URL}/bookings/${id}/check-in`,
+    checkOut: (id) => `${BASE_URL}/bookings/${id}/check-out`,
+    desactive: (id) => `${BASE_URL}/bookings/${id}/desactive`
+  },
 };
