@@ -25,6 +25,16 @@ export class RoomsController {
     return await this.service.findById(id);
   }
 
+  @Get('roomNumber/:roomNumber')
+  async findByRoomNumber(@Param('roomNumber') roomNumber: number): Promise<RoomEntity> {
+    return await this.service.findByRoomNumber(roomNumber);
+  }
+
+  @Get('enums/values')
+  async getEnumValues() {
+    return this.service.getEnumValues();
+  }
+
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateRoomDTO: UpdateRoomDTO) {
     return this.service.update(id, updateRoomDTO);
