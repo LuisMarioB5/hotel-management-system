@@ -1,13 +1,14 @@
+import { In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingEntity, BookingStatus } from './booking.entity';
-import { In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
+import { CreateBookingDTO } from './dtos/create-booking.dto';
+import { CreateCheckInDTO } from './dtos/create-checkin.dto';
+import { UpdateBookingDTO } from './dtos/update-booking.dto';
 import { CustomersService } from 'src/customers/customers.service';
 import { RoomsService } from 'src/rooms/rooms.service';
-import { CreateBookingDTO } from './dtos/create-booking.dto';
-import { UpdateBookingDTO } from './dtos/update-booking.dto';
 import { RoomEntity, RoomStatus } from 'src/rooms/room.entity';
-import { CreateCheckInDTO } from './dtos/create-checkin.dto';
+import { getEnumValues } from 'src/utils/showEnum.values';
 
 @Injectable()
 export class BookingsService {
@@ -48,13 +49,26 @@ export class BookingsService {
     async update(id: number, newBooking: UpdateBookingDTO): Promise<BookingEntity> {
         const oldBooking = await this.findById(id);
         
-        const actualCheckIn = newBooking.checkInDate ?? oldBooking.checkInDate;
-        const actualCheckOut = newBooking.checkOutDate ?? oldBooking.checkOutDate;
+        if(newBooking.roomId) {
+            const newRoom = await this.roomsService.findById(newBooking.roomId);
+            oldBooking.room = newRoom;
+        }
+
+        if(newBooking.checkInDate) {
+            oldBooking.checkInDate = newBooking.checkInDate;
+        }
+
+        if(newBooking.checkOutDate) {
+            oldBooking.checkOutDate = newBooking.checkOutDate;
+        }
+
+        if(newBooking.details) {
+            oldBooking.details = newBooking.details;
+        }
     
-        this.verifyDatesAreFuture(actualCheckIn, actualCheckOut);
-        await this.isRoomAvailableWithException(oldBooking.room.id, actualCheckIn, actualCheckOut);
+        this.verifyDatesAreFuture(oldBooking.checkInDate, oldBooking.checkOutDate);
+        await this.isRoomAvailableWithException(oldBooking.room.id, oldBooking.checkInDate, oldBooking.checkOutDate);
     
-        Object.assign(oldBooking, newBooking);
         return this.repository.save(oldBooking);
     }
 
@@ -174,6 +188,10 @@ export class BookingsService {
         if (newFistDate < today || newSecondDate <= newFistDate) {
             throw new BadRequestException('Las fechas proporcionadas deben estar en el futuro y en un orden válido (la primera antes que la segunda).');
         }
+    }
+
+    getEnumValues() {
+        return getEnumValues({ BookingStatus });
     }
 
     private throwBookingNotFoundException(id: number) {

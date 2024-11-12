@@ -56,6 +56,10 @@ export class BookingsController {
         return { message: `Reserva con ID ${id} eliminada exitosamente` }
     }
 
+    @Get('enums/values')
+    getEnumValues() {
+        return this.service.getEnumValues();
+    }
     
     @Get('rooms/available')
     async findAvailableRooms(

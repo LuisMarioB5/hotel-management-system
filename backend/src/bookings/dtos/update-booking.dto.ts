@@ -1,6 +1,10 @@
-import { IsBoolean, IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class UpdateBookingDTO {  
+export class UpdateBookingDTO {
+  @IsNumber()
+  @IsOptional()
+  roomId?: number;
+
   @IsDateString()
   @IsOptional()
   checkInDate?: Date;
