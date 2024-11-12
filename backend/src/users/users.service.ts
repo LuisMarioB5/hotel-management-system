@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { UserEntity, UserRole } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { CreateUserDTO } from './dtos/create-user.dto';
+import { getEnumValues } from 'src/utils/showEnum.values';
 
 @Injectable()
 export class UsersService {
@@ -48,6 +49,9 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     const user = await this.findById(id);
     Object.assign(user, updateUserDto);
+    if(updateUserDto.password !== null) {
+      user.password = await bcrypt.hash(updateUserDto.password, await bcrypt.genSalt());
+    }
     return this.repository.save(user);
   }
 
@@ -56,6 +60,10 @@ export class UsersService {
     if (result.affected === 0) {
       this.throwUserNotFoundException(id);
     }
+  }
+
+  getEnumValues() {
+    return getEnumValues({ UserRole });
   }
 
   private throwUserNotFoundException(id: number) {

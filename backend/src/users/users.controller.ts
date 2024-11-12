@@ -28,6 +28,11 @@ export class UsersController {
     return this.service.findByUsername(username);
   }
 
+  @Get('enums/values')
+  async getEnumValues() {
+    return this.service.getEnumValues();
+  }
+
   @Patch(':id')
   async updateUser(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.service.update(id, updateUserDto);

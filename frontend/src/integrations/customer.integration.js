@@ -1,4 +1,5 @@
 import { BACKEND_ROUTES } from '../config/backend.routes.js';
+import { validateParamIsNotNull } from '../scripts/utils.js';
 
 /**
  * Obtiene todos los clientes.
@@ -203,16 +204,27 @@ export async function deleteCustomer(id) {
     }
 }
 
+
 /**
- * Valida que un parámetro no sea nulo o indefinido.
- * @function validateParamIsNotNull
- * @param {string} paramName - El nombre del parámetro.
- * @param {*} paramValue - El valor del parámetro.
- * @throws {TypeError} Lanza un error si el parámetro es nulo o indefinido.
+ * Muestra todos los enums (variables constantes) que se emplean en el cliente.
+ * @async
+ * @function getCustomerEnumsValues
+ * @returns {Promise<Object>} Lista de los enums en formato JSON.
  */
-function validateParamIsNotNull(paramName, paramValue) {
-    if (paramValue === null || paramValue === undefined) {
-        throw new TypeError(`El parámetro '${paramName}' es obligatorio y no puede ser nulo o indefinido.`);
+export async function getCustomerEnumsValues() {
+    try {
+        const response = await fetch(BACKEND_ROUTES.customers.getEnumsValues, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
     }
 }
 
@@ -251,3 +263,4 @@ const updatedCustomerData = {
 // console.log(await createCustomer(customerDataAll));
 // console.log(await updateCustomer(updatedCustomerData));
 // console.log(await deleteCustomer(24)); // Se debe utilizar un id válido 
+// console.log(await getCustomerEnumsValues()); 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotel Hodelpa - Usuarios</title>
+  <title>Hotel Hodelpa - Habitaciones</title>
   <link rel="stylesheet" href="../styles/dashboard.css">
   <link rel="stylesheet" href="../styles/usuarios.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -44,7 +44,7 @@
                     <li class="dropdown">
                         <a href="#" class="dropbtn"><i class="fas fa-chart-bar"></i> Reportes <i class="fas fa-chevron-down"></i></a>
                         <div class="dropdown-content">
-                            <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Recepciones</a>
+                            <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Reservaciones</a>
                             <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
                         </div>
                     </li>
@@ -62,9 +62,6 @@
                  
                     <!-- Botón "Crear Nuevo" y opciones de visualización -->
                     <div class="user-actions">
-                        <button class="create-button" data-toggle="modal" data-target="#createUserModal">
-                            <i class="fas fa-user-plus"></i> Nuevo
-                        </button>
                         <div class="table-controls">
                             <label for="recordsPerPage">Mostrar:</label>
                             <select id="recordsPerPage">
@@ -101,8 +98,8 @@
                                     <td>PRIMERO</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -111,10 +108,10 @@
                                     <td>80.00</td>
                                     <td>Doble</td>
                                     <td>PRIMERO</td>
-                                    <td><span class="status active">Activo</span></td>
+                                    <td><span class="status inactive">Inactivo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -125,8 +122,8 @@
                                     <td>PRIMERO</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -137,8 +134,8 @@
                                     <td>PRIMERO</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -149,8 +146,8 @@
                                     <td>PRIMERO</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -161,8 +158,8 @@
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -173,8 +170,8 @@
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -185,8 +182,8 @@
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -197,8 +194,8 @@
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -209,15 +206,15 @@
                                     <td>SEGUNDO</td>
                                     <td><span class="status active">Activo</span></td>
                                     <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                         <!-- Div de paginación y conteo de registros -->
                         <div class="pagination-info">
-                            <label>Mostrando registros del 1 al 10 de un total de 10 registros</label>
+                            <label></label>
                                 <div class="pagination-buttons">
                                     <button class="pagination-btn">&lt;</button>
                                     <button class="pagination-btn">&gt;</button>
@@ -228,11 +225,12 @@
             </div>
         </div>
     </div>
-    <!-- Modal para Crear Usuario -->
+
+    <!-- Modal para modificar Usuario -->
     <div id="createUserModal" class="modalusu">
         <div class="modalusu-content">
             <div class="modalusu-header">   
-                <h2>Crear Habitacion</h2>
+                <h2>Editar Habitacion</h2>
                 <span class="close-buttonusu" onclick="closeModal()">&times;</span>
             </div>
             <div class="modalusu-body">
@@ -336,7 +334,7 @@
 
 <script>
      // Abrir modal
-    document.querySelector('.create-button').addEventListener('click', function() {
+    document.querySelector('.edit-btn').addEventListener('click', function() {
         document.getElementById('createUserModal').style.display = 'flex';
     });
 
@@ -396,5 +394,7 @@
     }
     }
 </script>
+
+<script type="module" src="../integrations/room.integration.js"></script>
 </body>
 </html>

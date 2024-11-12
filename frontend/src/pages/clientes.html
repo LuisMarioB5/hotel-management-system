@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotel Hodelpa - Usuarios</title>
+  <title>Hotel Hodelpa - Clientes</title>
   <link rel="stylesheet" href="../styles/dashboard.css">
   <link rel="stylesheet" href="../styles/usuarios.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -44,7 +44,7 @@
                     <li class="dropdown">
                         <a href="#" class="dropbtn"><i class="fas fa-chart-bar"></i> Reportes <i class="fas fa-chevron-down"></i></a>
                         <div class="dropdown-content">
-                            <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Recepciones</a>
+                            <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Reservaciones</a>
                             <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
                         </div>
                     </li>
@@ -82,7 +82,7 @@
 
                     <!-- Tabla de Usuarios -->
                     <div class="user-table">
-                        <table id="clientesTable">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>Tipo Documento</th>
@@ -95,16 +95,39 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Se llena el body con JavaScript -->
+                                <tr>
+                                    <td>DNI</td>
+                                    <td>4105648</td>
+                                    <td>Mizuki</td>
+                                    <td>Hayashi</td>
+                                    <td>mizuhi@gmail.com</td>
+                                    <td><span class="status active">Activo</span></td>
+                                    <td>
+                                        <button class="edit-btn" data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
+                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Pasaporte</td>
+                                    <td>4545453</td>
+                                    <td>Naomi</td>
+                                    <td>Konoe</td>
+                                    <td>naomko@gmail.com</td>
+                                    <td><span class="status active">Activo</span></td>
+                                    <td>
+                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                         <!-- Div de paginación y conteo de registros -->
                         <div class="pagination-info">
                             <label></label>
-                            <div class="pagination-buttons">
-                                <button class="pagination-btn">&lt;</button>
-                                <button class="pagination-btn">&gt;</button>
-                            </div>
+                                <div class="pagination-buttons">
+                                    <button class="pagination-btn">&lt;</button>
+                                    <button class="pagination-btn">&gt;</button>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -112,56 +135,55 @@
         </div>
     </div>
 
-    <!-- Modal para Crear/editar Cliente -->
-    <div id="clienteModal" class="modalusu">
+    <!-- Modal para Crear Cliente -->
+    <div id="createUserModal" class="modalusu">
         <div class="modalusu-content">
             <div class="modalusu-header">
-                <h2 id="modalTitle">Añadir Cliente</h2>
-                <span class="close-buttonusu">&times;</span>
+                <h2>Cliente</h2>
+                <span class="close-buttonusu" onclick="closeModal()">&times;</span>
             </div>
             <div class="modalusu-body">
-                <form id="clienteForm">
-                    <input type="hidden" id="clienteId">
-                    <label for="tipo">Tipo Documento</label>
-                    <select id="tipo" required>
-                        <option value="DNI">DNI</option>
-                        <option value="Pasaporte">Pasaporte</option>
-                        <option value="Cedula">Cedula</option>
-                        <option value="Otro">Otro</option>
-                    </select>
+                <label for="tipo">Tipo Documento</label>
+                <select id="tipo">
+                    <option value="DNI">DNI</option>
+                    <option value="Pasaporte">Pasaporte</option>
+                    <option value="Cedula">Cedula</option>
+                    <option value="Otro">Otro</option>
+                </select>
 
-                    <label for="documento"># Documento</label>
-                    <input type="text" id="documento" required>
+                <label for="documento"># Documento</label>
+                <input type="text" id="documento" required>
 
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" required>
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" required>
 
-                    <label for="apellido">Apellido</label>
-                    <input type="text" id="apellido" required>
+                <label for="apellido">Apellido</label>
+                <input type="text" id="apellido" required>
 
-                    <label for="correo">Correo</label>
-                    <input type="email" id="correo" required>
+                <label for="correo">Correo</label>
+                <input type="email" id="correo" required>
 
-                    <label for="estado">Estado</label>
-                    <select id="estado" required>
-                        <option value="Activo">Activo</option>
-                        <option value="Inactivo">Inactivo</option>
-                    </select>
-                </form>
+                <label for="estado">Estado</label>
+                <select id="estado">
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
             </div>
             <div class="modalusu-footer">
-                <button class="btn_cancelusu">Cerrar</button>
-                <button class="btn_saveusu" id="saveCliente">Guardar</button>
+                <button class="btn_cancelusu" onclick="closeModal()">Cerrar</button>
+                <button class="btn_saveusu" onclick="guardarCliente()">Guardar</button>
             </div>
         </div>
     </div>
 
-    <script src="../scripts/clientes.js"></script>
     <script>
         // Abrir modal
-       document.querySelector('.create-button').addEventListener('click', function() {
-           document.getElementById('createUserModal').style.display = 'flex';
-       });
+        document.querySelectorAll('.create-button, .edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('createUserModal').style.display = 'flex';
+            });
+        });
+
    
        // Cerrar modal y limpiar campos
        function closeModal() {
@@ -284,6 +306,6 @@
             });
         });
     </script>
-<script type="module" src="../integrations/customer.integration.js"></script>
+
 </body>
 </html>
