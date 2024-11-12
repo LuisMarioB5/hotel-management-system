@@ -204,6 +204,30 @@ export async function deleteCustomer(id) {
     }
 }
 
+
+/**
+ * Muestra todos los enums (variables constantes) que se emplean en el cliente.
+ * @async
+ * @function getCustomerEnumsValues
+ * @returns {Promise<Object>} Lista de los enums en formato JSON.
+ */
+export async function getCustomerEnumsValues() {
+    try {
+        const response = await fetch(BACKEND_ROUTES.customers.getEnumsValues, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
 /* PRUEBAS DE LOS METODOS PARA LA CRUD DE LOS CLIENTES (CUSTOMERS) */
 const customerDataRequired = {
     name: 'John',
@@ -239,3 +263,4 @@ const updatedCustomerData = {
 // console.log(await createCustomer(customerDataAll));
 // console.log(await updateCustomer(updatedCustomerData));
 // console.log(await deleteCustomer(24)); // Se debe utilizar un id válido 
+// console.log(await getCustomerEnumsValues()); 
