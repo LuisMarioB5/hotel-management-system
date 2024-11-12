@@ -1,11 +1,39 @@
-import { BACKEND_ROUTES } from '../config/backend.routes.js';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: integrations/user.integration.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: integrations/user.integration.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { BACKEND_ROUTES } from '../config/backend.routes.js';
 import { validateParamIsNotNull } from '../scripts/utils.js';
 
 /**
  * Obtiene todos los usuarios.
  * @async
  * @function getAllUsers
- * @returns {Promise<Object[]>} Una lista de usuarios en formato JSON.
+ * @returns {Promise&lt;Object[]>} Una lista de usuarios en formato JSON.
  */
 export async function getAllUsers() {
     try {
@@ -29,7 +57,7 @@ export async function getAllUsers() {
  * @async
  * @function getUserById
  * @param {number} id - El ID del usuario.
- * @returns {Promise<Object>} Los datos del usuario en formato JSON.
+ * @returns {Promise&lt;Object>} Los datos del usuario en formato JSON.
  */
 export async function getUserById(id) {
     validateParamIsNotNull('id', id);
@@ -55,7 +83,7 @@ export async function getUserById(id) {
  * @async
  * @function getUserByUsername
  * @param {string} username - El nombre de usuario del usuario.
- * @returns {Promise<Object>} Los datos del usuario en formato JSON.
+ * @returns {Promise&lt;Object>} Los datos del usuario en formato JSON.
  */
 export async function getUserByUsername(username) {
     validateParamIsNotNull('username', username);
@@ -85,7 +113,7 @@ export async function getUserByUsername(username) {
  * @param {string} params.password - Contraseña del usuario (requerido).
  * @param {string} params.role - Rol del usuario (requerido).
  * @param {boolean} [params.isActive] - Estado del usuario.
- * @returns {Promise<Object>} Los datos del usuario recién creado en formato JSON.
+ * @returns {Promise&lt;Object>} Los datos del usuario recién creado en formato JSON.
  */
 export async function createUser({ username = null, password = null, role = null, isActive = null } = {}) {
     validateParamIsNotNull('username', username);
@@ -125,7 +153,7 @@ export async function createUser({ username = null, password = null, role = null
  * @param {string} [params.password] - Contraseña del usuario.
  * @param {string} [params.role] - Rol del usuario.
  * @param {boolean} [params.isActive] - Estado del usuario.
- * @returns {Promise<Object>} Los datos del usuario actualizados en formato JSON.
+ * @returns {Promise&lt;Object>} Los datos del usuario actualizados en formato JSON.
  */
 export async function updateUser({ id = null, username = null, password = null, role = null, isActive = null } = {}) {
     validateParamIsNotNull('id', id);
@@ -158,7 +186,7 @@ export async function updateUser({ id = null, username = null, password = null, 
  * @async
  * @function deleteUser
  * @param {number} id - El ID del usuario.
- * @returns {Promise<Object>} Los datos de la operación de eliminación en formato JSON.
+ * @returns {Promise&lt;Object>} Los datos de la operación de eliminación en formato JSON.
  */
 export async function deleteUser(id) {
     validateParamIsNotNull('id', id);
@@ -184,7 +212,7 @@ export async function deleteUser(id) {
  * Muestra todos los enums (variables constantes) que se emplean en el usuario.
  * @async
  * @function getUserEnumsValues
- * @returns {Promise<Object>} Lista de los enums en formato JSON.
+ * @returns {Promise&lt;Object>} Lista de los enums en formato JSON.
  */
 export async function getUserEnumsValues() {
     try {
@@ -230,3 +258,26 @@ const updatedUserData = {
 // console.log(await updateUser(updatedUserData));
 // console.log(await deleteUser(8)); // Se debe utilizar un id válido 
 // console.log(await getUserEnumsValues());
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#changeRoomStatusToAvailable">changeRoomStatusToAvailable</a></li><li><a href="global.html#createCustomer">createCustomer</a></li><li><a href="global.html#createRoom">createRoom</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteCustomer">deleteCustomer</a></li><li><a href="global.html#deleteUser">deleteUser</a></li><li><a href="global.html#getAllCustomers">getAllCustomers</a></li><li><a href="global.html#getAllRooms">getAllRooms</a></li><li><a href="global.html#getAllUsers">getAllUsers</a></li><li><a href="global.html#getCustomerByDocumentNumber">getCustomerByDocumentNumber</a></li><li><a href="global.html#getCustomerById">getCustomerById</a></li><li><a href="global.html#getCustomerEnumsValues">getCustomerEnumsValues</a></li><li><a href="global.html#getRoomById">getRoomById</a></li><li><a href="global.html#getRoomByRoomNumber">getRoomByRoomNumber</a></li><li><a href="global.html#getRoomEnumsValues">getRoomEnumsValues</a></li><li><a href="global.html#getRoomsAvailable">getRoomsAvailable</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#getUserEnumsValues">getUserEnumsValues</a></li><li><a href="global.html#loginIntegration">loginIntegration</a></li><li><a href="global.html#updateCustomer">updateCustomer</a></li><li><a href="global.html#updateRoom">updateRoom</a></li><li><a href="global.html#updateRoomNotAvailable">updateRoomNotAvailable</a></li><li><a href="global.html#updateUser">updateUser</a></li><li><a href="global.html#validateParamIsNotNull">validateParamIsNotNull</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Nov 11 2024 21:33:29 GMT-0400 (Bolivia Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
