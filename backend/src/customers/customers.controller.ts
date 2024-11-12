@@ -28,6 +28,11 @@ export class CustomersController {
     return this.service.findByDocumentNumber(documentNumber);
   }
 
+  @Get('enums/values')
+  getEnumValues() {
+    return this.service.getEnumValues();
+  }
+
   @Patch(':id')
   async updateCustomer(@Param('id') id: number, @Body() updateCustomerDTO: UpdateCustomerDTO) {
     return this.service.update(id, updateCustomerDTO);

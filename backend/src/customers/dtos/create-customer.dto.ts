@@ -1,4 +1,5 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { CustomerDocumentType, CustomerGender } from '../customer.entity';
 
 export class CreateCustomerDTO {
   @IsString()
@@ -9,17 +10,21 @@ export class CreateCustomerDTO {
   @IsNotEmpty()
   lastName: string;
 
-  @IsString()
+  @IsEnum(CustomerDocumentType, {
+    message: 'El tipo de documento debe ser uno válido (DNI, CEDULA ó PASAPORTE)'
+  })
   @IsNotEmpty()
-  documentType: string;
+  documentType: CustomerDocumentType;
 
   @IsString()
   @IsNotEmpty()
   documentNumber: string;
 
-  @IsString()
+  @IsEnum(CustomerGender, {
+    message: 'El género del cliente debe ser uno válido (MASCULINO ó FEMENINO)'
+  })
   @IsOptional()
-  gender?: string;
+  gender?: CustomerGender;
 
   @IsString()
   @IsOptional()

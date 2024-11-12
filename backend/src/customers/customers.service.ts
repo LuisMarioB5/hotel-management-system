@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CustomerEntity } from './customer.entity';
+import { CustomerDocumentType, CustomerEntity, CustomerGender } from './customer.entity';
 import { CreateCustomerDTO } from './dtos/create-customer.dto';
 import { UpdateCustomerDTO } from './dtos/update-customer.dto';
+import { getEnumValues } from 'src/utils/showEnum.values';
 
 @Injectable()
 export class CustomersService {
@@ -35,6 +36,10 @@ export class CustomersService {
       throw new NotFoundException(`Cliente con el número de documento ${documentNumber} no encontrado`);
     }
     return customer;
+  }
+
+  getEnumValues() {
+    return getEnumValues({ CustomerDocumentType, CustomerGender });
   }
 
   async update(id: number, updateCustomerDTO: UpdateCustomerDTO): Promise<CustomerEntity> {

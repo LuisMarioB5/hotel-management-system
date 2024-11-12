@@ -1,6 +1,17 @@
 import { BookingEntity } from 'src/bookings/booking.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 
+export enum CustomerDocumentType {
+  DNI = 'DNI',
+  CEDULA = 'CEDULA',
+  PASAPORTE = 'PASAPORTE',
+}
+
+export enum CustomerGender {
+  MACULINO = 'MACULINO',
+  FEMENINO = 'FEMENINO',
+}
+
 @Entity('customers')
 export class CustomerEntity {
   @PrimaryGeneratedColumn()
@@ -12,14 +23,14 @@ export class CustomerEntity {
   @Column()
   lastName: string;
 
-  @Column()
-  documentType: string;
+  @Column({ type: 'enum', enum: CustomerDocumentType})
+  documentType: CustomerDocumentType;
 
   @Column({ unique: true })
   documentNumber: string;
 
-  @Column({ nullable: true })
-  gender: string;
+  @Column({ type: 'enum', enum: CustomerGender, nullable: true })
+  gender: CustomerGender;
 
   @Column({ nullable: true })
   phoneNumber: string;
