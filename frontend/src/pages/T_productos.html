@@ -44,7 +44,7 @@
                     <li class="dropdown">
                         <a href="#" class="dropbtn"><i class="fas fa-chart-bar"></i> Reportes <i class="fas fa-chevron-down"></i></a>
                         <div class="dropdown-content">
-                            <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Recepciones</a>
+                            <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Reservaciones</a>
                             <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
                         </div>
                     </li>
@@ -205,7 +205,7 @@
                         </table>
                         <!-- Div de paginación y conteo de registros -->
                         <div class="pagination-info">
-                            <label>Mostrando registros del 1 al 10 de un total de 10 registros</label>
+                            <label></label>
                                 <div class="pagination-buttons">
                                     <button class="pagination-btn">&lt;</button>
                                     <button class="pagination-btn">&gt;</button>
@@ -221,7 +221,7 @@
     <div id="createUserModal" class="modalusu">
         <div class="modalusu-content">
             <div class="modalusu-header">
-                <h2>Añadir Producto</h2>
+                <h2>Producto</h2>
                 <span class="close-buttonusu" onclick="closeModal()">&times;</span>
             </div>
             <div class="modalusu-body">
@@ -313,10 +313,11 @@
 
 <script>
      // Abrir modal
-    document.querySelector('.create-button').addEventListener('click', function() {
-        document.getElementById('createUserModal').style.display = 'flex';
-    });
-
+     document.querySelectorAll('.create-button, .edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('createUserModal').style.display = 'flex';
+            });
+        });
     // Cerrar modal y limpiar campos
     function closeModal() {
         document.getElementById('createUserModal').style.display = 'none';
