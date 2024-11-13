@@ -184,6 +184,7 @@ body, html {
 .card:nth-child(2) {border-left: 8px solid #4a7aff;}
 .card:nth-child(3) {border-left: 8px solid #ff5722;}
 .card:nth-child(4) {border-left: 8px solid #00bcd4;}
+.card:nth-child(5) {border-left: 8px solid #000000;}
 
 @media (max-width: 1200px) {
     .card {
@@ -730,4 +731,26 @@ body, html {
     .item-avatar i {
         font-size: 0.9rem;
     }
+}
+
+/*estilo para la tablla de habitaciones. cambio de colores segun que */
+.status-disponible {
+    color: green;
+    font-weight: bold;
+}
+.status-reservada {
+    color: orange;
+    font-weight: bold;
+}
+.status-ocupada {
+    color: red;
+    font-weight: bold;
+}
+.status-fuera_de_servicio {
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+}
+.status-limpieza {
+    color: #00bcd4;
+    font-weight: bold;
 }

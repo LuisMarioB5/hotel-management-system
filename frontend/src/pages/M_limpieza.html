@@ -60,26 +60,17 @@
 
                     <div class="rooms-container">
                         <label>Seleccionar Piso</label>
-                        <select class="floor-selector" >
-                            <option value="">Todos</option>
-                            <option value="1">Piso 1</option>
-                            <option value="2">Piso 2</option>
-                            <option value="3">Piso 3</option>
+                        <select class="floor-selector">
+                            <option value="Todos">Todos</option>
+                            <option value="PRIMER">PRIMER</option>
+                            <option value="SEGUNDO">SEGUNDO</option>
+                            <option value="TERCER">TERCER</option>
+                            <option value="CUARTO">CUARTO</option>
+                            <option value="QUINTO">QUINTO</option>
                         </select>
+
                         <div class="rooms-grid">
-                            <div class="room-card limpieza">
-                                <div class="room-header">
-                                    <span class="room-number">NRO: 002</span>
-                                    <i class="fas fa-broom room-icon"></i>
-                                </div>
-                                <div class="room-category">
-                                    CATEGORIA: DOBLE
-                                </div>
-                                <div class="room-status limpieza" id="limpiezaBtn">
-                                    LIMPIEZA
-                                    <i class="fas fa-chevron-right"></i>
-                                </div>
-                            </div>
+                            <!--Se llenara automatico-->
                         </div>
                     </div>
                 </div>
@@ -121,37 +112,37 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    const limpiezaModal = document.getElementById('limpiezaModal');
-    const btnLimpieza = document.getElementById('limpiezaBtn');
-    const closeLimpiezaModal = document.getElementById('closeLimpiezaModal');
-    const cancelLimpieza = document.getElementById('cancelLimpieza');
-    const confirmarLimpieza = document.getElementById('confirmarLimpieza');
+        const limpiezaModal = document.getElementById('limpiezaModal');
+        const btnLimpieza = document.getElementById('limpiezaBtn');
+        const closeLimpiezaModal = document.getElementById('closeLimpiezaModal');
+        const cancelLimpieza = document.getElementById('cancelLimpieza');
+        const confirmarLimpieza = document.getElementById('confirmarLimpieza');
 
-    function abrirModalLimpieza() {
-        limpiezaModal.style.display = 'block';
-    }
+        function abrirModalLimpieza() {
+            limpiezaModal.style.display = 'block';
+        }
 
-    function cerrarModalLimpieza() {
-        limpiezaModal.style.display = 'none';
-    }
+        function cerrarModalLimpieza() {
+            limpiezaModal.style.display = 'none';
+        }
 
-    function confirmarFinalizacionLimpieza() {
-        // Aquí iría la lógica para marcar la habitación como limpia
-        alert('Limpieza confirmada para la habitación');
-        cerrarModalLimpieza();
-    }
-
-    btnLimpieza.addEventListener('click', abrirModalLimpieza);
-    closeLimpiezaModal.addEventListener('click', cerrarModalLimpieza);
-    cancelLimpieza.addEventListener('click', cerrarModalLimpieza);
-    confirmarLimpieza.addEventListener('click', confirmarFinalizacionLimpieza);
-
-    window.addEventListener('click', function(event) {
-        if (event.target == limpiezaModal) {
+        function confirmarFinalizacionLimpieza() {
+            // Aquí iría la lógica para marcar la habitación como limpia
+            alert('Limpieza confirmada para la habitación');
             cerrarModalLimpieza();
         }
+
+        btnLimpieza.addEventListener('click', abrirModalLimpieza);
+        closeLimpiezaModal.addEventListener('click', cerrarModalLimpieza);
+        cancelLimpieza.addEventListener('click', cerrarModalLimpieza);
+        confirmarLimpieza.addEventListener('click', confirmarFinalizacionLimpieza);
+
+        window.addEventListener('click', function(event) {
+            if (event.target == limpiezaModal) {
+                cerrarModalLimpieza();
+            }
+        });
     });
-});
     </script>
     <script>
         // Script para abrir y cerrar el modal
@@ -177,25 +168,30 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-    const dropdowns = document.querySelectorAll('.dropdown');
+        const dropdowns = document.querySelectorAll('.dropdown');
 
-    dropdowns.forEach(dropdown => {
-        // Agregar el evento de clic solo al botón que despliega el menú
-        dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-            e.preventDefault();
+        dropdowns.forEach(dropdown => {
+            // Agregar el evento de clic solo al botón que despliega el menú
+            dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                e.preventDefault();
 
-            // Cerrar otros menús abiertos
-            dropdowns.forEach(d => {
-                if (d !== dropdown) {
-                    d.classList.remove('active');
-                }
+                // Cerrar otros menús abiertos
+                dropdowns.forEach(d => {
+                    if (d !== dropdown) {
+                        d.classList.remove('active');
+                    }
+                });
+
+                // Alternar el menú actual
+                dropdown.classList.toggle('active');
             });
-
-            // Alternar el menú actual
-            dropdown.classList.toggle('active');
         });
     });
-});
+    </script>
+
+    <script type="module">
+        import { initializeCleaningRooms } from '../scripts/habitacion.js';
+        document.addEventListener('DOMContentLoaded', initializeCleaningRooms);
     </script>
 </body>
 </html>
