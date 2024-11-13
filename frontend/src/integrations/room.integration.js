@@ -289,4 +289,4 @@ const updatedRoomData = {
 // console.log(await createRoom(roomDataAll));
 // console.log(await updateRoom(updatedRoomData));
 // console.log(await notAvailableRoom(8)); // Se debe utilizar un id válido
-console.log(await getRoomEnumsValues());
+//console.log(await getRoomEnumsValues());

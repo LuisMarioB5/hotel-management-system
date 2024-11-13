@@ -69,10 +69,9 @@
                         <div class="table-controls">
                             <label for="recordsPerPage">Mostrar:</label>
                             <select id="recordsPerPage">
+                                <option value="All">Todos</option>
+                                <option value="5">5</option>
                                 <option value="10">10</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
                             </select>
                             <label>Registros:</label>
             
@@ -97,34 +96,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>DNI</td>
-                                    <td>4105648</td>
-                                    <td>Mizuki</td>
-                                    <td>Hayashi</td>
-                                    <td>8095478451</td>
-                                    <td>FEMENINO</td>
-                                    <td>mizuhi@gmail.com</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn" data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Pasaporte</td>
-                                    <td>4545453</td>
-                                    <td>Naomi</td>
-                                    <td>Konoe</td>
-                                    <td>8295784512</td>
-                                    <td>FEMENINO</td>
-                                    <td>naomko@gmail.com</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
-                                    </td>
-                                </tr>
+                             <!-- Se llena solo  -->
                             </tbody>
                         </table>
                         <!-- Div de paginación y conteo de registros -->
@@ -151,9 +123,9 @@
             <div class="modalusu-body">
                 <label for="tipo">Tipo Documento</label>
                 <select id="tipo">
+                    <option value="Cedula">Cedula</option>
                     <option value="DNI">DNI</option>
                     <option value="Pasaporte">Pasaporte</option>
-                    <option value="Cedula">Cedula</option>
                     <option value="Otro">Otro</option>
                 </select>
 
@@ -170,7 +142,10 @@
                 <input type="text" id="telefono" required>
 
                 <label for="sexo">Sexo</label>
-                <input type="text" id="sexo" required>
+                <select id="sexo">
+                    <option value="masculino">Masculino</option>
+                    <option value="femenino">Femenino</option>
+                </select>
 
                 <label for="correo">Correo</label>
                 <input type="email" id="correo" required>
@@ -318,6 +293,6 @@
             });
         });
     </script>
-
+    <script src="../scripts/cliente.js" type="module"></script>
 </body>
 </html>
