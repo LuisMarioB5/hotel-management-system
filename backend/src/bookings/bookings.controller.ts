@@ -56,14 +56,11 @@ export class BookingsController {
         return { message: `Reserva con ID ${id} eliminada exitosamente` }
     }
 
-<<<<<<< Updated upstream
-=======
     @Patch(':id/desactive')
     async bookingNotActive(@Param('id') id: number) {
         return await this.service.desactiveBooking(id);
     }
 
->>>>>>> Stashed changes
     @Get('enums/values')
     getEnumValues() {
         return this.service.getEnumValues();
