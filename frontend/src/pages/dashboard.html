@@ -59,23 +59,28 @@
                     <div class="dashboard-cards">
                         <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/M_habitaciones.html'">
                             <h3>Total Habitaciones</h3> 
-                            <p> 84  </p> 
+                            <p id="total-rooms">0</p>  
                             <i class="fas fa-hotel"></i> 
                         </div>
                         <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/G_recepcion.html'">
                             <h3> Disponibles</h3>
-                            <p>50   </p>
-                            <i class="fas fa-door-open"></i>
+                            <p id="available-rooms">0</p>
+                            <i class="fas fa-door-open" style="color: #4a7aff;"></i>
                         </div>
                         <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/T_vender.html'">
                             <h3> Ocupadas</h3>
-                            <p>30 </p>
-                            <i class="fas fa-bed"></i>
+                            <p id="occupied-rooms">0</p>
+                            <i class="fas fa-bed" style="color: #ff5722;"></i>
                         </div>
                         <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/M_limpieza.html'">
                             <h3> En Limpieza</h3>
-                            <p>4  </p>
-                            <i class="fas fa-broom"></i>
+                            <p id="cleaning-rooms">0</p>
+                            <i class="fas fa-broom" style="color: #00bcd4;"></i>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/M_habitaciones.html'">
+                            <h3> Fuera de Servicio</h3>
+                            <p id="noservice-rooms">0</p>
+                            <i class="fas fa-exclamation-triangle" style="color: #000000;"></i>
                         </div>
                     </div>
 
@@ -84,13 +89,12 @@
                            <div class="metric-content">
                                 <p class="metric-value">RD$10.457.850</p> 
                                 <h3>Ventas Totales</h3>
-
                             </div>
                             <i class="fas fa-dollar-sign metric-icon"></i>
                         </div>
                         <div class="metric-card blue">
                             <div class="metric-content">
-                                <p class="metric-value">18</p>
+                                <p class="metric-value" id="reserved-rooms">0</p> 
                                 <h3>Reservas</h3>
                             </div>
                             <div class="more-info" style="cursor: pointer;" onclick="window.location.href='../pages/G_reservaciones.html'">
@@ -101,7 +105,7 @@
                         </div>
                         <div class="metric-card yellow">
                             <div class="metric-content">
-                                <p class="metric-value">8</p>
+                                <p class="metric-value">0</p>
                                 <h3>Usuarios</h3>
                             </div>
                             <div class="more-info" style="cursor: pointer;" onclick="window.location.href='../pages/usuarios.html'">
@@ -109,6 +113,17 @@
                                 <i class="fas fa-chevron-right"></i>
                             </div>
                             <i class="fas fa-users metric-icon"></i>
+                        </div>
+                        <div class="metric-card red">
+                            <div class="metric-content">
+                                <p class="metric-value">0</p>
+                                <h3>Clientes</h3>
+                            </div>
+                            <div class="more-info" style="cursor: pointer;" onclick="window.location.href='../pages/clientes.html'">
+                                <label>Más información </label>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <i class="fas fa-user metric-icon"></i>
                         </div>
                     </div>
                     <!--Grafico de ventas-->
@@ -121,7 +136,6 @@
                         <div class="latest-section">
                             <div class="latest-header">
                                 <h3>Últimos Usuarios</h3>
-                                
                             </div>
                             <div class="latest-content">
                                 <div class="item">
@@ -236,6 +250,7 @@
                 </div>
             </div>
     </div>
+    <script type="module" src="../scripts/habitacion.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

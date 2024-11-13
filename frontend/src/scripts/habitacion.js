@@ -1,5 +1,9 @@
 import { getAllRooms, getRoomById, updateRoom } from '../integrations/room.integration.js';
 
+//----------------------------------------------------------------------------//
+////ESTA PARTE ES PARA LA LISTA DE HABITACIONES la parte de M_HABITACIONES///
+//----------------------------------------------------------------------------//
+
 let allRooms = [];
 let currentPage = 1;
 let recordsPerPage = 'All';
@@ -43,13 +47,14 @@ function renderRooms(rooms) {
     tableBody.innerHTML = '';
 
     rooms.forEach(room => {
+        const statusClass = getStatusClass(room.status);
         const row = `
             <tr>
                 <td>${room.number}</td>
                 <td>${room.details || ''}</td>
                 <td>${room.floor}</td>
                 <td>${room.type}</td>
-                <td>${room.status}</td>
+                <td><span class="${statusClass}">${room.status}</span></td>
                 <td>RD$${room.price}</td>
                 <td><span class="status ${room.isAvailable ? 'active' : 'inactive'}">${room.isAvailable ? 'Active' : 'Inactive'}</span></td>
                 <td>
@@ -59,6 +64,23 @@ function renderRooms(rooms) {
         `;
         tableBody.insertAdjacentHTML('beforeend', row);
     });
+}
+//Esto es para el color dependiendo el estado
+function getStatusClass(status) {
+    switch (status.toLowerCase()) {
+        case 'disponible':
+            return 'status-disponible';
+        case 'reservada':
+            return 'status-reservada';
+        case 'ocupada':
+            return 'status-ocupada';
+        case 'fuera_de_servicio':
+            return 'status-fuera_de_servicio';    
+        case 'limpieza':
+            return 'status-limpieza';
+        default:
+            return '';
+    }
 }
 
 function updatePaginationInfo(totalFilteredRecords) {
@@ -143,6 +165,20 @@ function fillModalWithRoomData(roomData) {
 }
 
 async function handleSaveRoom() {
+
+    const disponibilidad = document.getElementById('Disponibilidad').value;
+    const estado = document.getElementById('estado').value;
+
+    // Verificación de consistencia entre disponibilidad y estado
+    if (disponibilidad === 'FUERA_DE_SERVICIO' && estado === 'Activo') {
+        alert('Error: Si la disponibilidad es "FUERA DE SERVICIO", el estado debe ser "Inactivo".');
+        return; // Evitar guardar los datos
+    }
+    if (disponibilidad === 'LIMPIEZA' && estado === 'Activo') {
+        alert('Error: Si la habitacion esta en "LIMPIEZA", el estado debe ser "Inactivo".');
+        return; // Evitar guardar los datos
+    }
+    
     if (!confirm('¿Está seguro de que desea guardar los cambios?')) {
         return;
     }
@@ -176,3 +212,127 @@ function closeModal() {
 // Expose necessary functions to window object for inline event handlers
 window.closeModal = closeModal;
 window.guardarHabitacion = handleSaveRoom;
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PARTE DEL DASHBOARD///
+//----------------------------------------------------------------------------//
+
+async function updateRoomCounts() {
+    try {
+        const rooms = await getAllRooms();
+        
+        const activeRooms = rooms.filter(room => 
+            room.isAvailable || 
+            room.status.toLowerCase() === 'limpieza' || 
+            room.status.toLowerCase() === 'fuera_de_servicio'
+        );
+
+        // Calcular los conteos por estado
+        const totalRooms = activeRooms.length;
+        const availableRooms = activeRooms.filter(room => room.status.toLowerCase() === 'disponible').length;
+        const occupiedRooms = activeRooms.filter(room => room.status.toLowerCase() === 'ocupada').length;
+        const noserviceRooms = activeRooms.filter(room => room.status.toLowerCase() === 'fuera_de_servicio').length;
+        const cleaningRooms = activeRooms.filter(room => room.status.toLowerCase() === 'limpieza').length;
+        const reservedRooms = activeRooms.filter(room => room.status.toLowerCase() === 'reservada').length;
+
+        // Actualizar los elementos del DOM en dashboard.html
+        document.getElementById('total-rooms').textContent = totalRooms;
+        document.getElementById('available-rooms').textContent = availableRooms;
+        document.getElementById('occupied-rooms').textContent = occupiedRooms;
+        document.getElementById('noservice-rooms').textContent = noserviceRooms;
+        document.getElementById('cleaning-rooms').textContent = cleaningRooms;
+        document.getElementById('reserved-rooms').textContent = reservedRooms;
+    } catch (error) {
+        console.error('Error al actualizar los conteos de habitaciones:', error);
+    }
+}
+
+// Llama a la función para actualizar los conteos al cargar la página
+document.addEventListener('DOMContentLoaded', updateRoomCounts);
+
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PARTE DE HABITACION LIMPIEZA///
+//----------------------------------------------------------------------------//
+export function initializeCleaningRooms() {
+    const roomsGrid = document.querySelector('.rooms-grid');
+    const floorSelector = document.querySelector('.floor-selector');
+    const limpiezaModal = document.getElementById('limpiezaModal');
+    const confirmLimpiezaButton = document.getElementById('confirmarLimpieza');
+    let selectedRoomId = null;
+
+    // Cargar habitaciones en limpieza
+    async function loadCleaningRooms(floor = 'Todos') {
+        try {
+            const allRooms = await getAllRooms();
+            const roomsInCleaning = allRooms.filter(room => 
+                room.status.toLowerCase() === 'limpieza' && 
+                (floor === 'Todos' || room.floor.toUpperCase() === floor)
+            );
+            renderRoomsInCleaning(roomsInCleaning);
+        } catch (error) {
+            console.error('Error loading cleaning rooms:', error);
+        }
+    }
+
+    // Renderizar habitaciones en el contenedor
+    function renderRoomsInCleaning(rooms) {
+        roomsGrid.innerHTML = '';
+        rooms.forEach(room => {
+            const roomCard = `
+                <div class="room-card limpieza">
+                    <div class="room-header">
+                        <span class="room-number">NRO: ${room.number}</span>
+                        <i class="fas fa-broom room-icon"></i>
+                    </div>
+                    <div class="room-category">CATEGORIA: ${room.type}</div>
+                    <div class="room-status limpieza" data-id="${room.id}">
+                        LIMPIEZA
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            `;
+            roomsGrid.insertAdjacentHTML('beforeend', roomCard);
+        });
+
+        // Asignar evento para abrir el modal en cada habitación
+        document.querySelectorAll('.room-status.limpieza').forEach(btn => {
+            btn.addEventListener('click', openLimpiezaModal);
+        });
+    }
+
+    // Abrir el modal de confirmación de limpieza
+    function openLimpiezaModal(event) {
+        selectedRoomId = event.target.getAttribute('data-id');
+        limpiezaModal.style.display = 'block';
+    }
+
+    // Confirmar limpieza y actualizar el estado
+    async function confirmCleaning() {
+        if (selectedRoomId) {
+            try {
+                await updateRoom({ id: selectedRoomId, status: 'DISPONIBLE',isAvailable: true });
+                alert('Limpieza confirmada para la habitación');
+                loadCleaningRooms(floorSelector.value); // Recargar habitaciones en limpieza
+                closeModal();
+            } catch (error) {
+                console.error('Error updating room status:', error);
+            }
+        }
+    }
+
+    // Cerrar el modal
+    function closeModal() {
+        limpiezaModal.style.display = 'none';
+        selectedRoomId = null;
+    }
+
+    // Filtrar habitaciones por piso al cambiar el selector
+    floorSelector.addEventListener('change', () => loadCleaningRooms(floorSelector.value));
+    confirmLimpiezaButton.addEventListener('click', confirmCleaning);
+    document.getElementById('closeLimpiezaModal').addEventListener('click', closeModal);
+    document.getElementById('cancelLimpieza').addEventListener('click', closeModal);
+
+    // Cargar habitaciones en limpieza al inicio
+    loadCleaningRooms();
+}
