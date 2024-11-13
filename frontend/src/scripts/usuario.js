@@ -1,6 +1,8 @@
 import { getAllUsers, createUser, updateUser, deleteUser, getUserByUsername, getUserById } from '../integrations/user.integration.js';
 
-let allUsers = []; // Variable para almacenar todos los usuarios
+let allUsers = [];
+let currentPage = 1;
+let recordsPerPage = 'All';
 
 document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
@@ -10,10 +12,31 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadUsers() {
     try {
         allUsers = await getAllUsers();
-        renderUsers(allUsers);
+        filterAndRenderUsers();
     } catch (error) {
         console.error('Error loading users:', error);
     }
+}
+
+function filterAndRenderUsers() {
+    const searchTerm = document.getElementById('searchUser').value.toLowerCase();
+    let filteredUsers = allUsers.filter(user => 
+        user.id.toString().toLowerCase().includes(searchTerm) ||
+        user.username.toLowerCase().includes(searchTerm) ||
+        user.role.toLowerCase().includes(searchTerm) ||
+        (user.isActive ? 'activo' : 'inactivo').includes(searchTerm)
+    );
+
+    const totalFilteredRecords = filteredUsers.length;
+
+    if (recordsPerPage !== 'All') {
+        const startIndex = (currentPage - 1) * parseInt(recordsPerPage);
+        const endIndex = startIndex + parseInt(recordsPerPage);
+        filteredUsers = filteredUsers.slice(startIndex, endIndex);
+    }
+
+    renderUsers(filteredUsers);
+    updatePaginationInfo(totalFilteredRecords);
 }
 
 function renderUsers(users) {
@@ -26,7 +49,7 @@ function renderUsers(users) {
                 <td>${user.id}</td>
                 <td>${user.username}</td>
                 <td>${user.role}</td>
-                <td><span class="status ${user.isActive ? 'active' : 'inactive'}">${user.isActive ? 'Active' : 'Inactive'}</span></td>
+                <td><span class="status ${user.isActive ? 'active' : 'inactive'}">${user.isActive ? 'Activo' : 'Inactivo'}</span></td>
                 <td>
                     <button class="edit-btn" data-id="${user.id}"><i class="fas fa-edit"></i></button>
                     <button class="delete-btn" data-id="${user.id}"><i class="fas fa-trash-alt"></i></button>
@@ -35,6 +58,20 @@ function renderUsers(users) {
         `;
         tableBody.insertAdjacentHTML('beforeend', row);
     });
+}
+
+function updatePaginationInfo(totalFilteredRecords) {
+    const paginationInfo = document.querySelector('.pagination-info label');
+    const paginationButtons = document.querySelector('.pagination-buttons');
+
+    if (recordsPerPage === 'All') {
+        paginationInfo.textContent = `Mostrando todos los registros (${totalFilteredRecords})`;
+        paginationButtons.style.display = 'none';
+    } else {
+        const totalPages = Math.ceil(totalFilteredRecords / parseInt(recordsPerPage));
+        paginationInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+        paginationButtons.style.display = 'flex';
+    }
 }
 
 function setupEventListeners() {
@@ -46,41 +83,38 @@ function setupEventListeners() {
 
     document.querySelector('#userTable').addEventListener('click', handleTableActions);
 
-    // Agregar evento para la búsqueda en tiempo real
     const searchInput = document.getElementById('searchUser');
-    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('input', filterAndRenderUsers);
+
+    const recordsPerPageSelect = document.getElementById('recordsPerPage');
+    recordsPerPageSelect.addEventListener('change', handleRecordsPerPageChange);
+
+    const paginationButtons = document.querySelector('.pagination-buttons');
+    paginationButtons.addEventListener('click', handlePaginationClick);
 }
 
-async function handleSearch(event) {
-    const searchTerm = event.target.value.toLowerCase();
-    if (searchTerm.length === 0) {
-        renderUsers(allUsers);
-        return;
-    }
+function handleRecordsPerPageChange(event) {
+    recordsPerPage = event.target.value;
+    currentPage = 1;
+    filterAndRenderUsers();
+}
 
-    let filteredUsers = allUsers.filter(user => 
-        user.id.toString().includes(searchTerm) ||
-        user.username.toLowerCase().includes(searchTerm)
-    );
-
-    // Si no se encuentra ningún usuario, intentamos buscar por ID o username exacto
-    if (filteredUsers.length === 0) {
-        try {
-            const userById = await getUserById(parseInt(searchTerm));
-            if (userById) {
-                filteredUsers = [userById];
-            } else {
-                const userByUsername = await getUserByUsername(searchTerm);
-                if (userByUsername) {
-                    filteredUsers = [userByUsername];
-                }
-            }
-        } catch (error) {
-            console.error('Error searching for user:', error);
+function handlePaginationClick(event) {
+    if (event.target.classList.contains('pagination-btn')) {
+        if (event.target.textContent === '<') {
+            currentPage = Math.max(1, currentPage - 1);
+        } else if (event.target.textContent === '>') {
+            const totalFilteredRecords = allUsers.filter(user => 
+                user.id.toString().toLowerCase().includes(document.getElementById('searchUser').value.toLowerCase()) ||
+                user.username.toLowerCase().includes(document.getElementById('searchUser').value.toLowerCase()) ||
+                user.role.toLowerCase().includes(document.getElementById('searchUser').value.toLowerCase()) ||
+                (user.isActive ? 'activo' : 'inactivo').includes(document.getElementById('searchUser').value.toLowerCase())
+            ).length;
+            const totalPages = Math.ceil(totalFilteredRecords / parseInt(recordsPerPage));
+            currentPage = Math.min(totalPages, currentPage + 1);
         }
+        filterAndRenderUsers();
     }
-
-    renderUsers(filteredUsers);
 }
 
 function openModal(userData = null) {
@@ -97,7 +131,7 @@ function openModal(userData = null) {
         document.getElementById('username').value = '';
         document.getElementById('contrasena').value = '';
         document.getElementById('confirmarContrasena').value = '';
-        document.getElementById('tipo').value = 'Administrador';
+        document.getElementById('tipo').value = 'ADMINISTRADOR';
         document.getElementById('estado').value = 'Activo';
         saveButton.removeAttribute('data-id');
     }
@@ -114,6 +148,10 @@ function fillModalWithUserData(userData) {
 }
 
 async function handleSaveUser() {
+    if (!confirm('¿Está seguro de que desea guardar los cambios?')) {
+        return;
+    }
+
     const username = document.getElementById('username').value;
     const password = document.getElementById('contrasena').value;
     const confirmPassword = document.getElementById('confirmarContrasena').value;

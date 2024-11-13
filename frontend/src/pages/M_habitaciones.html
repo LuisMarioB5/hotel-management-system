@@ -65,10 +65,9 @@
                         <div class="table-controls">
                             <label for="recordsPerPage">Mostrar:</label>
                             <select id="recordsPerPage">
+                                <option value="All">Todos</option>
+                                <option value="5">5</option>
                                 <option value="10">10</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
                             </select>
                             <label>Registros: </label>
                             <input type="text" id="searchUser" placeholder="Buscar habitacion">
@@ -77,139 +76,21 @@
 
                     <!-- Tabla de Habitaciones -->
                     <div class="user-table">
-                        <table>
+                        <table id="roomTable">
                             <thead>
                                 <tr>
                                     <th>Numero</th>
                                     <th>Detalle</th>
-                                    <th>Precio</th>
-                                    <th>Categoria</th>
                                     <th>Piso</th>
+                                    <th>Categoria</th>
+                                    <th>Disponibilidad</th>
+                                    <th>Precio</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>001</td>
-                                    <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>70.00</td>
-                                    <td>Individual</td>
-                                    <td>PRIMERO</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>002</td>
-                                    <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>80.00</td>
-                                    <td>Doble</td>
-                                    <td>PRIMERO</td>
-                                    <td><span class="status inactive">Inactivo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>003</td>
-                                    <td>BAÑO + TV + CABLE</td>
-                                    <td>60.00</td>
-                                    <td>Individual</td>
-                                    <td>PRIMERO</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>004</td>
-                                    <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>80.00</td>
-                                    <td>Doble</td>
-                                    <td>PRIMERO</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>005</td>
-                                    <td>WIFI + BAÑO</td>
-                                    <td>50.00</td>
-                                    <td>Individual</td>
-                                    <td>PRIMERO</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>006</td>
-                                    <td>WIFI + BAÑO + TV 4K + CABLE</td>
-                                    <td>80.00</td>
-                                    <td>Individual</td>
-                                    <td>SEGUNDO</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>007</td>
-                                    <td>WIFI + BAÑO + TV 4K + CABLE</td>
-                                    <td>90.00</td>
-                                    <td>Doble</td>
-                                    <td>SEGUNDO</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>008</td>
-                                    <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>70.00</td>
-                                    <td>Individual</td>
-                                    <td>SEGUNDO</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>009</td>
-                                    <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>80.00</td>
-                                    <td>Doble</td>
-                                    <td>SEGUNDO</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>010</td>
-                                    <td>WIFI + BAÑO + TV + CABLE</td>
-                                    <td>70.00</td>
-                                    <td>Individual</td>
-                                    <td>SEGUNDO</td>
-                                    <td><span class="status active">Activo</span></td>
-                                    <td>
-                                        <button class="edit-btn"  data-toggle="modal" data-target="#createUserModal"><i class="fas fa-edit"></i></button>
-
-                                    </td>
-                                </tr>
+                                <!-- Los datos se cargarán dinámicamente aquí -->
                             </tbody>
                         </table>
                         <!-- Div de paginación y conteo de registros -->
@@ -240,24 +121,33 @@
                 <label for="detalle">Detalle</label>
                 <input type="text" id="detalle" required>
 
-                <label for="precio">Precio</label>
-                <input type="text" id="precio" required>
+                <label for="piso">Piso</label>
+                <select id="piso">
+                    <option value="PRIMER">PRIMER</option>
+                    <option value="SEGUNDO">SEGUNDO</option>
+                    <option value="TERCER">TERCER</option>
+                    <option value="CUARTO">CUARTO</option>
+                    <option value="QUINTO">QUINTO</option>
+                </select>
 
                 <label for="categoria">Categoria</label>
                 <select id="categoria">
-                    <option value="individual">Individual</option>
-                    <option value="doble">Doble</option>
-                    <option value="matrimonial">Matrimonial</option>
-                    <option value="Otro">Otro</option>
+                    <option value="INDIVIDUAL">INDIVIDUAL</option>
+                    <option value="DOBLE">DOBLE</option>
+                    <option value="TRIPLE">TRIPLE</option>
+                    <option value="MATRIMONIAL">MATRIMONIAL</option>
                 </select>
-                <label for="piso">Piso</label>
-                <select id="piso">
-                    <option value="primero">Primero</option>
-                    <option value="segundo">Segundo</option>
-                    <option value="tercero">Tercero</option>
-                    <option value="cuarto">Cuarto</option>
-                    <option value="quinto">Quinto</option>
+                
+                <label for="Disponibilidad">Disponibilidad</label>
+                <select id="Disponibilidad">
+                    <option value="DISPONIBLE">DISPONIBLE</option>
+                    <option value="RESERVADA">RESERVADA</option>
+                    <option value="OCUPADA">OCUPADA</option>
+                    <option value="LIMPIEZA">LIMPIEZA</option>
                 </select>
+
+                <label for="precio">Precio</label>
+                <input type="text" id="precio" required>
 
                 <label for="estado">Estado</label>
                 <select id="estado">
@@ -395,6 +285,6 @@
     }
 </script>
 
-<script type="module" src="../integrations/room.integration.js"></script>
+<script src="../scripts/habitacion.js" type="module"></script>
 </body>
 </html>
