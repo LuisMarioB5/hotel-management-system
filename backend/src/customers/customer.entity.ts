@@ -8,7 +8,7 @@ export enum CustomerDocumentType {
 }
 
 export enum CustomerGender {
-  MACULINO = 'MACULINO',
+  MASCULINO = 'MASCULINO',
   FEMENINO = 'FEMENINO',
 }
 
