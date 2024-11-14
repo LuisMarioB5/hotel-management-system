@@ -31,7 +31,7 @@ export async function loginIntegration() {
                 handleLoginNotification('success', username, 'dashboard.html');
             } 
             
-            if (response.status == 401) {
+            if (response.status === 401 || response.status === 404) {
                 console.error('No tiene autorización para logearse, sus credenciales son incorrectas');
                 handleLoginNotification('failed');
             }
