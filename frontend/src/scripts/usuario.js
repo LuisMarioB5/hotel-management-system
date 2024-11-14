@@ -225,3 +225,53 @@ function closeModal() {
 // Expose necessary functions to window object for inline event handlers
 window.closeModal = closeModal;
 window.guardarUsuario = handleSaveUser;
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LOS 3 ULTIMOS USUARIOS DEL DASHBOARD  ///
+//----------------------------------------------------------------------------//
+
+export async function loadLatestUsers() {
+    try {
+        // Obtener todos los usuarios
+        const users = await getAllUsers();
+
+        // Ordenar los usuarios por ID de forma descendente y obtener los últimos 3
+        const latestUsers = users.sort((a, b) => b.id - a.id).slice(0, 3);
+
+        // Insertar los últimos 3 usuarios en el HTML
+        const latestUsersContainer = document.querySelector('.latest-section .latest-content');
+        latestUsersContainer.innerHTML = ''; // Limpiar contenido anterior
+
+        latestUsers.forEach(user => {
+            const userElement = document.createElement('div');
+            userElement.classList.add('item');
+            userElement.innerHTML = `
+                <div class="item-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">${user.username}</div>
+                    <div class="item-subtitle">${user.role}</div>
+                </div>
+            `;
+            latestUsersContainer.appendChild(userElement);
+        });
+    } catch (error) {
+        console.error('Error al cargar los últimos usuarios:', error);
+    }
+}
+
+async function updateUsersCounts() {
+    try {
+        const users = await getAllUsers();  // Obtener todos los usuarios
+        const totalUsers = users.length;    // Contar el total de usuarios
+
+        // Actualizar el DOM en dashboard.html
+        document.getElementById('total-Users').textContent = totalUsers;
+    } catch (error) {
+        console.error('Error al actualizar el conteo de usuarios:', error);
+    }
+}
+
+// Llamar a la función para actualizar el conteo de usuarios al cargar la página
+document.addEventListener('DOMContentLoaded', updateUsersCounts);
