@@ -59,27 +59,27 @@
                     <div class="dashboard-cards">
                         <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/M_habitaciones.html'">
                             <h3>Total Habitaciones</h3> 
-                            <p id="total-rooms">0</p>  
+                            <p id="total-rooms"></p>  
                             <i class="fas fa-hotel"></i> 
                         </div>
                         <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/G_recepcion.html'">
                             <h3> Disponibles</h3>
-                            <p id="available-rooms">0</p>
+                            <p id="available-rooms"></p>
                             <i class="fas fa-door-open" style="color: #4a7aff;"></i>
                         </div>
                         <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/T_vender.html'">
                             <h3> Ocupadas</h3>
-                            <p id="occupied-rooms">0</p>
+                            <p id="occupied-rooms"></p>
                             <i class="fas fa-bed" style="color: #ff5722;"></i>
                         </div>
                         <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/M_limpieza.html'">
                             <h3> En Limpieza</h3>
-                            <p id="cleaning-rooms">0</p>
+                            <p id="cleaning-rooms"></p>
                             <i class="fas fa-broom" style="color: #00bcd4;"></i>
                         </div>
                         <div class="card" style="cursor: pointer;" onclick="window.location.href='../pages/M_habitaciones.html'">
                             <h3> Fuera de Servicio</h3>
-                            <p id="noservice-rooms">0</p>
+                            <p id="noservice-rooms"></p>
                             <i class="fas fa-exclamation-triangle" style="color: #000000;"></i>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                         </div>
                         <div class="metric-card blue">
                             <div class="metric-content">
-                                <p class="metric-value" id="reserved-rooms">0</p> 
+                                <p class="metric-value" id="reserved-rooms"></p> 
                                 <h3>Reservas</h3>
                             </div>
                             <div class="more-info" style="cursor: pointer;" onclick="window.location.href='../pages/G_reservaciones.html'">
@@ -105,7 +105,7 @@
                         </div>
                         <div class="metric-card yellow">
                             <div class="metric-content">
-                                <p class="metric-value">0</p>
+                                <p class="metric-value" id="total-Users"></p>
                                 <h3>Usuarios</h3>
                             </div>
                             <div class="more-info" style="cursor: pointer;" onclick="window.location.href='../pages/usuarios.html'">
@@ -116,7 +116,7 @@
                         </div>
                         <div class="metric-card red">
                             <div class="metric-content">
-                                <p class="metric-value">0</p>
+                                <p class="metric-value" id="total-cli"></p>
                                 <h3>Clientes</h3>
                             </div>
                             <div class="more-info" style="cursor: pointer;" onclick="window.location.href='../pages/clientes.html'">
@@ -137,34 +137,7 @@
                             <div class="latest-header">
                                 <h3>Últimos Usuarios</h3>
                             </div>
-                            <div class="latest-content">
-                                <div class="item">
-                                    <div class="item-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-title">Junior Castillo</div>
-                                        <div class="item-subtitle">Ingreso directo</div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="item-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-title">Yenmy Guizado Zuñiga</div>
-                                        <div class="item-subtitle">Ingreso directo</div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="item-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-title">Hector Tuesta Pereda</div>
-                                        <div class="item-subtitle">Ingreso directo</div>
-                                    </div>
-                                </div>
+                            <div class="latest-content usuario">
                             </div>
                         </div>
                     
@@ -175,34 +148,7 @@
                                 <h3>Últimos Clientes</h3>
     
                             </div>
-                            <div class="latest-content">
-                                <div class="item">
-                                    <div class="item-avatar">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-title">María González</div>
-                                        <div class="item-subtitle"><span>DNI:</span> 45678912</div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="item-avatar">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-title">Carlos Rodríguez</div>
-                                        <div class="item-subtitle"><span>DNI:</span> 78912345</div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="item-avatar">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-title">Ana Martínez</div>
-                                        <div class="item-subtitle"><span>DNI:</span> 32165498</div>
-                                    </div>
-                                </div>
+                            <div class="latest-content cliente">
                             </div>
                         </div>
                     
@@ -213,13 +159,13 @@
                                 <h3>Últimas Reservas</h3>
                                 
                             </div>
-                            <div class="latest-content">
+                            <div class="latest-content reservas">
                                 <div class="item">
                                     <div class="item-avatar">
                                         <i class="fas fa-bed"></i>
                                     </div>
                                     <div class="item-info">
-                                        <div class="item-title">Habitación 101 - Suite</div>
+                                        <div class="item-title">Habitación 101 - INDIVIDUAL</div>
                                         <div class="item-subtitle"><span>Check-in:</span> 07/11/2024</div>
                                     </div>
                                 </div>
@@ -228,7 +174,7 @@
                                         <i class="fas fa-bed"></i>
                                     </div>
                                     <div class="item-info">
-                                        <div class="item-title">Habitación 205 - Doble</div>
+                                        <div class="item-title">Habitación 204 - TRIPLE</div>
                                         <div class="item-subtitle"><span>Check-in:</span> 08/11/2024</div>
                                     </div>
                                 </div>
@@ -237,7 +183,7 @@
                                         <i class="fas fa-bed"></i>
                                     </div>
                                     <div class="item-info">
-                                        <div class="item-title">Habitación 304 - Individual</div>
+                                        <div class="item-title">Habitación 304 - MATRIMONIAL</div>
                                         <div class="item-subtitle"><span>Check-in:</span> 08/11/2024</div>
                                     </div>
                                 </div>
@@ -245,13 +191,17 @@
                         </div>
                     </div>
             
-
-
                 </div>
             </div>
     </div>
+    <script type="module">
+        import { loadLatestUsers } from '../scripts/usuario.js';
+        
+        // Llamar a la función cuando se carga la página
+        document.addEventListener('DOMContentLoaded', loadLatestUsers);
+    </script>
     <script type="module" src="../scripts/habitacion.js"></script>
-
+    <script type="module" src="../scripts/cliente.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Configuración del gráfico de ventas

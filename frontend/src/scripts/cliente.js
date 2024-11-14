@@ -217,3 +217,60 @@ function closeModal() {
 // Expose necessary functions to window object for inline event handlers
 window.closeModal = closeModal;
 window.guardarCliente = handleSaveClient;
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA DEL DASHBOARD///
+//----------------------------------------------------------------------------//
+
+async function updateCustomersCounts() {
+    try {
+        const customers = await getAllCustomers();  // Obtener todos los clientes
+        const totalCustomers = customers.length;    // Contar el total de clientes
+
+        // Actualizar el DOM en dashboard.html
+        document.getElementById('total-cli').textContent = totalCustomers;
+    } catch (error) {
+        console.error('Error al actualizar el conteo de clientes:', error);
+    }
+}
+async function loadLatestCustomers() {
+    try {
+        // Obtener todos los clientes
+        const customers = await getAllCustomers();
+
+        // Ordenar los clientes por ID de forma descendente y obtener los últimos 3
+        const latestCustomers = customers.sort((a, b) => b.id - a.id).slice(0, 3);
+
+        // Insertar los últimos 3 clientes en el HTML
+        const latestCustomersContainer = document.querySelector('.latest-section .latest-content.cliente');
+        latestCustomersContainer.innerHTML = ''; // Limpiar contenido anterior
+
+        latestCustomers.forEach(client => {
+            const clientElement = document.createElement('div');
+            clientElement.classList.add('item');
+            clientElement.innerHTML = `
+                <div class="item-avatar">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">${client.name} ${client.lastName}</div>
+                    <div class="item-subtitle"><span>${client.documentType}:</span> ${client.documentNumber}</div>
+                </div>
+            `;
+            latestCustomersContainer.appendChild(clientElement);
+        });
+    } catch (error) {
+        console.error('Error al cargar los últimos clientes:', error);
+    }
+}
+
+// Llamar a las funciones al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    updateCustomersCounts();  // Para mostrar el total de clientes
+    loadLatestCustomers();   // Para mostrar los últimos 3 clientes
+});
+
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA DEL RegistroReservas ///
+//----------------------------------------------------------------------------//

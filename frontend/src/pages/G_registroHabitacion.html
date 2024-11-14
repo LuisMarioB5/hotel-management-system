@@ -56,23 +56,24 @@
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
                  <!-- Detalles de la Habitación -->
-                <div class="info-card">
+                 <div class="info-card">
                     <h2><i class="fas fa-bed"></i> Detalles de la Habitación</h2>
                     <div class="info-grid">
                         <div class="info-group">
                             <label><i class="fas fa-hashtag"></i> Número:</label>
-                            <input type="text" value="001" readonly>
+                            <input type="text" id="roomNumber" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-list"></i> Detalles:</label>
-                            <input type="text" value="WIFI + BAÑO + TV + CABLE" readonly>
+                            <input type="text" id="roomDetails" readonly>
                         </div>        
                         <div class="info-group">
                             <label><i class="fas fa-tag"></i> Categoría:</label>
-                            <input type="text" value="Individual" readonly>
+                            <input type="text" id="roomCategory" readonly>
                         </div>
                         <div class="info-group">
-                            <label><i class="fas fa-building"></i> Piso:</label><input type="text" value="PRIMERO" readonly>
+                            <label><i class="fas fa-building"></i> Piso:</label>
+                            <input type="text" id="roomFloor" readonly>
                         </div>
                     </div>
                 </div>
@@ -149,6 +150,7 @@
             </div>
         </div>
     </div>
+      
 
     <!-- MODULO DE DISPONIBILIDAD -->
     <div class="calendar-modal" id="calendarModal">
