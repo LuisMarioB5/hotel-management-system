@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { CustomerEntity } from '../customers/customer.entity';
 import { RoomEntity } from '../rooms/room.entity';
+import { ConsumptionEntity } from 'src/consumptions/consumption.entity';
 
 export enum BookingStatus {
     PENDIENTE = 'PENDIENTE',
@@ -21,6 +22,9 @@ export class BookingEntity {
     @ManyToOne(() => RoomEntity, (room) => room.bookings, { nullable: false })
     room: RoomEntity;
 
+    @OneToMany(() => ConsumptionEntity, consumption => consumption.booking, { cascade: true })
+    consumptions: ConsumptionEntity[];
+
     // Fechas planeadas de check-in y check-out
     @Column({ type: 'timestamp' })
     checkInDate: Date;
@@ -28,11 +32,11 @@ export class BookingEntity {
     @Column({ type: 'timestamp' })
     checkOutDate?: Date;
     
-    @Column({ nullable: true, default: null })
+    @Column({ type: 'string', nullable: true, default: null })
     details?: string;
     
     // Campo para indicar si la reserva está activa o no
-    @Column({ default: true })
+    @Column({ type: 'boolean', default: true })
     isActive: boolean;
     
     // Fecha y hora reales de check-in y check-out
@@ -42,8 +46,17 @@ export class BookingEntity {
     @Column({ type: 'timestamp', nullable: true })
     actualCheckOutDate?: Date;
 
-    @Column({ nullable: true})
+    @Column({ type: 'decimal', nullable: true})
     cashAdvance?: number;
+    
+    @Column({ type: 'decimal', default: 0})
+    totalConsumption: number
+    
+    @Column({ type: 'decimal', default: 0})
+    totalStayCost: number
+    
+    @Column({type: 'int', default: 1})
+    totalStayDays: number;
 
     // Estado de la reserva usando enum para evitar errores
     @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.PENDIENTE })

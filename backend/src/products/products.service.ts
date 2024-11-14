@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { ProductEntity } from './product.entity';
+import { ProductCategory, ProductEntity } from './product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
+import { getEnumValues } from 'src/utils/showEnum.values';
 
 @Injectable()
 export class ProductsService {
@@ -44,6 +45,7 @@ export class ProductsService {
         if(p.unitPrice !== null) product.unitPrice = p.unitPrice;
         if(p.quantity !== null) product.quantity = p.quantity;
         if(p.details !== null) product.details = p.details;
+        if(p.category !== null) product.category = p.category;
         if(p.isActive !== null) product.isActive = p.isActive;
       
         return await this.repository.save(product);
@@ -54,6 +56,10 @@ export class ProductsService {
         if(result.affected === 0) {
             this.throwProductNotFoundException('id', id.toString());
         }
+    }
+
+    getEnumValues() {
+      return getEnumValues({ ProductCategory });
     }
 
     private throwProductNotFoundException(varName: string, varValue: string) {
