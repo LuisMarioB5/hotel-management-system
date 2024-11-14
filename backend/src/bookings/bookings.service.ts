@@ -35,6 +35,7 @@ export class BookingsService {
             isActive: true
         });
 
+        await this.updateTotalStayCost(booking.id);
         return this.repository.save(booking);
     }
     
@@ -70,7 +71,8 @@ export class BookingsService {
     
         this.verifyDatesAreFuture(oldBooking.checkInDate, oldBooking.checkOutDate);
         await this.isRoomAvailableWithException(oldBooking.room.id, oldBooking.checkInDate, oldBooking.checkOutDate);
-    
+        await this.updateTotalStayCost(oldBooking.id);
+
         return this.repository.save(oldBooking);
     }
 
@@ -176,7 +178,7 @@ export class BookingsService {
         return overlappingBookings.length === 0;
     }
 
-    private async updateTotalStayCost(bookingId: number): Promise<void> {
+    async updateTotalStayCost(bookingId: number): Promise<void> {
         const booking = await this.repository.findOne({
             where: { id: bookingId },
             relations: ['room', 'consumptions'],

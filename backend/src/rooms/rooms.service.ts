@@ -5,6 +5,7 @@ import { RoomEntity, RoomFloor, RoomStatus, RoomType } from './room.entity';
 import { UpdateRoomDTO } from './dtos/update-room.dto';
 import { CreateRoomDTO } from './dtos/create-room.dto';
 import { getEnumValues } from 'src/utils/showEnum.values';
+import { BookingsService } from 'dist/bookings/bookings.service';
 
 @Injectable()
 export class RoomsService {
@@ -38,9 +39,17 @@ export class RoomsService {
     return room;
   }
 
-  async update(id: number, updateRoomDto: UpdateRoomDTO): Promise<RoomEntity> {
+  async update(id: number, newRoom: UpdateRoomDTO): Promise<RoomEntity> {
     const room = await this.findById(id);
-    Object.assign(room, updateRoomDto);
+
+    if(newRoom.number !== null) room.number = newRoom.number;
+    if(newRoom.details !== null) room.details = newRoom.details;
+    if(newRoom.floor !== null) room.floor = newRoom.floor;
+    if(newRoom.type !== null) room.type = newRoom.type;
+    if(newRoom.status !== null) room.status = newRoom.status;
+    if(newRoom.price !== null) room.price = newRoom.price;
+    if(newRoom.isAvailable !== null) room.isAvailable = newRoom.isAvailable;
+
     return this.repository.save(room);
   }
 
