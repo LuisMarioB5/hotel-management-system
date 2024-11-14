@@ -289,7 +289,7 @@ export async function getBookingEnumsValues() {
     }
 }
 
-/* PRUEBAS DE LOS METODOS PARA LA CRUD DE LAS HABITACIONES (Rooms) */
+/* PRUEBAS DE LOS METODOS PARA LA CRUD DE LAS RESERVAS (Bookings) */
 const bookingDataRequired = {
     customerId: 8,
     roomId: 9,
