@@ -42,7 +42,7 @@ export class ProductsService {
 
         if(p.name !== null) product.name = p.name;
         if(p.unitPrice !== null) product.unitPrice = p.unitPrice;
-        if(p.amount !== null) product.amount = p.amount;
+        if(p.quantity !== null) product.quantity = p.quantity;
         if(p.details !== null) product.details = p.details;
         if(p.isActive !== null) product.isActive = p.isActive;
       

@@ -12,7 +12,7 @@ export class ProductEntity {
   unitPrice: number;
   
   @Column()
-  amount: number;
+  quantity: number;
 
   @Column({ nullable: true, default: null })
   details: string;
