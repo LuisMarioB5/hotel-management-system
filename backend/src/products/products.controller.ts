@@ -35,6 +35,11 @@ export class ProductsController {
         return this.service.update(id, p);
     }
 
+    @Get('enums/values')
+    getEnumValues() {
+        return this.service.getEnumValues();
+    }
+
     @Delete(':id')
     async delete(@Param('id') id: number): Promise<Object> {
         await this.service.delete(id);
