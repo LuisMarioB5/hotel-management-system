@@ -8,8 +8,8 @@ export class ProductEntity {
   @Column({ unique: true })
   name: string;
 
-  @Column()
-  price: number;
+  @Column({ type: 'decimal' })
+  unitPrice: number;
   
   @Column()
   amount: number;

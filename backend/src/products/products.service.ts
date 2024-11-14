@@ -41,7 +41,7 @@ export class ProductsService {
         const product = await this.findById(id);
 
         if(p.name !== null) product.name = p.name;
-        if(p.price !== null) product.price = p.price;
+        if(p.unitPrice !== null) product.unitPrice = p.unitPrice;
         if(p.amount !== null) product.amount = p.amount;
         if(p.details !== null) product.details = p.details;
         if(p.isActive !== null) product.isActive = p.isActive;
