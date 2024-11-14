@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/commo
 import { ProductsService } from './products.service';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { ProductEntity } from './product.entity';
-import { UpdateBookingDTO } from 'src/bookings/dtos/update-booking.dto';
+import { UpdateProductDTO } from './dtos/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -31,12 +31,13 @@ export class ProductsController {
     }
 
     @Patch(':id')
-    async update(@Param('id') id: number, p: UpdateBookingDTO): Promise<ProductEntity> {
+    async update(@Param('id') id: number, @Body() p: UpdateProductDTO): Promise<ProductEntity> {
         return this.service.update(id, p);
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: number): Promise<void> {
-        return this.service.delete(id);
+    async delete(@Param('id') id: number): Promise<Object> {
+        await this.service.delete(id);
+        return { message: `El producto con ID ${id} se ha eliminado correctamente` };
     }
 }

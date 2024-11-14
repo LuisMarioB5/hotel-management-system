@@ -39,14 +39,14 @@ export class ProductsService {
 
     async update(id: number, p: UpdateProductDTO): Promise<ProductEntity> {
         const product = await this.findById(id);
-        
+
         if(p.name !== null) product.name = p.name;
         if(p.price !== null) product.price = p.price;
         if(p.amount !== null) product.amount = p.amount;
         if(p.details !== null) product.details = p.details;
         if(p.isActive !== null) product.isActive = p.isActive;
       
-        return this.repository.save(product);
+        return await this.repository.save(product);
     }
 
     async delete(id: number): Promise<void> {
@@ -58,5 +58,5 @@ export class ProductsService {
 
     private throwProductNotFoundException(varName: string, varValue: string) {
         throw new NotFoundException(`Producto con ${varName.toUpperCase()} '${varValue}' no encontrado`);
-      }
+    }
 }
