@@ -8,7 +8,7 @@ export class UpdateProductDTO {
   @IsNumber()
   @IsPositive()
   @IsOptional()
-  price?: number;
+  unitPrice?: number;
   
   @IsNumber()
   @IsPositive()

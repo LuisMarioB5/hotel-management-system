@@ -8,7 +8,7 @@ export class CreateProductDTO {
   @IsNumber()
   @IsNotEmpty()
   @IsPositive()
-  price: number;
+  unitPrice: number;
   
   @IsNumber()
   @IsNotEmpty()
