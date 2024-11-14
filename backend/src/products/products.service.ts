@@ -44,6 +44,7 @@ export class ProductsService {
         if(p.unitPrice !== null) product.unitPrice = p.unitPrice;
         if(p.quantity !== null) product.quantity = p.quantity;
         if(p.details !== null) product.details = p.details;
+        if(p.category !== null) product.category = p.category;
         if(p.isActive !== null) product.isActive = p.isActive;
       
         return await this.repository.save(product);

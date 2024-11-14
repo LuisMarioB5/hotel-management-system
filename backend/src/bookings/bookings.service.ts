@@ -174,6 +174,8 @@ export class BookingsService {
     
         return overlappingBookings.length === 0;
     }
+
+    
     
     private async isRoomAvailableWithException(roomId: number, checkInDate: Date, checkOutDate: Date, bookingId?: number): Promise<void> {
         if (!await this.isRoomAvailable(roomId, checkInDate, checkOutDate)) {
