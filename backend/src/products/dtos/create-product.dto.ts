@@ -13,7 +13,7 @@ export class CreateProductDTO {
   @IsNumber()
   @IsNotEmpty()
   @IsPositive()
-  amount: number;
+  quantity: number;
   
   @IsString()
   @IsOptional()

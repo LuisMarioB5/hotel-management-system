@@ -13,7 +13,7 @@ export class UpdateProductDTO {
   @IsNumber()
   @IsPositive()
   @IsOptional()
-  amount?: number;
+  quantity?: number;
   
   @IsString()
   @IsOptional()
