@@ -9,6 +9,7 @@ import { CustomersService } from 'src/customers/customers.service';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { RoomEntity, RoomStatus } from 'src/rooms/room.entity';
 import { getEnumValues } from 'src/utils/showEnum.values';
+import { ConsumptionEntity } from 'src/consumptions/consumption.entity';
 
 @Injectable()
 export class BookingsService {
@@ -175,7 +176,38 @@ export class BookingsService {
         return overlappingBookings.length === 0;
     }
 
-    
+    private async updateTotalStayCost(bookingId: number): Promise<void> {
+        const booking = await this.repository.findOne({
+            where: { id: bookingId },
+            relations: ['room', 'consumptions'],
+        });
+
+        if(!booking) this.throwBookingNotFoundException(bookingId);
+
+        // Determinar la fecha de salida efectiva
+        const checkOutDate = booking.actualCheckOutDate || booking.checkOutDate;
+
+        // Calcular la duración de la estancia en días redondeando hacia arriba
+        const durationInMillis = new Date(checkOutDate).getTime() - new Date(booking.actualCheckInDate).getTime();
+        const durationInDays = Math.ceil(durationInMillis / (1000 * 60 * 60 * 24)); // Redonde hacia arriba
+        booking.totalStayDays = durationInDays;
+
+        // Costo por noche de la habitación
+        const roomCostPerNight = booking.room.price;
+
+        // Calcular el costo total de la habitación
+        const roomTotalCost = roomCostPerNight * durationInDays;
+
+        // Calcular el total de consumos
+        booking.totalConsumption = Array.isArray(booking.consumptions)
+            ? booking.consumptions.reduce((acc, consumption) => acc + Number(consumption.subtotal), 0)
+            : 0;
+
+        // Costo total de la estancia
+        booking.totalStayCost = roomTotalCost + booking.totalConsumption;
+
+        await this.repository.save(booking);
+    }
     
     private async isRoomAvailableWithException(roomId: number, checkInDate: Date, checkOutDate: Date, bookingId?: number): Promise<void> {
         if (!await this.isRoomAvailable(roomId, checkInDate, checkOutDate)) {

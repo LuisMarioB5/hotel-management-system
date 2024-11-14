@@ -23,7 +23,7 @@ export class BookingEntity {
     room: RoomEntity;
 
     @OneToMany(() => ConsumptionEntity, consumption => consumption.booking, { cascade: true })
-    consumptions: ConsumptionEntity;
+    consumptions: ConsumptionEntity[];
 
     // Fechas planeadas de check-in y check-out
     @Column({ type: 'timestamp' })
@@ -55,6 +55,9 @@ export class BookingEntity {
     @Column({ type: 'decimal', default: 0})
     totalStayCost: number
     
+    @Column({type: 'int', default: 1})
+    totalStayDays: number;
+
     // Estado de la reserva usando enum para evitar errores
     @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.PENDIENTE })
     status: BookingStatus;
