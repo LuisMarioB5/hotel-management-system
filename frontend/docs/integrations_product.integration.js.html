@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: integrations/user.integration.js</title>
+    <title>JSDoc: Source: integrations/product.integration.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: integrations/user.integration.js</h1>
+    <h1 class="page-title">Source: integrations/product.integration.js</h1>
 
     
 
@@ -30,14 +30,14 @@
 import { validateParamIsNotNull } from '../scripts/utils.js';
 
 /**
- * Obtiene todos los usuarios.
+ * Obtiene todos los productos.
  * @async
- * @function getAllUsers
- * @returns {Promise&lt;Object[]>} Una lista de usuarios en formato JSON.
+ * @function getAllProducts
+ * @returns {Promise&lt;Object[]>} Una lista con los productos en formato JSON.
  */
-export async function getAllUsers() {
+export async function getAllProducts() {
     try {
-        const response = await fetch(BACKEND_ROUTES.users.getAll, {
+        const response = await fetch(BACKEND_ROUTES.products.getAll, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -53,17 +53,17 @@ export async function getAllUsers() {
 }
 
 /**
- * Obtiene un usuario por su ID.
+ * Obtiene un producto por su ID.
  * @async
- * @function getUserById
- * @param {number} id - El ID del usuario.
- * @returns {Promise&lt;Object>} Los datos del usuario en formato JSON.
+ * @function getProductById
+ * @param {number} id - El ID del producto.
+ * @returns {Promise&lt;Object>} Los datos del producto en formato JSON.
  */
-export async function getUserById(id) {
+export async function getProductById(id) {
     validateParamIsNotNull('id', id);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.getById(id), {
+        const response = await fetch(BACKEND_ROUTES.products.getById(id), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -79,17 +79,17 @@ export async function getUserById(id) {
 }
 
 /**
- * Obtiene un usuario por su nombre de usuario.
+ * Obtiene un producto por su nombre.
  * @async
- * @function getUserByUsername
- * @param {string} username - El nombre de usuario del usuario.
- * @returns {Promise&lt;Object>} Los datos del usuario en formato JSON.
+ * @function getProductByName
+ * @param {string} name - El nombre del producto.
+ * @returns {Promise&lt;Object>} Los datos del producto en formato JSON.
  */
-export async function getUserByUsername(username) {
-    validateParamIsNotNull('username', username);
+export async function getProductByName(name) {
+    validateParamIsNotNull('name', name);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.getByUsername(username), {
+        const response = await fetch(BACKEND_ROUTES.products.getByName(name), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -105,26 +105,33 @@ export async function getUserByUsername(username) {
 }
 
 /**
- * Crea un nuevo usuario.
+ * Crea un nuevo producto.
  * @async
- * @function createUser
- * @param {Object} params - Datos del usuario.
- * @param {string} params.username - Nombre de usuario del usuario (requerido).
- * @param {string} params.password - Contraseña del usuario (requerido).
- * @param {string} params.role - Rol del usuario (requerido).
- * @param {boolean} [params.isActive] - Estado del usuario.
- * @returns {Promise&lt;Object>} Los datos del usuario recién creado en formato JSON.
+ * @function createProduct
+ * @param {Object} params - Datos del producto.
+ * @param {string} params.name - Nombre del producto (requerido).
+ * @param {number} params.price - Precio del producto (requerido).
+ * @param {number} params.amount - Cantidad del producto (requerido).
+ * @param {string} [params.details] - Detalles relacionados a la producto.
+ * @param {boolean} [params.isActive] - Estado del producto.
+ * @returns {Promise&lt;Object>} Los datos del producto recién creado en formato JSON.
  */
-export async function createUser({ username = null, password = null, role = null, isActive = null } = {}) {
-    validateParamIsNotNull('username', username);
-    validateParamIsNotNull('password', password);
-    validateParamIsNotNull('role', role);
+export async function createProduct({ name = null, price = null, amount = null, details = null, isActive = null} = {}) {
+    validateParamIsNotNull('name', name);
+    validateParamIsNotNull('price', price);
+    validateParamIsNotNull('amount', amount);
 
-    const body = { username, password, role };
-    body.isActive = isActive ?? true;
+    const body = { 
+        name,
+        price,
+        amount
+     };
+    
+     if(details !== null) body.details = details;
+     if(isActive !== null) body.isActive = isActive;
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.create, {
+        const response = await fetch(BACKEND_ROUTES.products.create, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -142,30 +149,31 @@ export async function createUser({ username = null, password = null, role = null
     }
 }
 
-
 /**
- * Actualiza los datos de un usuario.
+ * Actualiza los datos de un producto.
  * @async
- * @function updateUser
- * @param {Object} params - Datos del usuario.
- * @param {number} params.id -ID del usuario (requerido).
- * @param {string} [params.username] - Nombre de usuario del usuario.
- * @param {string} [params.password] - Contraseña del usuario.
- * @param {string} [params.role] - Rol del usuario.
- * @param {boolean} [params.isActive] - Estado del usuario.
- * @returns {Promise&lt;Object>} Los datos del usuario actualizados en formato JSON.
+ * @function updateProduct
+ * @param {Object} params - Datos del producto.
+ * @param {number} params.id -ID del producto (requerido).
+ * @param {string} [params.name] - Nombre del producto.
+ * @param {number} [params.price] - Precio del producto.
+ * @param {number} [params.amount] - Cantidad del producto.
+ * @param {string} [params.details] - Detalles relacionados a la producto.
+ * @param {boolean} [params.isActive] - Estado del producto.
+ * @returns {Promise&lt;Object>} Los datos del producto actualizados en formato JSON.
  */
-export async function updateUser({ id = null, username = null, password = null, role = null, isActive = null } = {}) {
+export async function updateProduct({ id = null, name = null, price = null, amount = null, details = null, isActive = null} = {}) {
     validateParamIsNotNull('id', id);
 
     const body = {};
-    if (username !== null) body.username = username;
-    if (password !== null) body.password = password;
-    if (role !== null) body.role = role;
-    if (isActive !== null) body.isActive = isActive;
+    if(name !== null) body.name = name;
+    if(price !== null) body.price = price;
+    if(amount !== null) body.amount = amount;
+    if(details !== null) body.details = details;
+    if(isActive !== null) body.isActive = isActive;
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.update(id), {
+        const response = await fetch(BACKEND_ROUTES.products.update(id), {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -182,17 +190,45 @@ export async function updateUser({ id = null, username = null, password = null, 
 }
 
 /**
- * Elimina un usuario por su ID.
+ * Desactiva un producto por su ID.
  * @async
- * @function deleteUser
- * @param {number} id - El ID del usuario.
- * @returns {Promise&lt;Object>} Los datos de la operación de eliminación en formato JSON.
+ * @function desactiveProduct
+ * @param {number} id - El ID del producto.
  */
-export async function deleteUser(id) {
+export async function desactiveProduct(id) {
+    validateParamIsNotNull('id', id);
+    const body = {
+        isActive: false,
+    };
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.products.update(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Elimina un producto por su ID.
+ * @async
+ * @function deleteProduct
+ * @param {number} id - El ID del producto.
+ */
+export async function deleteProduct(id) {
     validateParamIsNotNull('id', id);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.delete(id), {
+        const response = await fetch(BACKEND_ROUTES.products.delete(id), {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -208,56 +244,36 @@ export async function deleteUser(id) {
 }
 
 
-/**
- * Muestra todos los enums (variables constantes) que se emplean en el usuario.
- * @async
- * @function getUserEnumsValues
- * @returns {Promise&lt;Object>} Lista de los enums en formato JSON.
- */
-export async function getUserEnumsValues() {
-    try {
-        const response = await fetch(BACKEND_ROUTES.users.getEnumsValues, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-/* PRUEBAS DE LOS METODOS PARA LA CRUD DE LOS USUARIOS (USERS) */
-const userDataRequired = {
-    username: 'J0hn',
-    password: '810m3hU$',
-    role: 'MANTENIMIENTO'
+/* PRUEBAS DE LOS METODOS PARA LA CRUD DE LOS PRODUCTOS (Products) */
+const productDataRequired = {
+    name: 'Cerveza M0delo',
+    price: 110,
+    amount: 10,
 };
-const userDataAll = {
-    username: 'J4n3',
-    password: '@mWXG26sdy4',
-    role: 'GERENTE',
-    isActive: true
+const productDataAll = {
+    name: 'Cerveza Presidente',
+    price: 150,
+    amount: 5,
+    details: 'Cerveza Presidente Jumbo',
+    isActive: true,
 };
-const updatedUserData = {
+const updatedProductData = {
     id: 7, // Se debe utilizar un id válido
-    username: 'J0hn4th4n',
-    password: '0?Hk5c09c',
-    role: 'RECEPCIONISTA',
+    name: 'Cerveza Módelo2',
+    price: 120,
+    amount: 15,
+    details: 'Cerveza Módelo Grande',
+    isActive: true,
 };
 
-// console.log(await getAllUsers());
-// console.log(await getUserById(1)); // Se debe utilizar un id válido
-// console.log(await getUserByUsername('bonilla.dev')); // Se debe utilizar un nomber de usuario válido
-// console.log(await createUser(userDataRequired));
-// console.log(await createUser(userDataAll));
-// console.log(await updateUser(updatedUserData));
-// console.log(await deleteUser(8)); // Se debe utilizar un id válido 
-// console.log(await getUserEnumsValues());
+// console.log(await createProduct(productDataRequired));
+// console.log(await createProduct(productDataAll));
+// console.log(await getAllProducts());
+// console.log(await getProductById(3)); // Se debe utilizar un id válido
+// console.log(await getProductByName("Cerveza Presidente")); // Se debe utilizar un nombre válido
+// console.log(await updateProduct(updatedProductData)); // ME FALTA DE AQUI PARA ABAJO Y ADEMAS TAMBIEN DEBO PROBAR EN POSTMAN
+// console.log(await desactiveProduct(7)); // Se debe utilizar un id válido
+// console.log(await deleteProduct(7));
 </code></pre>
         </article>
     </section>
