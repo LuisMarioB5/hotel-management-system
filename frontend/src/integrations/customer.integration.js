@@ -204,7 +204,6 @@ export async function deleteCustomer(id) {
     }
 }
 
-
 /**
  * Muestra todos los enums (variables constantes) que se emplean en el cliente.
  * @async
@@ -227,40 +226,3 @@ export async function getCustomerEnumsValues() {
         console.error('Error de red', error);
     }
 }
-
-/* PRUEBAS DE LOS METODOS PARA LA CRUD DE LOS CLIENTES (CUSTOMERS) */
-const customerDataRequired = {
-    name: 'John',
-    lastName: 'Doe',
-    documentType: 'DNI',
-    documentNumber: '123456',
-    email: 'john.doe@example.com'
-};
-const customerDataAll = {
-    name: 'Jane',
-    lastName: 'Smith',
-    documentType: 'PASAPORTE',
-    documentNumber: '654321',
-    email: 'jane.smith@example.com',
-    gender: 'Female',
-    phoneNumber: '9876543210',
-    address: '456 Elm St',
-    isFrequentGuest: false,
-    notes: 'VIP customer',
-    isActive: true
-};
-const updatedCustomerData = {
-    id: 20, // Se debe utilizar un id válido
-    name: 'Johnathan',
-    lastName: 'Doe',
-    email: 'johnathan.doe@example.com',
-};
-
-// console.log(await getAllCustomers());
-// console.log(await getCustomerById(2)); // Se debe utilizar un id válido
-// console.log(await getCustomerByDocumentNumber('4105648')); // Se debe utilizar un numero de documento válido
-// console.log(await createCustomer(customerDataRequired));
-// console.log(await createCustomer(customerDataAll));
-// console.log(await updateCustomer(updatedCustomerData));
-// console.log(await deleteCustomer(24)); // Se debe utilizar un id válido 
-// console.log(await getCustomerEnumsValues()); 

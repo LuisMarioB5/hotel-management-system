@@ -84,19 +84,22 @@ export async function getProductByName(name) {
  * @param {string} params.name - Nombre del producto (requerido).
  * @param {number} params.unitPrice - Precio del producto (requerido).
  * @param {number} params.quantity - Cantidad del producto (requerido).
+ * @param {string} params.category - Categoria del producto (requerido).
  * @param {string} [params.details] - Detalles relacionados a la producto.
  * @param {boolean} [params.isActive] - Estado del producto.
  * @returns {Promise<Object>} Los datos del producto recién creado en formato JSON.
  */
-export async function createProduct({ name = null, unitPrice = null, quantity = null, details = null, isActive = null} = {}) {
+export async function createProduct({ name = null, unitPrice = null, quantity = null, category = null, details = null, isActive = null} = {}) {
     validateParamIsNotNull('name', name);
     validateParamIsNotNull('unitPrice', unitPrice);
     validateParamIsNotNull('quantity', quantity);
+    validateParamIsNotNull('category', category);
 
     const body = { 
         name,
         unitPrice,
-        quantity
+        quantity,
+        category
      };
     
      if(details !== null) body.details = details;
@@ -130,17 +133,19 @@ export async function createProduct({ name = null, unitPrice = null, quantity = 
  * @param {string} [params.name] - Nombre del producto.
  * @param {number} [params.unitPrice] - Precio del producto.
  * @param {number} [params.quantity] - Cantidad del producto.
+ * @param {number} [params.category] - Categoria del producto.
  * @param {string} [params.details] - Detalles relacionados a la producto.
  * @param {boolean} [params.isActive] - Estado del producto.
  * @returns {Promise<Object>} Los datos del producto actualizados en formato JSON.
  */
-export async function updateProduct({ id = null, name = null, unitPrice = null, quantity = null, details = null, isActive = null} = {}) {
+export async function updateProduct({ id = null, name = null, unitPrice = null, quantity = null, category = null, details = null, isActive = null} = {}) {
     validateParamIsNotNull('id', id);
 
     const body = {};
     if(name !== null) body.name = name;
     if(unitPrice !== null) body.unitPrice = unitPrice;
     if(quantity !== null) body.quantity = quantity;
+    if(category !== null) body.category = category;
     if(details !== null) body.details = details;
     if(isActive !== null) body.isActive = isActive;
 
@@ -215,34 +220,25 @@ export async function deleteProduct(id) {
     }
 }
 
+/**
+ * Muestra todos los enums (variables constantes) que se emplean en el producto.
+ * @async
+ * @function getProductEnumsValues
+ * @returns {Promise<Object>} Lista de los enums en formato JSON.
+ */
+export async function getProductEnumsValues() {
+    try {
+        const response = await fetch(BACKEND_ROUTES.products.getEnumsValues, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
 
-/* PRUEBAS DE LOS METODOS PARA LA CRUD DE LOS PRODUCTOS (Products) */
-const productDataRequired = {
-    name: 'Cerveza M0delo',
-    unitPrice: 110,
-    quantity: 10,
-};
-const productDataAll = {
-    name: 'Cerveza Presidente',
-    unitPrice: 150,
-    quantity: 5,
-    details: 'Cerveza Presidente Jumbo',
-    isActive: true,
-};
-const updatedProductData = {
-    id: 7, // Se debe utilizar un id válido
-    name: 'Cerveza Módelo2',
-    unitPrice: 120,
-    quantity: 15,
-    details: 'Cerveza Módelo Grande',
-    isActive: true,
-};
-
-// console.log(await createProduct(productDataRequired));
-// console.log(await createProduct(productDataAll));
-// console.log(await getAllProducts());
-// console.log(await getProductById(3)); // Se debe utilizar un id válido
-// console.log(await getProductByName("Cerveza Presidente")); // Se debe utilizar un nombre válido
-// console.log(await updateProduct(updatedProductData)); // ME FALTA DE AQUI PARA ABAJO Y ADEMAS TAMBIEN DEBO PROBAR EN POSTMAN
-// console.log(await desactiveProduct(7)); // Se debe utilizar un id válido
-// console.log(await deleteProduct(7));
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}

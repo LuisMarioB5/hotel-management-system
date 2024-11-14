@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: integrations/product.integration.js</title>
+    <title>JSDoc: Source: integrations/consumption.integration.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: integrations/product.integration.js</h1>
+    <h1 class="page-title">Source: integrations/consumption.integration.js</h1>
 
     
 
@@ -30,14 +30,14 @@
 import { validateParamIsNotNull } from '../scripts/utils.js';
 
 /**
- * Obtiene todos los productos.
+ * Obtiene todos los consumos.
  * @async
  * @function getAllProducts
- * @returns {Promise&lt;Object[]>} Una lista con los productos en formato JSON.
+ * @returns {Promise&lt;Object[]>} Una lista con los consumos en formato JSON.
  */
-export async function getAllProducts() {
+export async function getAllConsumptions() {
     try {
-        const response = await fetch(BACKEND_ROUTES.products.getAll, {
+        const response = await fetch(BACKEND_ROUTES.consumptions.getAll, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -53,17 +53,17 @@ export async function getAllProducts() {
 }
 
 /**
- * Obtiene un producto por su ID.
+ * Obtiene un consumo por su ID.
  * @async
- * @function getProductById
- * @param {number} id - El ID del producto.
- * @returns {Promise&lt;Object>} Los datos del producto en formato JSON.
+ * @function getConsumptionById
+ * @param {number} id - El ID del consumo.
+ * @returns {Promise&lt;Object>} Los datos del consumo en formato JSON.
  */
-export async function getProductById(id) {
+export async function getConsumptionById(id) {
     validateParamIsNotNull('id', id);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.products.getById(id), {
+        const response = await fetch(BACKEND_ROUTES.consumptions.getById(id), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -79,17 +79,17 @@ export async function getProductById(id) {
 }
 
 /**
- * Obtiene un producto por su nombre.
+ * Obtiene los consumos de una reserva en especifico
  * @async
- * @function getProductByName
- * @param {string} name - El nombre del producto.
- * @returns {Promise&lt;Object>} Los datos del producto en formato JSON.
+ * @function getConsumptionByBookingId
+ * @param {number} bookingId - El ID de la reserva vinculada al consumo.
+ * @returns {Promise&lt;Object[]>} Lista de los consumos en formato JSON.
  */
-export async function getProductByName(name) {
-    validateParamIsNotNull('name', name);
+export async function getConsumptionByBookingId(bookingId) {
+    validateParamIsNotNull('bookingId', bookingId);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.products.getByName(name), {
+        const response = await fetch(BACKEND_ROUTES.consumptions.getByBookingId(bookingId), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -105,36 +105,28 @@ export async function getProductByName(name) {
 }
 
 /**
- * Crea un nuevo producto.
+ * Crea un nuevo consumo.
  * @async
  * @function createProduct
- * @param {Object} params - Datos del producto.
- * @param {string} params.name - Nombre del producto (requerido).
- * @param {number} params.unitPrice - Precio del producto (requerido).
- * @param {number} params.quantity - Cantidad del producto (requerido).
- * @param {string} params.category - Categoria del producto (requerido).
- * @param {string} [params.details] - Detalles relacionados a la producto.
- * @param {boolean} [params.isActive] - Estado del producto.
- * @returns {Promise&lt;Object>} Los datos del producto recién creado en formato JSON.
+ * @param {Object} params - Datos del consumo.
+ * @param {number} params.bookingId - ID de la reserva vinculada al consumo (requerido).
+ * @param {number} params.productID - ID del producto a ser consumido (requerido).
+ * @param {number} params.quantity - Cantidad del consumo (requerido).
+ * @returns {Promise&lt;Object>} Los datos del consumo recién creado en formato JSON.
  */
-export async function createProduct({ name = null, unitPrice = null, quantity = null, category = null, details = null, isActive = null} = {}) {
-    validateParamIsNotNull('name', name);
-    validateParamIsNotNull('unitPrice', unitPrice);
+export async function createProduct({ bookingId = null, productID = null, quantity = null} = {}) {
+    validateParamIsNotNull('bookingId', bookingId);
+    validateParamIsNotNull('productID', productID);
     validateParamIsNotNull('quantity', quantity);
-    validateParamIsNotNull('category', category);
 
     const body = { 
-        name,
-        unitPrice,
-        quantity,
-        category
+        bookingId,
+        productID,
+        quantity
      };
-    
-     if(details !== null) body.details = details;
-     if(isActive !== null) body.isActive = isActive;
 
     try {
-        const response = await fetch(BACKEND_ROUTES.products.create, {
+        const response = await fetch(BACKEND_ROUTES.consumptions.add, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -153,32 +145,21 @@ export async function createProduct({ name = null, unitPrice = null, quantity = 
 }
 
 /**
- * Actualiza los datos de un producto.
+ * Actualiza la cantidad de un producto a consumir.
  * @async
  * @function updateProduct
- * @param {Object} params - Datos del producto.
- * @param {number} params.id -ID del producto (requerido).
- * @param {string} [params.name] - Nombre del producto.
- * @param {number} [params.unitPrice] - Precio del producto.
- * @param {number} [params.quantity] - Cantidad del producto.
- * @param {number} [params.category] - Categoria del producto.
- * @param {string} [params.details] - Detalles relacionados a la producto.
- * @param {boolean} [params.isActive] - Estado del producto.
- * @returns {Promise&lt;Object>} Los datos del producto actualizados en formato JSON.
+ * @param {number} id - ID del consumo.
+ * @param {number} quantity - Nueva cantidad del producto a consumir.
+ * @returns {Promise&lt;Object>} Los datos del consumo actualizados en formato JSON.
  */
-export async function updateProduct({ id = null, name = null, unitPrice = null, quantity = null, category = null, details = null, isActive = null} = {}) {
+export async function updateProduct(id, quantity) {
     validateParamIsNotNull('id', id);
+    validateParamIsNotNull('quantity', quantity);
 
-    const body = {};
-    if(name !== null) body.name = name;
-    if(unitPrice !== null) body.unitPrice = unitPrice;
-    if(quantity !== null) body.quantity = quantity;
-    if(category !== null) body.category = category;
-    if(details !== null) body.details = details;
-    if(isActive !== null) body.isActive = isActive;
+    const body = {quantity};
 
     try {
-        const response = await fetch(BACKEND_ROUTES.products.update(id), {
+        const response = await fetch(BACKEND_ROUTES.consumptions.updateQuantity(id), {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -195,69 +176,17 @@ export async function updateProduct({ id = null, name = null, unitPrice = null, 
 }
 
 /**
- * Desactiva un producto por su ID.
- * @async
- * @function desactiveProduct
- * @param {number} id - El ID del producto.
- */
-export async function desactiveProduct(id) {
-    validateParamIsNotNull('id', id);
-    const body = {
-        isActive: false,
-    };
-
-    try {
-        const response = await fetch(BACKEND_ROUTES.products.update(id), {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body),
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-/**
- * Elimina un producto por su ID.
+ * Elimina un consumo por su ID.
  * @async
  * @function deleteProduct
- * @param {number} id - El ID del producto.
+ * @param {number} id - El ID del consumo.
  */
 export async function deleteProduct(id) {
     validateParamIsNotNull('id', id);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.products.delete(id), {
+        const response = await fetch(BACKEND_ROUTES.consumptions.delete(id), {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-/**
- * Muestra todos los enums (variables constantes) que se emplean en el producto.
- * @async
- * @function getProductEnumsValues
- * @returns {Promise&lt;Object>} Lista de los enums en formato JSON.
- */
-export async function getProductEnumsValues() {
-    try {
-        const response = await fetch(BACKEND_ROUTES.products.getEnumsValues, {
-            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },

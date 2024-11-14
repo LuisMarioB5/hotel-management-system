@@ -202,31 +202,3 @@ export async function getUserEnumsValues() {
         console.error('Error de red', error);
     }
 }
-
-/* PRUEBAS DE LOS METODOS PARA LA CRUD DE LOS USUARIOS (USERS) */
-const userDataRequired = {
-    username: 'J0hn',
-    password: '810m3hU$',
-    role: 'MANTENIMIENTO'
-};
-const userDataAll = {
-    username: 'J4n3',
-    password: '@mWXG26sdy4',
-    role: 'GERENTE',
-    isActive: true
-};
-const updatedUserData = {
-    id: 7, // Se debe utilizar un id válido
-    username: 'J0hn4th4n',
-    password: '0?Hk5c09c',
-    role: 'RECEPCIONISTA',
-};
-
-// console.log(await getAllUsers());
-// console.log(await getUserById(1)); // Se debe utilizar un id válido
-// console.log(await getUserByUsername('bonilla.dev')); // Se debe utilizar un nomber de usuario válido
-// console.log(await createUser(userDataRequired));
-// console.log(await createUser(userDataAll));
-// console.log(await updateUser(updatedUserData));
-// console.log(await deleteUser(8)); // Se debe utilizar un id válido 
-// console.log(await getUserEnumsValues());
