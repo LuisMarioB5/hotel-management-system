@@ -41,6 +41,13 @@ export class ConsumptionsService {
         return consumption;
     }
 
+    async findAllByBookingId(bookingId: number): Promise<ConsumptionEntity[]> {
+        return this.repository.find({
+            where: { booking: { id: bookingId } },
+            relations: ['product'],
+        });
+    }
+
     async findAll(): Promise<ConsumptionEntity[]> {
         return this.repository.find({
             relations: ['booking', 'product'],
