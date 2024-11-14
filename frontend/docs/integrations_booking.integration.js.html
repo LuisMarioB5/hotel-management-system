@@ -1,11 +1,39 @@
-import { BACKEND_ROUTES } from '../config/backend.routes.js';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: integrations/booking.integration.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: integrations/booking.integration.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { BACKEND_ROUTES } from '../config/backend.routes.js';
 import { validateParamIsNotNull } from '../scripts/utils.js';
 
 /**
  * Obtiene todas las reservas.
  * @async
  * @function getAllBookings
- * @returns {Promise<Object[]>} Una lista con las reservas en formato JSON.
+ * @returns {Promise&lt;Object[]>} Una lista con las reservas en formato JSON.
  */
 export async function getAllBookings() {
     try {
@@ -29,7 +57,7 @@ export async function getAllBookings() {
  * @async
  * @function getBookingById
  * @param {number} id - El ID de la reserva.
- * @returns {Promise<Object>} Los datos de la reserva en formato JSON.
+ * @returns {Promise&lt;Object>} Los datos de la reserva en formato JSON.
  */
 export async function getBookingById(id) {
     validateParamIsNotNull('id', id);
@@ -60,7 +88,7 @@ export async function getBookingById(id) {
  * @param {Date} params.checkInDate - Fecha en la que se espera iniciar la estadía (requerido).
  * @param {Date} params.checkOutDate - Fecha en la que se espera concluir la estadía (requerido).
  * @param {string} [params.details] - Detalles relacionados a la reserva.
- * @returns {Promise<Object>} Los datos de la reserva recién creada en formato JSON.
+ * @returns {Promise&lt;Object>} Los datos de la reserva recién creada en formato JSON.
  */
 export async function createBooking({ customerId = null, roomId = null, checkInDate = null, checkOutDate = null, details = null} = {}) {
     validateParamIsNotNull('customerId', customerId);
@@ -106,7 +134,7 @@ export async function createBooking({ customerId = null, roomId = null, checkInD
  * @param {Date} [params.checkInDate] - Fecha en la que se espera iniciar la estadía.
  * @param {Date} [params.checkOutDate] - Fecha en la que se espera concluir la estadía.
  * @param {string} [params.details] - Detalles relacionados a la reserva.
- * @returns {Promise<Object>} Los datos de la reserva actualizados en formato JSON.
+ * @returns {Promise&lt;Object>} Los datos de la reserva actualizados en formato JSON.
  */
 export async function updateBooking({ id = null, customerId = null, roomId = null, checkInDate = null, checkOutDate = null, details = null} = {}) {
     validateParamIsNotNull('id', id);
@@ -270,7 +298,7 @@ export async function checkOutBooking(id) {
  * Muestra todos los enums (variables constantes) que se emplean en la reserva.
  * @async
  * @function getBookingEnumsValues
- * @returns {Promise<Object>} Lista de los enums en formato JSON.
+ * @returns {Promise&lt;Object>} Lista de los enums en formato JSON.
  */
 export async function getBookingEnumsValues() {
     try {
@@ -322,3 +350,26 @@ console.log(await getAllBookings());
 // console.log(await checkOutBooking(18));
 // console.log(await cancelBooking(19));
 // console.log(await getBookingEnumsValues());
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#cancelBooking">cancelBooking</a></li><li><a href="global.html#changeRoomStatusToAvailable">changeRoomStatusToAvailable</a></li><li><a href="global.html#checkInBooking">checkInBooking</a></li><li><a href="global.html#checkOutBooking">checkOutBooking</a></li><li><a href="global.html#confirmBooking">confirmBooking</a></li><li><a href="global.html#createBooking">createBooking</a></li><li><a href="global.html#createCustomer">createCustomer</a></li><li><a href="global.html#createProduct">createProduct</a></li><li><a href="global.html#createRoom">createRoom</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteCustomer">deleteCustomer</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#deleteUser">deleteUser</a></li><li><a href="global.html#desactiveBooking">desactiveBooking</a></li><li><a href="global.html#desactiveProduct">desactiveProduct</a></li><li><a href="global.html#getAllBookings">getAllBookings</a></li><li><a href="global.html#getAllCustomers">getAllCustomers</a></li><li><a href="global.html#getAllProducts">getAllProducts</a></li><li><a href="global.html#getAllRooms">getAllRooms</a></li><li><a href="global.html#getAllUsers">getAllUsers</a></li><li><a href="global.html#getBookingById">getBookingById</a></li><li><a href="global.html#getBookingEnumsValues">getBookingEnumsValues</a></li><li><a href="global.html#getCustomerByDocumentNumber">getCustomerByDocumentNumber</a></li><li><a href="global.html#getCustomerById">getCustomerById</a></li><li><a href="global.html#getCustomerEnumsValues">getCustomerEnumsValues</a></li><li><a href="global.html#getProductById">getProductById</a></li><li><a href="global.html#getProductByName">getProductByName</a></li><li><a href="global.html#getRoomById">getRoomById</a></li><li><a href="global.html#getRoomByRoomNumber">getRoomByRoomNumber</a></li><li><a href="global.html#getRoomEnumsValues">getRoomEnumsValues</a></li><li><a href="global.html#getRoomsAvailable">getRoomsAvailable</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#getUserEnumsValues">getUserEnumsValues</a></li><li><a href="global.html#loginIntegration">loginIntegration</a></li><li><a href="global.html#updateBooking">updateBooking</a></li><li><a href="global.html#updateCustomer">updateCustomer</a></li><li><a href="global.html#updateProduct">updateProduct</a></li><li><a href="global.html#updateRoom">updateRoom</a></li><li><a href="global.html#updateRoomNotAvailable">updateRoomNotAvailable</a></li><li><a href="global.html#updateUser">updateUser</a></li><li><a href="global.html#validateParamIsNotNull">validateParamIsNotNull</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Thu Nov 14 2024 08:11:18 GMT-0400 (Bolivia Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

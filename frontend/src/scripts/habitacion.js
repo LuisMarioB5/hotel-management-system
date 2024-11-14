@@ -183,6 +183,7 @@ async function handleSaveRoom() {
         return;
     }
 
+
     const roomId = this.getAttribute('data-id');
     const updatedRoomData = {
         id: parseInt(roomId),
@@ -220,20 +221,13 @@ window.guardarHabitacion = handleSaveRoom;
 async function updateRoomCounts() {
     try {
         const rooms = await getAllRooms();
-        
-        const activeRooms = rooms.filter(room => 
-            room.isAvailable || 
-            room.status.toLowerCase() === 'limpieza' || 
-            room.status.toLowerCase() === 'fuera_de_servicio'
-        );
 
-        // Calcular los conteos por estado
-        const totalRooms = activeRooms.length;
-        const availableRooms = activeRooms.filter(room => room.status.toLowerCase() === 'disponible').length;
-        const occupiedRooms = activeRooms.filter(room => room.status.toLowerCase() === 'ocupada').length;
-        const noserviceRooms = activeRooms.filter(room => room.status.toLowerCase() === 'fuera_de_servicio').length;
-        const cleaningRooms = activeRooms.filter(room => room.status.toLowerCase() === 'limpieza').length;
-        const reservedRooms = activeRooms.filter(room => room.status.toLowerCase() === 'reservada').length;
+        // Calcular los conteos por estado sin importar disponibilidad u otros filtros
+        const totalRooms = rooms.length;
+        const availableRooms = rooms.filter(room => room.status.toLowerCase() === 'disponible').length;
+        const occupiedRooms = rooms.filter(room => room.status.toLowerCase() === 'ocupada').length;
+        const noserviceRooms = rooms.filter(room => room.status.toLowerCase() === 'fuera_de_servicio').length;
+        const cleaningRooms = rooms.filter(room => room.status.toLowerCase() === 'limpieza').length;
 
         // Actualizar los elementos del DOM en dashboard.html
         document.getElementById('total-rooms').textContent = totalRooms;
@@ -241,7 +235,6 @@ async function updateRoomCounts() {
         document.getElementById('occupied-rooms').textContent = occupiedRooms;
         document.getElementById('noservice-rooms').textContent = noserviceRooms;
         document.getElementById('cleaning-rooms').textContent = cleaningRooms;
-        document.getElementById('reserved-rooms').textContent = reservedRooms;
     } catch (error) {
         console.error('Error al actualizar los conteos de habitaciones:', error);
     }
@@ -252,7 +245,7 @@ document.addEventListener('DOMContentLoaded', updateRoomCounts);
 
 
 //----------------------------------------------------------------------------//
-             ////ESTA PARTE ES PARA LA PARTE DE HABITACION LIMPIEZA///
+             ////ESTA PARTE ES PARA LA PAGINA DE HABITACION LIMPIEZA///
 //----------------------------------------------------------------------------//
 export function initializeCleaningRooms() {
     const roomsGrid = document.querySelector('.rooms-grid');
@@ -335,4 +328,74 @@ export function initializeCleaningRooms() {
 
     // Cargar habitaciones en limpieza al inicio
     loadCleaningRooms();
+}
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA  DE HABITACION RECEPCION///
+//----------------------------------------------------------------------------//
+
+
+export function initializeAllRooms() {
+    const roomsGrid = document.querySelector('.rooms-grid');
+    const floorSelector = document.querySelector('.floor-selector');
+
+    async function loadAllRooms(floor = 'Todos') {
+        try {
+            const allRooms = await getAllRooms();
+            const roomsToShow = allRooms.filter(room =>
+                ['disponible', 'limpieza', 'ocupada'].includes(room.status.toLowerCase()) &&
+                (floor === 'Todos' || room.floor.toUpperCase() === floor)
+            );
+            renderAllRooms(roomsToShow);
+        } catch (error) {
+            console.error('Error loading rooms:', error);
+        }
+    }
+
+    function getStatusClass(status) {
+        switch (status.toLowerCase()) {
+            case 'disponible': return 'disponible';
+            case 'limpieza': return 'limpieza';
+            case 'ocupada': return 'ocupado';
+            default: return '';
+        }
+    }
+
+    function renderAllRooms(rooms) {
+        roomsGrid.innerHTML = '';
+        rooms.forEach(room => {
+            const statusClass = getStatusClass(room.status);
+            const roomCard = `
+                <div class="room-card ${statusClass}">
+                    <div class="room-header">
+                        <span class="room-number">NRO: ${room.number}</span>
+                        <i class="fas fa-${statusClass === 'limpieza' ? 'broom' : statusClass === 'ocupado' ? 'user-check' : 'bed'} room-icon"></i>
+                    </div>
+                    <div class="room-category">CATEGORIA: ${room.type}</div>
+                    <div class="room-status ${statusClass}" data-id="${room.id}" onclick="redirectToPage('${statusClass}', '${room.id}', '${room.number}', '${room.type}', '${room.floor}', '${encodeURIComponent(room.details || '')}')">
+                        ${room.status.toUpperCase()}
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            `;
+            roomsGrid.insertAdjacentHTML('beforeend', roomCard);
+        });
+    }
+
+    window.redirectToPage = function(status, id, number, type, floor, details) {
+        switch (status) {
+            case 'disponible':
+                window.location.href = `../pages/G_registroReserva.html?id=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}`;
+                break;
+            case 'ocupado':
+                window.location.href = '../pages/G_salida.html';
+                break;
+            case 'limpieza':
+                window.location.href = '../pages/M_limpieza.html';
+                break;
+        }
+    };
+
+    floorSelector.addEventListener('change', () => loadAllRooms(floorSelector.value));
+    loadAllRooms();
 }
