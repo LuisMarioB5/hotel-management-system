@@ -288,37 +288,3 @@ export async function getBookingEnumsValues() {
         console.error('Error de red', error);
     }
 }
-
-/* PRUEBAS DE LOS METODOS PARA LA CRUD DE LAS RESERVAS (Bookings) */
-const bookingDataRequired = {
-    customerId: 8,
-    roomId: 9,
-    checkInDate: '2024-11-17T12:00Z',
-    checkOutDate: '2024-11-18T14:00Z',
-};
-const bookingDataAll = {
-    customerId: 6,
-    roomId: 7,
-    checkInDate: '2024-11-18T12:00Z',
-    checkOutDate: '2024-11-19T14:00Z',
-    details: 'Ojo con la persona parece sospechosa'
-};
-const updatedBookingData = {
-    id: 17, // Se debe utilizar un id válido
-    roomId: 8,
-    checkInDate: '2024-11-20T12:00Z',
-    checkOutDate: '2024-11-22T14:00Z',
-    details: 'Se actualizaron los datos de la habitación'
-}
-
-console.log(await getAllBookings());
-// console.log(await getBookingById(2)); // Se debe utilizar un id válido
-// console.log(await createBooking(bookingDataRequired));
-// console.log(await createBooking(bookingDataAll));
-// console.log(await updateBooking(updatedBookingData));
-// console.log(await desactiveBooking(8)); // Se debe utilizar un id válido
-// console.log(await confirmBooking(18));
-// console.log(await checkInBooking(18, 1000));
-// console.log(await checkOutBooking(18));
-// console.log(await cancelBooking(19));
-// console.log(await getBookingEnumsValues());

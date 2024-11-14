@@ -254,39 +254,3 @@ export async function getRoomEnumsValues() {
         console.error('Error de red', error);
     }
 }
-
-/* PRUEBAS DE LOS METODOS PARA LA CRUD DE LAS HABITACIONES (Rooms) */
-const roomDataRequired = {
-    number: 202,
-    floor: 'SEGUndO',
-    type: 'doble',
-    price: 2000,
-};
-const roomDataAll = {
-    number: 101,
-    details: 'Habitación con vista al mar',
-    floor: 'PRIMER',
-    type: 'MATRIMONIAL',
-    status: 'Disponible',
-    price: 15000,
-    isAvailable: true
-};
-const updatedRoomData = {
-    id: 7, // Se debe utilizar un id válido
-    number: 303,
-    details: 'Habitación sencilla para pasar la noche',
-    floor: 'TERCER',
-    type: 'INdividual',
-    status: 'ocuPada',
-    price: 900,
-    isAvailable: false
-}
-    
-// console.log(await getAllRooms());
-// console.log(await getRoomById(1)); // Se debe utilizar un id válido
-// console.log(await getRoomByRoomNumber(40)); // Se debe utilizar un nomber de habitación válido
-// console.log(await createRoom(roomDataRequired));
-// console.log(await createRoom(roomDataAll));
-// console.log(await updateRoom(updatedRoomData));
-// console.log(await notAvailableRoom(8)); // Se debe utilizar un id válido
-//console.log(await getRoomEnumsValues());

@@ -5,6 +5,7 @@ const users = 'users';
 const rooms = 'rooms';
 const bookings = 'bookings';
 const products = 'products';
+const consumptions = 'consumptions';
 
 export const BACKEND_ROUTES = {
   auth: {
@@ -59,5 +60,14 @@ export const BACKEND_ROUTES = {
     getByName: (name) => `${BASE_URL}/${products}/name/${name}`,
     update: (id) => `${BASE_URL}/${products}/${id}`,
     delete: (id) => `${BASE_URL}/${products}/${id}`,
+    getEnumsValues: `${BASE_URL}/${products}/enums/values`,
+  },
+  consumptions: {
+    add: `${BASE_URL}/${consumptions}/add`,
+    getAll: `${BASE_URL}/${consumptions}`,
+    getById: (id) => `${BASE_URL}/${consumptions}/${id}`,
+    getByBookingId: (bookingId) => `${BASE_URL}/${consumptions}/booking/${bookingId}`,
+    updateQuantity: (id) => `${BASE_URL}/${consumptions}/${id}`,
+    delete: (id) => `${BASE_URL}/${consumptions}/${id}`,
   },
 };
