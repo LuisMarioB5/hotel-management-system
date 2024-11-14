@@ -82,20 +82,20 @@ export async function getProductByName(name) {
  * @function createProduct
  * @param {Object} params - Datos del producto.
  * @param {string} params.name - Nombre del producto (requerido).
- * @param {number} params.price - Precio del producto (requerido).
+ * @param {number} params.unitPrice - Precio del producto (requerido).
  * @param {number} params.amount - Cantidad del producto (requerido).
  * @param {string} [params.details] - Detalles relacionados a la producto.
  * @param {boolean} [params.isActive] - Estado del producto.
  * @returns {Promise<Object>} Los datos del producto recién creado en formato JSON.
  */
-export async function createProduct({ name = null, price = null, amount = null, details = null, isActive = null} = {}) {
+export async function createProduct({ name = null, unitPrice = null, amount = null, details = null, isActive = null} = {}) {
     validateParamIsNotNull('name', name);
-    validateParamIsNotNull('price', price);
+    validateParamIsNotNull('unitPrice', unitPrice);
     validateParamIsNotNull('amount', amount);
 
     const body = { 
         name,
-        price,
+        unitPrice,
         amount
      };
     
@@ -128,18 +128,18 @@ export async function createProduct({ name = null, price = null, amount = null, 
  * @param {Object} params - Datos del producto.
  * @param {number} params.id -ID del producto (requerido).
  * @param {string} [params.name] - Nombre del producto.
- * @param {number} [params.price] - Precio del producto.
+ * @param {number} [params.unitPrice] - Precio del producto.
  * @param {number} [params.amount] - Cantidad del producto.
  * @param {string} [params.details] - Detalles relacionados a la producto.
  * @param {boolean} [params.isActive] - Estado del producto.
  * @returns {Promise<Object>} Los datos del producto actualizados en formato JSON.
  */
-export async function updateProduct({ id = null, name = null, price = null, amount = null, details = null, isActive = null} = {}) {
+export async function updateProduct({ id = null, name = null, unitPrice = null, amount = null, details = null, isActive = null} = {}) {
     validateParamIsNotNull('id', id);
 
     const body = {};
     if(name !== null) body.name = name;
-    if(price !== null) body.price = price;
+    if(unitPrice !== null) body.unitPrice = unitPrice;
     if(amount !== null) body.amount = amount;
     if(details !== null) body.details = details;
     if(isActive !== null) body.isActive = isActive;
@@ -219,12 +219,12 @@ export async function deleteProduct(id) {
 /* PRUEBAS DE LOS METODOS PARA LA CRUD DE LOS PRODUCTOS (Products) */
 const productDataRequired = {
     name: 'Cerveza M0delo',
-    price: 110,
+    unitPrice: 110,
     amount: 10,
 };
 const productDataAll = {
     name: 'Cerveza Presidente',
-    price: 150,
+    unitPrice: 150,
     amount: 5,
     details: 'Cerveza Presidente Jumbo',
     isActive: true,
@@ -232,7 +232,7 @@ const productDataAll = {
 const updatedProductData = {
     id: 7, // Se debe utilizar un id válido
     name: 'Cerveza Módelo2',
-    price: 120,
+    unitPrice: 120,
     amount: 15,
     details: 'Cerveza Módelo Grande',
     isActive: true,
