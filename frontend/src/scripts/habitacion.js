@@ -164,6 +164,7 @@ function fillModalWithRoomData(roomData) {
     document.querySelector('.btn_saveusu').setAttribute('data-id', roomData.id);
 }
 
+
 async function handleSaveRoom() {
 
     const disponibilidad = document.getElementById('Disponibilidad').value;
@@ -250,11 +251,9 @@ document.addEventListener('DOMContentLoaded', updateRoomCounts);
 export function initializeCleaningRooms() {
     const roomsGrid = document.querySelector('.rooms-grid');
     const floorSelector = document.querySelector('.floor-selector');
-    const limpiezaModal = document.getElementById('limpiezaModal');
-    const confirmLimpiezaButton = document.getElementById('confirmarLimpieza');
     let selectedRoomId = null;
+    let selectedRoomNumber = null;
 
-    // Cargar habitaciones en limpieza
     async function loadCleaningRooms(floor = 'Todos') {
         try {
             const allRooms = await getAllRooms();
@@ -265,10 +264,10 @@ export function initializeCleaningRooms() {
             renderRoomsInCleaning(roomsInCleaning);
         } catch (error) {
             console.error('Error loading cleaning rooms:', error);
+            showAlert('error', 'Error', 'Hubo un problema al cargar las habitaciones en limpieza.', 1500);
         }
     }
 
-    // Renderizar habitaciones en el contenedor
     function renderRoomsInCleaning(rooms) {
         roomsGrid.innerHTML = '';
         rooms.forEach(room => {
@@ -279,7 +278,7 @@ export function initializeCleaningRooms() {
                         <i class="fas fa-broom room-icon"></i>
                     </div>
                     <div class="room-category">CATEGORIA: ${room.type}</div>
-                    <div class="room-status limpieza" data-id="${room.id}">
+                    <div class="room-status limpieza" data-id="${room.id}" data-number="${room.number}">
                         LIMPIEZA
                         <i class="fas fa-chevron-right"></i>
                     </div>
@@ -288,47 +287,83 @@ export function initializeCleaningRooms() {
             roomsGrid.insertAdjacentHTML('beforeend', roomCard);
         });
 
-        // Asignar evento para abrir el modal en cada habitación
         document.querySelectorAll('.room-status.limpieza').forEach(btn => {
             btn.addEventListener('click', openLimpiezaModal);
         });
     }
 
-    // Abrir el modal de confirmación de limpieza
-    function openLimpiezaModal(event) {
-        selectedRoomId = event.target.getAttribute('data-id');
-        limpiezaModal.style.display = 'block';
+    async function openLimpiezaModal(event) {
+        event.preventDefault();
+        const roomElement = event.target.closest('.room-status');
+        selectedRoomId = roomElement.getAttribute('data-id');
+        selectedRoomNumber = roomElement.getAttribute('data-number'); // Guardamos el número de la habitación
+        
+        // Mostrar alerta con opción de confirmar o cancelar, y permitir clic fuera para cerrarla
+        const result = await Swal.fire({
+            icon: 'question',
+            title: 'Confirmar Limpieza',
+            text: `¿Está seguro de que desea confirmar la limpieza de la habitación ${selectedRoomNumber}?`,
+            showConfirmButton: true,
+            confirmButtonText: 'Sí, confirmar',
+            showCancelButton: true,
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            allowOutsideClick: true,  // Permitir que se cierre al hacer clic fuera
+            backdrop: true,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+    
+        // Si el usuario confirma, se procede con la limpieza
+        if (result.isConfirmed) {
+            confirmCleaning();
+        }
     }
-
-    // Confirmar limpieza y actualizar el estado
+    
     async function confirmCleaning() {
         if (selectedRoomId) {
             try {
-                await updateRoom({ id: selectedRoomId, status: 'DISPONIBLE',isAvailable: true });
-                alert('Limpieza confirmada para la habitación');
-                loadCleaningRooms(floorSelector.value); // Recargar habitaciones en limpieza
-                closeModal();
+                await updateRoom({ id: selectedRoomId, status: 'DISPONIBLE', isAvailable: true });
+                showAlert('success', `Limpieza terminada en la habitación ${selectedRoomNumber}`, 'La habitación está lista para ser usada.', 1500);
+                loadCleaningRooms(floorSelector.value);
             } catch (error) {
                 console.error('Error updating room status:', error);
+                showAlert('error', 'Error', 'Hubo un problema al actualizar el estado de la habitación.', 1500);
             }
         }
     }
 
-    // Cerrar el modal
-    function closeModal() {
-        limpiezaModal.style.display = 'none';
-        selectedRoomId = null;
+
+    function showAlert(icon, title, text, timer = null, showConfirmButton = false) {
+        return Swal.fire({
+            icon,
+            title,
+            text,
+            showConfirmButton,
+            showCancelButton: showConfirmButton,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, confirmar',
+            cancelButtonText: 'Cancelar',
+            allowOutsideClick: false,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+            backdrop: true,
+            timer: timer,
+            timerProgressBar: timer !== null,
+        });
     }
 
-    // Filtrar habitaciones por piso al cambiar el selector
     floorSelector.addEventListener('change', () => loadCleaningRooms(floorSelector.value));
-    confirmLimpiezaButton.addEventListener('click', confirmCleaning);
-    document.getElementById('closeLimpiezaModal').addEventListener('click', closeModal);
-    document.getElementById('cancelLimpieza').addEventListener('click', closeModal);
 
-    // Cargar habitaciones en limpieza al inicio
     loadCleaningRooms();
 }
+
 
 //----------------------------------------------------------------------------//
              ////ESTA PARTE ES PARA LA PAGINA  DE HABITACION RECEPCION///

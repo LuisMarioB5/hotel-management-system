@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Hodelpa - Reportes</title>
+    <title>Hotel Hodelpa | Reportes</title>
     <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -22,13 +22,13 @@
                                 <a href="../pages/G_recepcion.html"><i class="fas fa-concierge-bell"></i> Recepcion</a>
                                 <a href="../pages/G_reservaciones.html"><i class="fas fa-calendar-check"></i>  Reservas</a>
                                 <a href="../pages/G_salida.html"><i class="fas fa-door-open"></i> Salida</a>
+                                <a href="../pages/M_limpieza.html"><i class="fas fa-broom"></i> Limpieza</a>
                             </div>
                         </li>
                         <li class="dropdown">
                             <a href="#" class="dropbtn"><i class="fas fa-store"></i> Tienda <i class="fas fa-chevron-down"></i></a>
                             <div class="dropdown-content">
                                 <a href="../pages/T_vender.html"><i class="fas fa-shopping-cart"></i> Vender</a>
-                                <a href="../pages/T_productos.html"><i class="fas fa-box"></i> Registrar productos</a>
                             </div>
                         </li>
                         <li class="dropdown">
@@ -37,17 +37,10 @@
                                 <a href="../pages/usuarios.html"><i class="fas fa-user"></i> Usuarios</a>
                                 <a href="../pages/clientes.html"><i class="fas fa-users"></i> Clientes</a>
                                 <a href="../pages/M_habitaciones.html"><i class="fas fa-bed"></i> Habitacion</a>
-                                <a href="../pages/M_limpieza.html"><i class="fas fa-broom"></i> Limpieza</a>
-    
+                                <a href="../pages/T_productos.html"><i class="fas fa-box"></i> Productos</a>
                             </div>
                         </li>
-                        <li class="dropdown">
-                            <a href="#" class="dropbtn"><i class="fas fa-chart-bar"></i> Reportes <i class="fas fa-chevron-down"></i></a>
-                            <div class="dropdown-content">
-                                <a href="../pages/R_recepcion.html"><i class="fas fa-receipt"></i> Reservaciones</a>
-                                <a href="../pages/R_productos.html"><i class="fas fa-boxes"></i> Productos</a>
-                            </div>
-                        </li>
+                        <li><a href="../pages/R_recepcion.html"><i class="fas fa-chart-bar"></i> Reportes</a></li>
                     </ul>
                 </div>
 
@@ -56,20 +49,19 @@
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
-                    <h2>Exportar Reservaciones</h2>
+                    <h2>Exportar Reportes</h2>
                     <hr>
                     <div class="rooms-container">
                         <div class="form-row">
                             <div class="form-group">
+                                <a style="color:#007bff">Exportacion de habitacion reservadas</a>
+                                <br>
                                 <label for="room-number"><i class="fas fa-hashtag" style="color: #007bff;"></i> Número Habitación:</label>
                                 <select id="room-number">
                                     <option value="all">Todos</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <!-- Añade más opciones aquí si es necesario -->
+                                    
                                 </select>
                             </div>
                             <div class="form-group">
@@ -82,6 +74,33 @@
                             </div>
                             <div class="form-group">
                                 <button class="download-btn">
+                                    <i class="fas fa-cloud-download-alt"></i> Descargar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="rooms-container">
+                        <h3 style="color: #007bff;">Exportación de Productos/Servicios Ofrecidos</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="status"><i class="fas fa-check-circle" style="color: green;"></i> Estado:</label>
+                                <select id="status">
+                                    <option value="all">Todos</option>
+                                    <option value="activo">Activo</option>
+                                    <option value="inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="category"><i class="fas fa-box" style="color: #007bff;"></i> Categoría:</label>
+                                <select id="category">
+                                    <option value="all">Todos</option>
+                                    <option value="PRODUCTO">Producto</option>
+                                    <option value="SERVICIO">Servicio</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button class="downloadproduct-btn" >
                                     <i class="fas fa-cloud-download-alt"></i> Descargar
                                 </button>
                             </div>

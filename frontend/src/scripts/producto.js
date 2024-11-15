@@ -54,7 +54,7 @@ function renderProducts(products) {
                 <td>${product.name || 'N/A'}</td>
                 <td>${product.details || 'N/A'}</td>
                 <td>${product.category || 'N/A'}</td>
-                <td>${product.unitPrice || 'N/A'}</td>
+                <td>RD$${product.unitPrice || 'N/A'}</td>
                 <td ${quantityStyle}>${product.quantity || 'N/A'}</td>
                 <td><span class="status ${product.isActive ? 'active' : 'inactive'}">${product.isActive ? 'Activo' : 'Inactivo'}</span></td>
                 <td>
@@ -304,3 +304,6 @@ function closeModal() {
 window.closeModal = closeModal;
 window.guardarProducto = handleSaveProduct;
 
+//
+// ESTA PARTE PARA LOS REPORTES
+//
