@@ -32,7 +32,7 @@ export class BookingEntity {
     @Column({ type: 'timestamp' })
     checkOutDate?: Date;
     
-    @Column({ type: 'string', nullable: true, default: null })
+    @Column({ type: 'varchar', nullable: true, default: null })
     details?: string;
     
     // Campo para indicar si la reserva está activa o no

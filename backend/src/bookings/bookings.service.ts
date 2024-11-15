@@ -9,7 +9,6 @@ import { CustomersService } from 'src/customers/customers.service';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { RoomEntity, RoomStatus } from 'src/rooms/room.entity';
 import { getEnumValues } from 'src/utils/showEnum.values';
-import { ConsumptionEntity } from 'src/consumptions/consumption.entity';
 
 @Injectable()
 export class BookingsService {

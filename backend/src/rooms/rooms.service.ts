@@ -5,7 +5,6 @@ import { RoomEntity, RoomFloor, RoomStatus, RoomType } from './room.entity';
 import { UpdateRoomDTO } from './dtos/update-room.dto';
 import { CreateRoomDTO } from './dtos/create-room.dto';
 import { getEnumValues } from 'src/utils/showEnum.values';
-import { BookingsService } from 'dist/bookings/bookings.service';
 
 @Injectable()
 export class RoomsService {

@@ -16,6 +16,6 @@ import { RoomEntity } from 'src/rooms/room.entity';
   ],
   providers: [BookingsService],
   controllers: [BookingsController],
-  exports: [BookingsService],
+  exports: [BookingsService, TypeOrmModule],
 })
 export class BookingsModule {}
