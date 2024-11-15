@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js" defer></script>
+
 </head>
 <body>
     <div class="dashboard-page">
@@ -52,16 +55,14 @@
                     <h2>Exportar Reportes</h2>
                     <hr>
                     <div class="rooms-container">
+                        <h3 style="color:#007bff">Exportacion de habitacion reservadas</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <a style="color:#007bff">Exportacion de habitacion reservadas</a>
-                                <br>
                                 <label for="room-number"><i class="fas fa-hashtag" style="color: #007bff;"></i> Número Habitación:</label>
                                 <select id="room-number">
                                     <option value="all">Todos</option>
                                     <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    
+                                    <option value="2">2</option>    
                                 </select>
                             </div>
                             <div class="form-group">
@@ -100,7 +101,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <button class="downloadproduct-btn" >
+                                <button class="downloadproduct-btn" onclick="downloadProductsReportPDF(document.getElementById('status').value, document.getElementById('category').value)">
                                     <i class="fas fa-cloud-download-alt"></i> Descargar
                                 </button>
                             </div>
@@ -109,7 +110,23 @@
                 </div>
             </div>
     </div>
+    <script src="../scripts/reporte.js" type="module"></script>
 
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>¿Estás seguro de que deseas salir?</h5>
+                <span class="close-button" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel" id="cancelLogout">Cancelar</button>
+                <a href="../pages/login.html" class="btn logout">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Establecer la fecha de entrada como la fecha actual
@@ -133,23 +150,6 @@
             });
         });
     </script>
-    <!-- Modal de Logout -->
-    <div class="modal" id="logoutModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>¿Estás seguro de que deseas salir?</h5>
-                <span class="close-button" id="closeModal">&times;</span>
-            </div>
-            <div class="modal-body">
-                Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
-            </div>
-            <div class="modal-footer">
-                <button class="btn cancel" id="cancelLogout">Cancelar</button>
-                <a href="../pages/login.html" class="btn logout">Cerrar sesión</a>
-            </div>
-        </div>
-    </div>
-
 
     <script>
         // Script para abrir y cerrar el modal
@@ -175,25 +175,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-    const dropdowns = document.querySelectorAll('.dropdown');
+            const dropdowns = document.querySelectorAll('.dropdown');
 
-    dropdowns.forEach(dropdown => {
-        // Agregar el evento de clic solo al botón que despliega el menú
-        dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-            e.preventDefault();
+            dropdowns.forEach(dropdown => {
+                // Agregar el evento de clic solo al botón que despliega el menú
+                dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                    e.preventDefault();
 
-            // Cerrar otros menús abiertos
-            dropdowns.forEach(d => {
-                if (d !== dropdown) {
-                    d.classList.remove('active');
-                }
+                    // Cerrar otros menús abiertos
+                    dropdowns.forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('active');
+                        }
+                    });
+
+                    // Alternar el menú actual
+                    dropdown.classList.toggle('active');
+                });
             });
-
-            // Alternar el menú actual
-            dropdown.classList.toggle('active');
         });
-    });
-});
     </script>
 </body>
 </html>
