@@ -22,6 +22,7 @@ import { ConsumptionsModule } from './consumptions/consumptions.module';
       database: EnvConfig.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
+      timezone: 'Z',
     }),
     UsersModule,
     AuthModule,

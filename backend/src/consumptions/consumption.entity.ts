@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ProductEntity } from "src/products/product.entity";
 import { BookingEntity } from "src/bookings/booking.entity";
 
@@ -6,6 +6,9 @@ import { BookingEntity } from "src/bookings/booking.entity";
 export class ConsumptionEntity {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @CreateDateColumn()
+    createdAt: Date;
 
     @ManyToOne(() => BookingEntity, booking => booking.consumptions, { nullable: false })
     booking: BookingEntity;
@@ -16,9 +19,9 @@ export class ConsumptionEntity {
     @Column({ type: 'int' })
     quantity: number;
 
-    @Column({ type: 'decimal' })
+    @Column({ type: 'decimal', precision: 10, scale: 2 })
     unitPrice: number;
 
-    @Column({ type: 'decimal' })
+    @Column({ type: 'decimal', precision: 10, scale: 2 })
     subtotal: number
 }
