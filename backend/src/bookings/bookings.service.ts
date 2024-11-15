@@ -197,7 +197,7 @@ export class BookingsService {
         const roomCostPerNight = booking.room.price;
 
         // Calcular el costo total de la habitación
-        const roomTotalCost = roomCostPerNight * durationInDays;
+        booking.stayCost = roomCostPerNight * durationInDays;
 
         // Calcular el total de consumos
         booking.totalConsumption = Array.isArray(booking.consumptions)
@@ -205,11 +205,35 @@ export class BookingsService {
             : 0;
 
         // Costo total de la estancia
-        booking.totalStayCost = roomTotalCost + booking.totalConsumption;
+        booking.totalCost = booking.stayCost + booking.totalConsumption;
 
         await this.repository.save(booking);
     }
     
+    async findBookingsWithinDateRange(startDate: Date, endDate: Date): Promise<BookingEntity[]> {
+        if (!startDate || !endDate) {
+            throw new BadRequestException('El rango de fechas es obligatorio');
+        }
+    
+        if (startDate > endDate) {
+            throw new BadRequestException('La fecha de inicio no puede ser posterior a la fecha de fin');
+        } else if (endDate < startDate) {
+            throw new BadRequestException('La fecha de fin no puede ser anterior a la fecha de inicio');
+        }
+    
+        const bookings = await this.repository.find({
+            where: [
+                {
+                    checkInDate: LessThanOrEqual(endDate),
+                    checkOutDate: MoreThanOrEqual(startDate),
+                },
+            ],
+            relations: ['customer', 'room'], // Incluye relaciones necesarias
+        });
+    
+        return bookings;
+    }
+
     private async isRoomAvailableWithException(roomId: number, checkInDate: Date, checkOutDate: Date, bookingId?: number): Promise<void> {
         if (!await this.isRoomAvailable(roomId, checkInDate, checkOutDate)) {
             throw new BadRequestException('La habitación ya tiene reservas en las fechas seleccionadas.');
