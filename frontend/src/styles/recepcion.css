@@ -157,7 +157,7 @@
     font-size: 14px;
 }
 
-#room-number,
+#room-number, #status, #category,
 .date-picker {
     padding: 8px;
     border: 1px solid #ccc;
@@ -179,7 +179,7 @@
     box-shadow: 0 0 5px #518de1; 
 }
 
-.download-btn {
+.download-btn, .downloadproduct-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -206,11 +206,11 @@
     max-width: 150px; 
     justify-content: flex-end;
 }
-.download-btn i,.reservar-btn i {
+.download-btn i,.reservar-btn i,.downloadproduct-btn i {
     margin-right: 5px;
     font-size: 16px;
 }
 
-.download-btn:hover, .reservar-btn:hover  {
-    background-color: #218838;
+.download-btn:hover, .reservar-btn:hover, .downloadproduct-btn:hover  {
+    background-color: #1e7c32;
 }

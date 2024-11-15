@@ -155,19 +155,67 @@ function fillModalWithClientData(clientData) {
 }
 
 async function handleSaveClient() {
-    if (!confirm('¿Está seguro de que desea guardar los cambios?')) {
+    // Validación de campos
+    const tipo = document.getElementById('tipo').value;
+    const documento = document.getElementById('documento').value.trim();
+    const nombre = document.getElementById('nombre').value.trim();
+    const apellido = document.getElementById('apellido').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    const sexo = document.getElementById('sexo').value;
+    const correo = document.getElementById('correo').value.trim();
+    const estado = document.getElementById('estado').value === 'Activo';
+
+    // Expresiones regulares para validaciones
+    const docRegex = /^[a-zA-Z0-9]+$/; // Documento puede ser letras y números
+    const nameRegex = /^[a-zA-Z\s]+$/; // Solo letras y espacios
+    const phoneRegex = /^\d+$/; // Solo números
+    const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+
+    // Validar cada campo y mostrar mensajes de error
+    if (!documento || !docRegex.test(documento)) {
+        await showTemporaryAlert('error', 'Documento inválido', 'El documento solo debe contener letras y números.');
+        return;
+    }
+    if (!nombre || !nameRegex.test(nombre)) {
+        await showTemporaryAlert('error', 'Nombre inválido', 'El nombre solo debe contener letras.');
+        return;
+    }
+    if (!apellido || !nameRegex.test(apellido)) {
+        await showTemporaryAlert('error', 'Apellido inválido', 'El apellido solo debe contener letras.');
+        return;
+    }
+    if (!telefono || !phoneRegex.test(telefono)) {
+        await showTemporaryAlert('error', 'Teléfono inválido', 'El teléfono solo debe contener números.');
+        return;
+    }
+    if (!correo || !emailRegex.test(correo)) {
+        await showTemporaryAlert('error', 'Correo inválido', 'Por favor, ingrese un correo electrónico válido.');
         return;
     }
 
+    // Confirmación para guardar los datos
+    const result = await Swal.fire({
+        icon: 'question',
+        title: '¿Confirmar?',
+        text: '¿Está seguro de que desea guardar los cambios?',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, guardar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) return;
+
     const clientData = {
-        documentType: document.getElementById('tipo').value,
-        documentNumber: document.getElementById('documento').value,
-        name: document.getElementById('nombre').value,
-        lastName: document.getElementById('apellido').value,
-        phoneNumber: document.getElementById('telefono').value,
-        gender: document.getElementById('sexo').value,
-        email: document.getElementById('correo').value,
-        isActive: document.getElementById('estado').value === 'Activo'
+        documentType: tipo,
+        documentNumber: documento,
+        name: nombre,
+        lastName: apellido,
+        phoneNumber: telefono,
+        gender: sexo,
+        email: correo,
+        isActive: estado
     };
 
     const clientId = this.getAttribute('data-id');
@@ -180,10 +228,27 @@ async function handleSaveClient() {
         }
         closeModal();
         loadClients();
+        await showTemporaryAlert('success', 'Éxito', 'El cliente se ha guardado correctamente.');
     } catch (error) {
         console.error('Error saving client:', error);
-        alert('Error al guardar el cliente');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al guardar el cliente.',
+        });
     }
+}
+
+// Función para mostrar alertas temporales de 1.5 segundos
+async function showTemporaryAlert(icon, title, text) {
+    return Swal.fire({
+        icon,
+        title,
+        text,
+        showConfirmButton: false,
+        timer: 1500,
+        heightAuto: false
+    });
 }
 
 function handleTableActions(event) {
@@ -214,9 +279,11 @@ function closeModal() {
     document.getElementById('createUserModal').style.display = 'none';
 }
 
-// Expose necessary functions to window object for inline event handlers
+// Exponer funciones necesarias al objeto window para los manejadores de eventos en línea
 window.closeModal = closeModal;
 window.guardarCliente = handleSaveClient;
+
+
 
 //----------------------------------------------------------------------------//
              ////ESTA PARTE ES PARA LA PAGINA DEL DASHBOARD///

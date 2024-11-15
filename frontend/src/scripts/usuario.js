@@ -148,18 +148,25 @@ function fillModalWithUserData(userData) {
 }
 
 async function handleSaveUser() {
-    if (!confirm('¿Está seguro de que desea guardar los cambios?')) {
-        return;
-    }
-
     const username = document.getElementById('username').value;
     const password = document.getElementById('contrasena').value;
     const confirmPassword = document.getElementById('confirmarContrasena').value;
     const role = document.getElementById('tipo').value;
     const isActive = document.getElementById('estado').value === 'Activo';
 
+    // Validaciones
+    if (!username || !password || !confirmPassword || !role) {
+        showAlert('error', 'Error', 'Por favor, complete todos los campos requeridos.', 1500);
+        return;
+    }
+
     if (password !== confirmPassword) {
-        alert('Las contraseñas no coinciden');
+        showAlert('error', 'Error', 'Las contraseñas no coinciden.', 1500);
+        return;
+    }
+
+    if (password.length < 6) {
+        showAlert('warning', 'Contraseña débil', 'La contraseña debe tener al menos 6 caracteres.', 1500);
         return;
     }
 
@@ -167,16 +174,15 @@ async function handleSaveUser() {
     const userId = this.getAttribute('data-id');
 
     try {
-        if (userId) {
-            await updateUser({ id: userId, ...userData });
-        } else {
-            await createUser(userData);
-        }
+        const action = userId ? updateUser : createUser;
+        await action(userId ? { id: userId, ...userData } : userData);
+
         closeModal();
         loadUsers();
+        showAlert('success', 'Éxito', userId ? 'Usuario actualizado correctamente.' : 'Usuario creado correctamente.', 1500);
     } catch (error) {
         console.error('Error saving user:', error);
-        alert('Error al guardar el usuario');
+        showAlert('error', 'Error', 'Hubo un problema al guardar el usuario.', 1500);
     }
 }
 
@@ -202,20 +208,66 @@ async function handleEdit(userId) {
         }
     } catch (error) {
         console.error('Error fetching user data:', error);
-        alert('Error al obtener los datos del usuario');
+        showAlert('error', 'Error', 'Error al obtener los datos del usuario', 1500);
     }
 }
 
 async function handleDelete(userId) {
-    if (confirm('¿Está seguro de que desea eliminar este usuario?')) {
+    // Muestra la alerta de confirmación y espera la respuesta del usuario
+    const result = await Swal.fire({
+        icon: 'warning',
+        title: 'Confirmación',
+        text: '¿Está seguro de que desea eliminar este usuario?',
+        showConfirmButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3085d6',
+        celButtonColor: '#d33',
+        allowOutsideClick: true,  // No permitir que se cierre al hacer clic fuera
+        backdrop: true,
+        heightAuto: false,
+        customClass: {
+            container: 'swal-container',
+        },
+    });
+
+    // Si el usuario confirma, se procede con la eliminación
+    if (result.isConfirmed) {
         try {
+            // Espera a la confirmación antes de proceder
             await deleteUser(parseInt(userId));
             loadUsers();
+            // Después de eliminar, muestra la alerta de éxito
+            showAlert('success', 'Éxito', 'Usuario eliminado correctamente.', 1500);
         } catch (error) {
             console.error('Error deleting user:', error);
-            alert('Error al eliminar el usuario');
+            showAlert('error', 'Error', 'Error al eliminar el usuario', 1500);
         }
     }
+}
+
+// Función para mostrar las alertas con SweetAlert2
+function showAlert(icon, title, text, timer = 1500, showConfirmButton = false) {
+    return Swal.fire({
+        icon,
+        title,
+        text,
+        showConfirmButton,
+        showCancelButton: showConfirmButton,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, continuar',
+        cancelButtonText: 'Cancelar',
+        allowOutsideClick: true,
+        backdrop: true,
+        heightAuto: false,
+        customClass: {
+            container: 'swal-container',
+        },
+        timer: timer,  // Cierra la alerta después del tiempo especificado
+        timerProgressBar: true,  // Muestra la barra de progreso
+    });
 }
 
 function closeModal() {
