@@ -33,7 +33,10 @@ export class ConsumptionsService {
     }
 
     async findById(id: number): Promise<ConsumptionEntity> {
-        const consumption = await this.repository.findOne({ where: { id } });
+        const consumption = await this.repository.findOne({ 
+            where: { id },
+            relations: ['booking', 'product']
+        });
         if (!consumption) {
             this.throwConsumptionNotFoundException(id);
         }
@@ -56,12 +59,13 @@ export class ConsumptionsService {
 
     async updateQuantity(id: number, c: ChangeQuantityConsumptionDTO): Promise<ConsumptionEntity> {
         const consumption = await this.findById(id);
-
+        
         if (c.quantity != null) {
             consumption.quantity = c.quantity;
             consumption.subtotal = c.quantity * consumption.unitPrice; // Actualiza el subtotal
         }
-
+        console.log(typeof consumption.unitPrice)
+        
         await this.bookingsService.updateTotalStayCost(consumption.booking.id);
         return this.repository.save(consumption);
     }
