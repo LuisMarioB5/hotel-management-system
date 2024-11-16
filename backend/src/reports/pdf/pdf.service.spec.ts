@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PdfService } from './pdf.service';
+import { PDFService } from './pdf.service';
 
-describe('PdfService', () => {
-  let service: PdfService;
+describe('PDFService', () => {
+  let service: PDFService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PdfService],
+      providers: [PDFService],
     }).compile();
 
-    service = module.get<PdfService>(PdfService);
+    service = module.get<PDFService>(PDFService);
   });
 
   it('should be defined', () => {

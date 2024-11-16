@@ -78,7 +78,7 @@ export class PDFReport {
     return new Date(date).toLocaleDateString('es-ES');
   }
 
-  private addConsumptions(consumptions: ConsumptionEntity[]): number {
+  private addConsumptions(consumptions: ConsumptionEntity[]): void {
     if (consumptions.length <= 0) {
       return null;
     }
@@ -161,7 +161,6 @@ export class PDFReport {
     this.doc.moveTo(startX, currentY).lineTo(this.doc.page.width - startX, currentY).stroke();
   
     this.doc.moveDown();
-    return totalConsumption;
   }  
 
   private addTotalSummary(booking: BookingEntity): void {
@@ -206,7 +205,7 @@ export class PDFReport {
     // Imprimir cada fila de resumen de costos
     const summaryData = [
       { description: 'Costo de Estadía', amount: booking.stayCost },
-      { description: 'Total de Consumos', amount: booking.totalConsumption },
+      ...(booking.consumptions.length > 0 ? [{ description: 'Total de Consumos', amount: booking.totalConsumption }] : []),
       { description: 'Costo Total de la Reserva', amount: booking.totalCost }
     ];
   
@@ -228,8 +227,13 @@ export class PDFReport {
     this.doc.moveDown();
   }
   
-  private save(outputPath: string): void {    
-    this.doc.pipe(fs.createWriteStream(outputPath));
-    this.doc.end();
+  private save(outputPath: string): void {   
+    try {
+      fs.writeFileSync(outputPath, 'Creación Inicial');
+      this.doc.pipe(fs.createWriteStream(outputPath));
+      this.doc.end();
+    } catch (error) {
+        throw new Error(`pdf.report | Error al crear el archivo: ${error}`)
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PDFReport } from './pdf.report';
 import { BookingEntity } from 'src/bookings/booking.entity';
+import { EnvConfig } from 'src/config/env.config';
 
 @Injectable()
 export class PDFService {    
@@ -12,13 +13,7 @@ export class PDFService {
     async generateBookingReport(booking: BookingEntity): Promise<string> {
         const pdfReport = new PDFReport();
 
-        const fs = require('fs');
-        const outputPath = `C:\\Users\\LUISM\\Downloads\\booking-report-${booking.id}.pdf`;
-        try {
-            fs.writeFileSync(outputPath, 'Creación Inicial');
-        } catch (error) {
-            throw new Error(`pdf.service | Error al crear el archivo: ${error}`)
-        }
+        const outputPath = `${EnvConfig.DOWNLOAD_PATH}\\booking-report-${booking.id}.pdf`;
 
         pdfReport.generateReport(booking, outputPath);
 
