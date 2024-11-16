@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="../styles/calendar-modal.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 </head>
 <body>
     <div class="dashboard-page">
@@ -133,10 +135,20 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-row"> 
+                            <div class="form-group"> 
+                                <label><i class="fas fa-hand-holding-usd"></i> Tarifa:</label> 
+                                <select id="tarifa"> 
+                                    <option value="ESTANDAR">Tarifa Estándar</option> 
+                                    <option value="ANTICIPADA">Reserva Anticipada</option> 
+                                    <option value="ALTA">Tarifa Alta</option> 
+                                </select> 
+                            </div>
+                        </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label><i class="fas fa-dollar-sign"></i> Precio:</label>
-                                <input type="number" id="precio" value="70.00" readonly>
+                                <input type="number" id="precio" readonly>
                             </div>
                             <div class="form-group">
                                 <label><i class="fas fa-money-bill-wave"></i> Adelanto:</label>
@@ -155,10 +167,134 @@
             </div>
         </div>
     </div>
-
+    <!--CODIGOS PARA PARTE DE DETALLE RESERVACION-->
+    <script>
+        let precioOriginal = 0; // Precio base
+        let diasReserva = 1; // Variable global para los días de reserva
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            const fechaEntrada = document.getElementById('fechaEntrada');
+            const fechaSalida = document.getElementById('fechaSalida');
+            const tarifaSelect = document.getElementById('tarifa');
+            const observacionInput = document.getElementById('observacion');
+            const precioInput = document.getElementById('precio');
+    
+            // Establecer la fecha de entrada como la fecha actual
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaEntrada.value = hoy;
+            fechaEntrada.setAttribute('min', hoy);
+    
+            // Establecer la fecha de salida como el día siguiente
+            const manana = new Date();
+            manana.setDate(manana.getDate() + 1);
+            const mananaISO = manana.toISOString().split('T')[0];
+            fechaSalida.value = mananaISO;
+            fechaSalida.setAttribute('min', mananaISO);
+    
+            // Inicializar precio original desde la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomPrice = urlParams.get('price');
+            if (roomPrice) {
+                precioOriginal = parseFloat(roomPrice);
+                precioInput.value = precioOriginal.toFixed(2);
+            }
+    
+            // Inicializar observación con tarifa estándar y días de reserva
+            tarifaSelect.value = "ESTANDAR";
+            actualizarDescripcion("Tarifa: Tarifa normal", "Días de reserva: 1");
+    
+            actualizarDiasReserva(); // Calcular días iniciales al cargar la página
+        });
+    
+        const tarifaSelect = document.getElementById("tarifa");
+        const precioInput = document.getElementById("precio");
+        const observacionInput = document.getElementById("observacion");
+        const adelantoInput = document.getElementById("adelanto");
+    
+        // Función para calcular y actualizar días de reserva
+        function actualizarDiasReserva() {
+            const fechaEntrada = document.getElementById('fechaEntrada');
+            const fechaSalida = document.getElementById('fechaSalida');
+            const entrada = new Date(fechaEntrada.value);
+            const salida = new Date(fechaSalida.value);
+    
+            // Calcular días de reserva
+            diasReserva = Math.max(1, (salida - entrada) / (1000 * 60 * 60 * 24)); // Diferencia en días
+    
+            // Actualizar el precio basado en la tarifa y días
+            actualizarTarifa();
+    
+            // Actualizar observación para días de reserva
+            actualizarDescripcion(null, `Días de reserva: ${diasReserva}`);
+        }
+    
+        // Función para actualizar el precio según la tarifa seleccionada
+        function actualizarTarifa() {
+            let tarifa = tarifaSelect.value;
+            let precioBase = precioOriginal * diasReserva; // Precio original multiplicado por los días
+            let precioFinal = precioBase;
+    
+            let textoTarifa = "Tarifa: Tarifa normal"; // Valor por defecto
+            if (tarifa === "ANTICIPADA") {
+                precioFinal *= 0.85; // Descuento del 15%
+                textoTarifa = "Tarifa: 15% de descuento por reserva anticipada";
+            } else if (tarifa === "ALTA") {
+                precioFinal *= 1.20; // Incremento del 20%
+                textoTarifa = "Tarifa: 20% de aumento por tarifa alta";
+            }
+    
+            // Validar y actualizar precio con adelanto
+            actualizarPrecioConAdelanto(precioFinal);
+    
+            // Actualizar descripción de tarifa
+            actualizarDescripcion(textoTarifa, null);
+        }
+    
+        // Función para validar y actualizar el precio con el adelanto
+        function actualizarPrecioConAdelanto(precioActual) {
+            let adelanto = parseFloat(adelantoInput.value) || 0;
+    
+            if (adelanto > precioActual) {
+                alert("El adelanto no puede ser mayor que el precio.");
+                adelantoInput.value = 0; // Restablecer el adelanto a 0
+                adelanto = 0;
+            }
+    
+            precioInput.value = Math.max(precioActual - adelanto, 0).toFixed(2);
+        }
+    
+        // Función para actualizar la descripción sin duplicados
+        function actualizarDescripcion(tarifaTexto, diasTexto) {
+            const lineasActuales = observacionInput.value.split("\n");
+            const nuevasLineas = lineasActuales.filter(linea =>
+                (!tarifaTexto || !linea.startsWith("Tarifa:")) &&
+                (!diasTexto || !linea.startsWith("Días de reserva:"))
+            );
+    
+            if (tarifaTexto) nuevasLineas.push(tarifaTexto);
+            if (diasTexto) nuevasLineas.push(diasTexto);
+    
+            observacionInput.value = nuevasLineas.join("\n");
+        }
+    
+        // Eventos para actualizar funcionalidad
+        document.getElementById('fechaEntrada').addEventListener("change", actualizarDiasReserva);
+        document.getElementById('fechaSalida').addEventListener("change", actualizarDiasReserva);
+        tarifaSelect.addEventListener("change", actualizarTarifa);
+        adelantoInput.addEventListener("input", () => {
+            let tarifa = tarifaSelect.value;
+            let precioBase = precioOriginal * diasReserva;
+    
+            if (tarifa === "ANTICIPADA") precioBase *= 0.85;
+            if (tarifa === "ALTA") precioBase *= 1.20;
+    
+            actualizarPrecioConAdelanto(precioBase);
+        });
+    </script>
+    
     <script type="module" src="../scripts/clientemodalreserva.js"></script>
 
-
+    <!--HALAR DATOS DE LA HABITACION-->>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -166,15 +302,20 @@
             const roomDetails = decodeURIComponent(urlParams.get('details') || '');
             const roomCategory = urlParams.get('type');
             const roomFloor = urlParams.get('floor');
-        
+            const roomPrice = urlParams.get('price');
+
             if (roomNumber) {
                 document.getElementById('roomNumber').value = roomNumber;
                 document.getElementById('roomDetails').value = roomDetails || 'No details available';
                 document.getElementById('roomCategory').value = roomCategory;
                 document.getElementById('roomFloor').value = roomFloor;
+                if (roomPrice) {
+                    document.getElementById('precio').value = roomPrice;
+                }
             }
         });
         </script>
+
     <!-- MODULO DE DISPONIBILIDAD -->
     <div class="calendar-modal" id="calendarModal">
         <div class="calendar-modal-content">
@@ -267,9 +408,7 @@
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Telefono</th>
-                            <th>Sexo</th>
-                            <th>Correo</th>
-                            <th>Estado</th>       
+                            <th>Correo</th>    
                         </tr>
                     </thead>
                     <tbody>
@@ -287,31 +426,10 @@
             </div>
         </div>
     </div>
-    
-    <!--Fin modal-->
 
-    <!--Manejo de fecha actual, validacion de formularios y evento del registro-->
+    <!--VALIDACIONES POR ARREGLAR-->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Establecer la fecha de entrada como la fecha actual
-            const fechaEntrada = document.getElementById('fechaEntrada');
-            const hoy = new Date().toISOString().split('T')[0];
-            fechaEntrada.value = hoy;
-
-            // Establecer la fecha de entrada como la fecha actual
-            const fechaSalida = document.getElementById('fechaSalida');
-            
-            // Set min date for checkout to be today
-            const today = new Date().toISOString().split('T')[0];
-            fechaSalida.setAttribute('min', today);
-            
-            // Update min date for checkout when check-in date changes
-            fechaEntrada.addEventListener('change', function() {
-                fechaSalida.setAttribute('min', this.value);
-                if(fechaSalida.value && fechaSalida.value < this.value) {
-                    fechaSalida.value = this.value;
-                }
-            });
         
             // Validación y registro
             const registrarBtn = document.getElementById('registrarBtn');
@@ -389,6 +507,7 @@
             }
         });
     </script>
+
     <!--Fin -->
     <script>
         // Abrir modal

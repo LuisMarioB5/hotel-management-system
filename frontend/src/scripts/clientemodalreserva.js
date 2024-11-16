@@ -2,24 +2,16 @@ import { getAllCustomers, createCustomer, updateCustomer } from '../integrations
 
 let allClients = [];
 let currentPage = 1;
-let recordsPerPage = 10;  // Default a 10 registros por página
+let recordsPerPage = 10;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    allClients = await getAllCustomers();
+    allClients = (await getAllCustomers()).filter(client => client.isActive); // Filtrar solo los clientes activos
     loadClients();
     setupEventListeners();
 });
 
 function loadClients() {
-    const searchInput = document.getElementById('searchUser');
-    const recordsPerPageSelect = document.getElementById('recordsPerPage');
-    const paginationButtons = document.querySelector('.pagination-buttons');
-
-    searchInput.addEventListener('input', filterAndRenderClients);
-    recordsPerPageSelect.addEventListener('change', handleRecordsPerPageChange);
-    paginationButtons.addEventListener('click', handlePaginationClick);
-
-    filterAndRenderClients();  // Inicializar la vista de los clientes
+    filterAndRenderClients();
 }
 
 function filterAndRenderClients() {
@@ -32,7 +24,7 @@ function filterAndRenderClients() {
 
     const totalFilteredRecords = filteredClients.length;
 
-    // Calculamos los clientes a mostrar en la página actual, según los registros por página
+    // Calcular los clientes a mostrar según la página actual
     const startIndex = (currentPage - 1) * recordsPerPage;
     const endIndex = startIndex + recordsPerPage;
     filteredClients = filteredClients.slice(startIndex, endIndex);
@@ -47,20 +39,19 @@ function renderClients(clients) {
 
     clients.forEach(client => {
         const row = `
-            <tr>
+            <tr data-id="${client.id}" data-gender="${client.gender}">
                 <td>${client.documentType || 'N/A'}</td>
                 <td>${client.documentNumber || 'N/A'}</td>
                 <td>${client.name || 'N/A'}</td>
                 <td>${client.lastName || 'N/A'}</td>
                 <td>${client.phoneNumber || 'N/A'}</td>
-                <td>${client.gender || 'N/A'}</td>
                 <td>${client.email || 'N/A'}</td>
-                <td><span class="status ${client.isActive ? 'active' : 'inactive'}">${client.isActive ? 'Activo' : 'Inactivo'}</span></td>
             </tr>
         `;
         tableBody.insertAdjacentHTML('beforeend', row);
     });
 }
+
 
 function updatePaginationInfo(totalFilteredRecords) {
     const paginationInfo = document.querySelector('.pagination-info label');
@@ -69,30 +60,29 @@ function updatePaginationInfo(totalFilteredRecords) {
     const totalPages = Math.ceil(totalFilteredRecords / recordsPerPage);
     paginationInfo.textContent = `Página ${currentPage} de ${totalPages}`;
 
-    paginationButtons.style.display = 'flex';
     renderPaginationButtons(totalPages);
 }
 
 function renderPaginationButtons(totalPages) {
     const paginationButtons = document.querySelector('.pagination-buttons');
-    paginationButtons.innerHTML = ''; // Limpiar botones existentes
+    paginationButtons.innerHTML = '';
 
     if (totalPages > 1) {
-        const prevButton = `<button class="pagination-btn" data-action="prev"><</button>`;
-        const nextButton = `<button class="pagination-btn" data-action="next">></button>`;
-        
-        paginationButtons.insertAdjacentHTML('beforeend', prevButton);
-        paginationButtons.insertAdjacentHTML('beforeend', nextButton);
+        if (currentPage > 1) {
+            paginationButtons.insertAdjacentHTML('beforeend', `<button class="pagination-btn" data-action="prev"><</button>`);
+        }
+        for (let i = 1; i <= totalPages; i++) {
+            const isActive = i === currentPage ? 'active' : '';
+            paginationButtons.insertAdjacentHTML('beforeend', `<button class="pagination-btn ${isActive}" data-page="${i}">${i}</button>`);
+        }
+        if (currentPage < totalPages) {
+            paginationButtons.insertAdjacentHTML('beforeend', `<button class="pagination-btn" data-action="next">></button>`);
+        }
     }
 }
 
-function handleRecordsPerPageChange(event) {
-    recordsPerPage = parseInt(event.target.value);
-    currentPage = 1;  // Reset to the first page
-    filterAndRenderClients();
-}
-
 function handlePaginationClick(event) {
+    const action = event.target.getAttribute('data-action');
     const totalFilteredRecords = allClients.filter(client =>
         Object.values(client).some(value =>
             value && value.toString().toLowerCase().includes(document.getElementById('searchUser').value.toLowerCase())
@@ -100,108 +90,76 @@ function handlePaginationClick(event) {
     ).length;
     const totalPages = Math.ceil(totalFilteredRecords / recordsPerPage);
 
-    const action = event.target.getAttribute('data-action');
     if (action === 'prev' && currentPage > 1) {
         currentPage--;
     } else if (action === 'next' && currentPage < totalPages) {
         currentPage++;
-    } else {
-        currentPage = parseInt(event.target.getAttribute('data-page'));
+    } else if (event.target.hasAttribute('data-page')) {
+        const targetPage = parseInt(event.target.getAttribute('data-page'));
+        if (targetPage >= 1 && targetPage <= totalPages) {
+            currentPage = targetPage;
+        }
     }
 
     filterAndRenderClients();
 }
 
 function setupEventListeners() {
-    const createButton = document.querySelector('.create-button');
-    createButton.addEventListener('click', () => openModal());
+    document.getElementById('searchUser').addEventListener('input', () => {
+        currentPage = 1; // Reiniciar a la primera página al buscar
+        filterAndRenderClients();
+    });
 
-    const saveButton = document.querySelector('.btn_saveusu');
-    saveButton.addEventListener('click', handleSaveClient);
+    document.getElementById('recordsPerPage').addEventListener('change', event => {
+        recordsPerPage = parseInt(event.target.value);
+        currentPage = 1; // Reiniciar a la primera página al cambiar el número de registros
+        filterAndRenderClients();
+    });
 
-    document.querySelector('table').addEventListener('dblclick', handleTableDoubleClick);
+    document.querySelector('.pagination-buttons').addEventListener('click', handlePaginationClick);
 }
 
-async function handleSaveClient() {
-    if (!confirm('¿Está seguro de que desea guardar los cambios?')) {
-        return;
-    }
+// Aquí se encuentran todas tus funciones y event listeners actuales
 
-    const clientData = {
-        documentType: document.getElementById('tipo').value,
-        documentNumber: document.getElementById('documento').value,
-        name: document.getElementById('nombre').value,
-        lastName: document.getElementById('apellido').value,
-        phoneNumber: document.getElementById('telefono').value,
-        gender: document.getElementById('sexo').value,
-        email: document.getElementById('correo').value,
-        isActive: document.getElementById('estado').value === 'Activo'
-    };
+// Añadir event listener para el doble clic en las filas de la tabla del modal
+document.querySelector('table tbody').addEventListener('dblclick', event => {
+    const targetRow = event.target.closest('tr');
 
-    const clientId = this.getAttribute('data-id');
+    if (targetRow) {
+        const cells = targetRow.getElementsByTagName('td');
+        const gender = targetRow.getAttribute('data-gender');
+        const nombreCliente = cells[2].innerText || 'N/A';  // Suponiendo que el nombre del cliente está en la columna 2
 
-    try {
-        if (clientId) {
-            await updateCustomer({ id: clientId, ...clientData });
-        } else {
-            await createCustomer(clientData);
-        }
+        // Asignar valores a los campos del formulario
+        document.getElementById('tipo').value = cells[0].innerText || 'N/A';
+        document.getElementById('nroDocumento').value = cells[1].innerText || 'N/A';
+        document.getElementById('nombre').value = nombreCliente;
+        document.getElementById('apellido').value = cells[3].innerText || 'N/A';
+        document.getElementById('telefono').value = cells[4].innerText || 'N/A';
+        document.getElementById('correo').value = cells[5].innerText || 'N/A';
+        document.getElementById('sexo').value = gender || 'N/A';
+
+        // Mostrar alerta con el nombre del cliente
+        Swal.fire({
+            icon: 'success',
+            title: `Cliente ${nombreCliente} seleccionado`,
+            showConfirmButton: false,
+            timer: 1000,  // Duración de la alerta (1 segundo)
+            timerProgressBar: true,
+        });
+
+        // Cerrar el modal después de seleccionar un cliente
         closeModal();
-        loadClients();
-    } catch (error) {
-        console.error('Error saving client:', error);
-        alert('Error al guardar el cliente');
     }
+});
+
+function closeModal() {
+    document.getElementById('createUserModal').style.display = 'none';
 }
 
-function handleTableDoubleClick(event) {
-    const target = event.target.closest('tr');
-    if (!target) return;
-
-    const clientId = target.querySelector('.edit-btn').getAttribute('data-id');
-    const client = allClients.find(c => c.id === parseInt(clientId));
-    if (client) {
-        fillModalWithClientData(client);
-        openModal(client);
-    }
-}
-
-function openModal(clientData = null) {
-    const modal = document.getElementById('createUserModal');
-    const modalTitle = modal.querySelector('.modalusu-header h2');
-    const saveButton = modal.querySelector('.btn_saveusu');
-
-    if (clientData) {
-        modalTitle.textContent = 'Editar Cliente';
-        fillModalWithClientData(clientData);
-        saveButton.setAttribute('data-id', clientData.id);
-    } else {
-        modalTitle.textContent = 'Crear Cliente';
-        resetModal();
-        saveButton.removeAttribute('data-id');
-    }
-
-    modal.style.display = 'flex';
-}
-
-function fillModalWithClientData(clientData) {
-    document.getElementById('tipo').value = clientData.documentType;
-    document.getElementById('documento').value = clientData.documentNumber;
-    document.getElementById('nombre').value = clientData.name;
-    document.getElementById('apellido').value = clientData.lastName;
-    document.getElementById('telefono').value = clientData.phoneNumber;
-    document.getElementById('sexo').value = clientData.gender.toLowerCase();
-    document.getElementById('correo').value = clientData.email;
-    document.getElementById('estado').value = clientData.isActive ? 'Activo' : 'Inactivo';
-}
-
-function resetModal() {
-    document.getElementById('tipo').value = 'Cedula';
-    document.getElementById('documento').value = '';
-    document.getElementById('nombre').value = '';
-    document.getElementById('apellido').value = '';
-    document.getElementById('telefono').value = '';
-    document.getElementById('sexo').value = 'masculino';
-    document.getElementById('correo').value = '';
-    document.getElementById('estado').value = 'Activo';
-}
+// Event listeners adicionales
+document.addEventListener('DOMContentLoaded', async () => {
+    allClients = (await getAllCustomers()).filter(client => client.isActive); // Filtrar solo los clientes activos
+    loadClients();
+    setupEventListeners();
+});

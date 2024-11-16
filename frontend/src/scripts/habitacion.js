@@ -407,7 +407,7 @@ export function initializeAllRooms() {
                         <i class="fas fa-${statusClass === 'limpieza' ? 'broom' : statusClass === 'ocupado' ? 'user-check' : 'bed'} room-icon"></i>
                     </div>
                     <div class="room-category">CATEGORIA: ${room.type}</div>
-                    <div class="room-status ${statusClass}" data-id="${room.id}" onclick="redirectToPage('${statusClass}', '${room.id}', '${room.number}', '${room.type}', '${room.floor}', '${encodeURIComponent(room.details || '')}')">
+                    <div class="room-status ${statusClass}" data-id="${room.id}" onclick="redirectToPage('${statusClass}', '${room.id}', '${room.number}', '${room.type}', '${room.floor}', '${encodeURIComponent(room.details || '')}','${room.price}')">
                         ${room.status.toUpperCase()}
                         <i class="fas fa-chevron-right"></i>
                     </div>
@@ -417,10 +417,10 @@ export function initializeAllRooms() {
         });
     }
 
-    window.redirectToPage = function(status, id, number, type, floor, details) {
+    window.redirectToPage = function(status, id, number, type, floor, details,price) {
         switch (status) {
             case 'disponible':
-                window.location.href = `../pages/G_registroReserva.html?id=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}`;
+                window.location.href = `../pages/G_registroReserva.html?id=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}&price=${price}`;
                 break;
             case 'ocupado':
                 window.location.href = '../pages/G_salida.html';
