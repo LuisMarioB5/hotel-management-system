@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+    <script type="module" src="../scripts/booking.js"></script>
 </head>
 <body>
     <div class="dashboard-page">
@@ -78,11 +79,15 @@
                     <div class="client-details">
                         <h2><i class="fas fa-user-circle"></i> Detalle Cliente</h2>
                         <div class="form-group">
-                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
+                            <label><i class="fas fa-id-card"></i> ID cliente:</label>
                             <div class="search-container">
-                                <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
+                                <input type="text" id="cliente-id" readonly>
                                 <button class="search-btn" data-toggle="modal" data-target="#createUserModal" ><i class="fas fa-search"></i> Buscar</button>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
+                            <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
                         </div>
                         <div class="form-group">
                             <label for="tipo"><i class="fas fa-file-alt"></i> Tipo Documento:</label>
@@ -294,7 +299,7 @@
     
     <script type="module" src="../scripts/clientemodalreserva.js"></script>
 
-    <!--HALAR DATOS DE LA HABITACION-->>
+    <!--HALAR DATOS DE LA HABITACION-->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -427,87 +432,6 @@
         </div>
     </div>
 
-    <!--VALIDACIONES POR ARREGLAR-->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        
-            // Validación y registro
-            const registrarBtn = document.getElementById('registrarBtn');
-            registrarBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (validarFormulario()) {
-                    // Aquí iría el código para enviar los datos al servidor
-                    alert('Formulario válido. Datos listos para ser enviados.');
-                }
-            });
-        
-            function validarFormulario() {
-                const fechaSalida = document.getElementById('fechaSalida');
-                const adelanto = document.getElementById('adelanto');
-                const observacion = document.getElementById('observacion');
-                const nroDocumento = document.getElementById('nroDocumento');
-                const nombre = document.getElementById('nombre');
-                const apellido = document.getElementById('apellido');
-                const correo = document.getElementById('correo');
-                const sexo = document.getElementById('sexo');
-        
-                let isValid = true;
-        
-                // Validar campos requeridos
-                [fechaSalida, adelanto, nroDocumento, nombre, apellido, correo, sexo].forEach(campo => {
-                    if (!campo.value.trim()) {
-                        marcarError(campo, 'Este campo es requerido');
-                        isValid = false;
-                    } else {
-                        limpiarError(campo);
-                    }
-                });
-        
-                // Validar fecha de salida
-                if (fechaSalida.value <= fechaEntrada.value) {
-                    marcarError(fechaSalida, 'La fecha de salida debe ser posterior a la fecha de entrada');
-                    isValid = false;
-                }
-        
-                // Validar adelanto
-                if (adelanto.value < 0 || adelanto.value > parseFloat(document.getElementById('precio').value)) {
-                    marcarError(adelanto, 'El adelanto debe ser entre 0 y el precio total');
-                    isValid = false;
-                }
-        
-                // Validar correo
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(correo.value)) {
-                    marcarError(correo, 'Ingrese un correo electrónico válido');
-                    isValid = false;
-                }
-        
-                return isValid;
-            }
-        
-            function marcarError(campo, mensaje) {
-                campo.classList.add('is-invalid');
-                const errorDiv = campo.nextElementSibling;
-                if (errorDiv && errorDiv.classList.contains('error-message')) {
-                    errorDiv.textContent = mensaje;
-                } else {
-                    const div = document.createElement('div');
-                    div.className = 'error-message';
-                    div.textContent = mensaje;
-                    campo.parentNode.insertBefore(div, campo.nextSibling);
-                }
-            }
-        
-            function limpiarError(campo) {
-                campo.classList.remove('is-invalid');
-                const errorDiv = campo.nextElementSibling;
-                if (errorDiv && errorDiv.classList.contains('error-message')) {
-                    errorDiv.remove();
-                }
-            }
-        });
-    </script>
-
     <!--Fin -->
     <script>
         // Abrir modal
@@ -570,5 +494,7 @@
             }
         });
     </script>
+
+ 
 </body>
 </html>

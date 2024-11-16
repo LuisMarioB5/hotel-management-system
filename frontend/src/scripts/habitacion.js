@@ -169,32 +169,75 @@ async function handleSaveRoom() {
 
     const disponibilidad = document.getElementById('Disponibilidad').value;
     const estado = document.getElementById('estado').value;
+    const numero = document.getElementById('numero').value;
+    const detalle = document.getElementById('detalle').value;
+    const piso = document.getElementById('piso').value;
+    const categoria = document.getElementById('categoria').value;
+    const precio = document.getElementById('precio').value;
+
+    // Validación de campos vacíos
+    if (!numero || !detalle || !piso || !categoria || !precio) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Campos vacíos',
+            text: 'Por favor, complete todos los campos obligatorios.',
+        });
+        return; // Evitar guardar los datos
+    }
 
     // Verificación de consistencia entre disponibilidad y estado
     if (disponibilidad === 'FUERA_DE_SERVICIO' && estado === 'Activo') {
-        alert('Error: Si la disponibilidad es "FUERA DE SERVICIO", el estado debe ser "Inactivo".');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error en disponibilidad',
+            text: 'Si la disponibilidad es "FUERA DE SERVICIO", el estado debe ser "Inactivo".',
+        });
         return; // Evitar guardar los datos
     }
     if (disponibilidad === 'LIMPIEZA' && estado === 'Activo') {
-        alert('Error: Si la habitacion esta en "LIMPIEZA", el estado debe ser "Inactivo".');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error en disponibilidad',
+            text: 'Si la habitacion esta en "LIMPIEZA", el estado debe ser "Inactivo".',
+        });
         return; // Evitar guardar los datos
     }
-    
-    if (!confirm('¿Está seguro de que desea guardar los cambios?')) {
+
+    // Validación de que el precio no puede ser letras
+    if (!/^\d+(\.\d{1,2})?$/.test(precio)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Precio inválido',
+            text: 'Por favor, ingrese un precio válido (ejemplo: 10.99).',
+        });
         return;
     }
 
+    const confirmacion = await Swal.fire({
+        title: 'Confirmación',
+        text: '¿Está seguro de que desea guardar los cambios?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, guardar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirmacion.isConfirmed) {
+        return; // Si el usuario cancela, no guardar los cambios
+    }
 
     const roomId = this.getAttribute('data-id');
     const updatedRoomData = {
         id: parseInt(roomId),
-        number: parseInt(document.getElementById('numero').value),
-        details: document.getElementById('detalle').value,
-        floor: document.getElementById('piso').value,
-        type: document.getElementById('categoria').value,
-        status: document.getElementById('Disponibilidad').value,
-        price: parseFloat(document.getElementById('precio').value),
-        isAvailable: document.getElementById('estado').value === 'Activo'
+        number: parseInt(numero),
+        details: detalle,
+        floor: piso,
+        type: categoria,
+        status: disponibilidad,
+        price: parseFloat(precio),
+        isAvailable: estado === 'Activo'
     };
 
     try {
@@ -203,9 +246,14 @@ async function handleSaveRoom() {
         loadRooms();
     } catch (error) {
         console.error('Error updating room:', error);
-        alert('Error al actualizar la habitación');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al actualizar la habitación',
+        });
     }
 }
+
 
 function closeModal() {
     document.getElementById('createUserModal').style.display = 'none';

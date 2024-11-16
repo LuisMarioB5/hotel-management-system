@@ -109,8 +109,8 @@
                     </div>
 
                     <div class="form-actions">
-                        <button id="cancelarBtn" class="cancelar-btn"><i class="fas fa-times-circle"></i> Cancelar</button>
-                        <button id="registrarBtn" class="register-btn"><i class="fas fa-save"></i> Confirmar Hospedaje</button>
+                        <button id="cancelarBtn" class="cancelar-btn" onclick="window.cancelBooking(bookingId)"><i class="fas fa-times-circle"></i> Cancelar</button>
+                        <button id="registrarBtn" class="register-btn" onclick="window.confirmCheckIn(bookingId, roomId)"><i class="fas fa-save"></i> Confirmar Hospedaje</button>
                     </div>
                 </div>
 
@@ -203,5 +203,6 @@
             });
         });
     </script>
+    <script type="module" src="../scripts/booking.js"></script>
 </body>
 </html>

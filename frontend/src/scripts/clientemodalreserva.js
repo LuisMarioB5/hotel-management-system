@@ -127,10 +127,12 @@ document.querySelector('table tbody').addEventListener('dblclick', event => {
 
     if (targetRow) {
         const cells = targetRow.getElementsByTagName('td');
+        const id = targetRow.getAttribute('data-id');
         const gender = targetRow.getAttribute('data-gender');
         const nombreCliente = cells[2].innerText || 'N/A';  // Suponiendo que el nombre del cliente está en la columna 2
 
         // Asignar valores a los campos del formulario
+        document.getElementById('cliente-id').value = id || 'N/A';
         document.getElementById('tipo').value = cells[0].innerText || 'N/A';
         document.getElementById('nroDocumento').value = cells[1].innerText || 'N/A';
         document.getElementById('nombre').value = nombreCliente;

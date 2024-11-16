@@ -296,7 +296,6 @@
     }
 
     .form-group input,
-    .form-group select,
     .form-group textarea {
         
         padding: 5px 12px;
@@ -308,9 +307,24 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        width: 90%;
+        width: 78%;
         color: #413e3e;;
         cursor: default;
+    }
+    .form-group select{
+        padding: 5px 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        transition: border-color 0.3s;
+        /* Ajustes adicionales para evitar desbordamiento de texto */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 82.5%;
+        color: #413e3e;;
+        cursor: default;
+
     }
 
     .form-group input:focus,
