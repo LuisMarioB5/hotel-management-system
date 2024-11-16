@@ -79,11 +79,15 @@
                     <div class="client-details">
                         <h2><i class="fas fa-user-circle"></i> Detalle Cliente</h2>
                         <div class="form-group">
-                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
+                            <label><i class="fas fa-id-card"></i> ID cliente:</label>
                             <div class="search-container">
-                                <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
+                                <input type="text" id="cliente-id" readonly>
                                 <button class="search-btn" data-toggle="modal" data-target="#createUserModal" ><i class="fas fa-search"></i> Buscar</button>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
+                            <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
                         </div>
                         <div class="form-group">
                             <label for="tipo"><i class="fas fa-file-alt"></i> Tipo Documento:</label>
