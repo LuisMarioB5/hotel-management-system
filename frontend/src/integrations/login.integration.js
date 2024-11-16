@@ -1,3 +1,4 @@
+import { checkAuthorizationLoginPage } from '../auth/pages/login.auth.js';
 import { BACKEND_ROUTES } from '../config/backend.routes.js';
 import { handleLoginNotification } from '../scripts/utils.js'
 
@@ -26,9 +27,12 @@ export async function loginIntegration() {
 
             if (response.ok) {
                 const token = await response.json();
+                localStorage.removeItem('jwt');
                 localStorage.setItem('jwt', token.access_token);
                 console.log('Inicio de sesión exitoso. Token almacenado correctamente');
-                handleLoginNotification('success', username, 'dashboard.html');
+                const status = checkAuthorizationLoginPage();
+                console.log(status)
+                handleLoginNotification(status[0], username, status[1]);
             } 
             
             if (response.status === 401 || response.status === 404) {
