@@ -105,40 +105,7 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        const limpiezaModal = document.getElementById('limpiezaModal');
-        const btnLimpieza = document.getElementById('limpiezaBtn');
-        const closeLimpiezaModal = document.getElementById('closeLimpiezaModal');
-        const cancelLimpieza = document.getElementById('cancelLimpieza');
-        const confirmarLimpieza = document.getElementById('confirmarLimpieza');
-
-        function abrirModalLimpieza() {
-            limpiezaModal.style.display = 'block';
-        }
-
-        function cerrarModalLimpieza() {
-            limpiezaModal.style.display = 'none';
-        }
-
-        function confirmarFinalizacionLimpieza() {
-            // Aquí iría la lógica para marcar la habitación como limpia
-            alert('Limpieza confirmada para la habitación');
-            cerrarModalLimpieza();
-        }
-
-        btnLimpieza.addEventListener('click', abrirModalLimpieza);
-        closeLimpiezaModal.addEventListener('click', cerrarModalLimpieza);
-        cancelLimpieza.addEventListener('click', cerrarModalLimpieza);
-        confirmarLimpieza.addEventListener('click', confirmarFinalizacionLimpieza);
-
-        window.addEventListener('click', function(event) {
-            if (event.target == limpiezaModal) {
-                cerrarModalLimpieza();
-            }
-        });
-    });
-    </script>
+   
     <script>
         // Script para abrir y cerrar el modal
         document.getElementById('logoutButton').addEventListener('click', function() {

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/recepcion.css"> <!--Se usara para el css del content-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+</head>
 </head>
 <body>
     <div class="dashboard-page">
@@ -53,42 +55,41 @@
                 <div class="rooms-container">
 
                     <label>Seleccionar Piso</label>
-                    <select class="floor-selector" >
-                        <option value="">Todos</option>
-                        <option value="1">Piso 1</option>
-                        <option value="2">Piso 2</option>
-                        <option value="3">Piso 3</option>
+                    <select class="floor-selector">
+                        <option value="Todos">Todos</option>
+                        <option value="PRIMER">PRIMER</option>
+                        <option value="SEGUNDO">SEGUNDO</option>
+                        <option value="TERCER">TERCER</option>
+                        <option value="CUARTO">CUARTO</option>
+                        <option value="QUINTO">QUINTO</option>
                     </select>
                     
-                <button class="reservar-btn" onclick="window.location.href='../pages/G_reservas.html';" ><i class="fas fa-file-alt"></i> Reservar</button>
+                    <button class="reservar-btn" onclick="window.location.href='../pages/G_reservas.html';" ><i class="fas fa-file-alt"></i> Reservar</button>
 
                     <div class="rooms-grid">
-                        <div class="room-card reservado">
-                            <div class="room-header">
-                                <span class="room-number">NRO: 004</span>
-                                <i class="fas fa-calendar-check room-icon"></i>
-                            </div>
-                            <div class="room-category">
-                                CATEGORIA: INDIVIDUAL   
-                            </div>
-                            <div class="room-status reservado" onclick="redirectToG_checkin()">
-                                RESERVADO
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
-                        </div>
-                    </div>
                     
+                    </div>
                 </div>
-                
             </div>
         </div>
     </div>
 
-    <script>   
-        function redirectToG_checkin() {
-            window.location.href = '../pages/G_check-in.html';
-        }
-    </script>
+    <!-- Nuevo Modal de confirmar -->
+    <div class="modal" id="confirmarModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>¿Quiere confirmar la Reserva?</h5>
+                <span class="close-button" id="closeconfirmarModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro que desea dar por Confirmada la reserva?
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel" id="cancelConfirmar">Cancelar</button>
+                <button class="btn confirm" id="confirmarReserva">Confirmar Reserva</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
@@ -151,5 +152,10 @@
     });
 });
     </script>
+
+<script type="module">
+    import { initializeRoomReservations } from '../scripts/booking.js';
+    document.addEventListener('DOMContentLoaded', initializeRoomReservations);
+</script>
 </body>
 </html>
