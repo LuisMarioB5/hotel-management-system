@@ -1,7 +1,7 @@
 // booking.js
 import { createCustomer, getCustomerByDocumentNumber, updateCustomer } from '../integrations/customer.integration.js';
-import { createBooking, confirmBooking, cancelBooking, checkInBooking } from '../integrations/booking.integration.js';
-import { updateRoom } from '../integrations/room.integration.js';
+import { createBooking, confirmBooking, cancelBooking, checkInBooking,getAllBookings } from '../integrations/booking.integration.js';
+import { updateRoom,getAllRooms,getRoomById } from '../integrations/room.integration.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const registrarBtn = document.getElementById('registrarBtn');
@@ -341,3 +341,274 @@ window.confirmCheckIn = async function(bookingId, roomId) {
         showAlert('error', 'Error', 'Hubo un problema al iniciar el hospedaje.');
     }
 };
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA DEL DASHBOARD///
+//----------------------------------------------------------------------------//
+
+
+// Función para actualizar el conteo de reservas confirmadas
+async function updateBookingCounts() {
+    try {
+        const bookings = await getAllBookings(); // Obtener todas las reservas
+        const confirmedBookings = bookings.filter(booking => booking.status === 'CONFIRMADA'); // Filtrar las confirmadas
+        const totalBookings = confirmedBookings.length; // Contar las reservas confirmadas
+
+        // Actualizar el DOM en dashboard.html
+        document.getElementById('reserved-rooms').textContent = totalBookings;
+    } catch (error) {
+        console.error('Error al actualizar el conteo de reservas:', error);
+    }
+}
+
+// Función para cargar las últimas tres reservas confirmadas
+async function loadLatestBookings() {
+    try {
+        const bookings = await getAllBookings(); // Obtener todas las reservas
+
+        // Filtrar las reservas confirmadas y ordenarlas por fecha de check-in descendente
+        const confirmedBookings = bookings
+            .filter(booking => booking.status === 'CONFIRMADA')
+            .sort((a, b) => new Date(b.checkInDate) - new Date(a.checkInDate))
+            .slice(0, 3); // Obtener las últimas tres
+
+        // Insertar las últimas 3 reservas confirmadas en el HTML
+        const latestBookingsContainer = document.querySelector('.latest-section .latest-content.reservas');
+        latestBookingsContainer.innerHTML = ''; // Limpiar contenido anterior
+
+        confirmedBookings.forEach(booking => {
+            const bookingElement = document.createElement('div');
+            bookingElement.classList.add('item');
+            bookingElement.innerHTML = `
+                <div class="item-avatar">
+                    <i class="fas fa-bed"></i>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">Habitación ${booking.room.number} - ${booking.room.type}</div>
+                    <div class="item-subtitle"><span>Check-in:</span> ${new Date(booking.checkInDate).toLocaleDateString()}</div>
+                </div>
+            `;
+            latestBookingsContainer.appendChild(bookingElement);
+        });
+    } catch (error) {
+        console.error('Error al cargar las últimas reservas:', error);
+    }
+}
+
+// Llamar a las funciones al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    updateBookingCounts(); // Para mostrar el total de reservas confirmadas
+    loadLatestBookings(); // Para mostrar las últimas 3 reservas confirmadas
+});
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA DEL DASHBOARD///
+//----------------------------------------------------------------------------//
+
+
+export function initializeRoomReservations() {
+    const roomsGrid = document.querySelector('.rooms-grid');
+    const floorSelector = document.querySelector('.floor-selector');
+    let selectedBookingId = null;
+    let selectedRoomNumber = null;
+
+    async function loadReservations(floor = 'Todos') {
+        try {
+            const allReservations = await getAllBookings();
+            const reservations = await Promise.all(
+                allReservations.map(async (reservation) => {
+                    try {
+                        const room = await getRoomById(reservation.roomId);
+                        if (!room) throw new Error(`Room not found for ID: ${reservation.roomId}`);
+                        return { ...reservation, roomDetails: room };
+                    } catch (error) {
+                        console.error('Error fetching room details:', error);
+                        return { ...reservation, roomDetails: null };
+                    }
+                })
+            );
+
+            const filteredReservations = reservations.filter(reservation =>
+                (reservation.status.toLowerCase() === 'pendiente' || reservation.status.toLowerCase() === 'confirmada') &&
+                (floor === 'Todos' || reservation.roomDetails?.floor?.toUpperCase() === floor)
+            );
+
+            renderReservations(filteredReservations);
+        } catch (error) {
+            console.error('Error loading reservations:', error);
+            showAlert('error', 'Error', 'Hubo un problema al cargar las reservas.', 1500);
+        }
+    }
+
+    function renderReservations(reservations) {
+        roomsGrid.innerHTML = '';
+        reservations.forEach(reservation => {
+            const { roomDetails } = reservation;
+            const statusClass = reservation.status.toLowerCase() === 'confirmada' ? 'reservado' : 'confirmar';
+            const statusText = reservation.status.toLowerCase() === 'confirmada' ? 'RESERVADO' : 'CONFIRMAR RESERVA';
+
+            const roomCard = `
+                <div class="room-card ${statusClass}">
+                    <div class="room-header">
+                        <span class="room-number">NRO: ${roomDetails?.number || 'No disponible'}</span>
+                        <i class="fas ${statusClass === 'reservado' ? 'fa-calendar-check' : 'fa-check-circle'} room-icon"></i>
+                    </div>
+                    <div class="room-category">
+                        CATEGORÍA: ${roomDetails?.type || 'Sin categoría'}
+                    </div>
+                    <div class="room-status ${statusClass}" data-id="${reservation.id}" data-number="${roomDetails?.number}">
+                        ${statusText}
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            `;
+            roomsGrid.insertAdjacentHTML('beforeend', roomCard);
+        });
+
+        attachEventListeners();
+    }
+
+    function attachEventListeners() {
+        document.querySelectorAll('.room-status.confirmar').forEach(btn => {
+            btn.addEventListener('click', openActionModal);
+        });
+
+        document.querySelectorAll('.room-status.reservado').forEach(btn => {
+            btn.addEventListener('click', redirectToCheckIn);
+        });
+    }
+
+    async function openActionModal(event) {
+        const roomElement = event.target.closest('.room-status');
+        if (!roomElement) return;
+
+        selectedBookingId = roomElement.getAttribute('data-id');
+        selectedRoomNumber = roomElement.getAttribute('data-number');
+
+        try {
+            // Modal que pregunta si quiere confirmar o cancelar
+            const result = await Swal.fire({
+                icon: 'question',
+                title: '¿Desea cancelar o confirmar la reserva?',
+                showConfirmButton: true,
+                confirmButtonText: 'Confirmar reserva',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar reserva',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                allowOutsideClick: true,
+                backdrop: true,
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
+            });
+
+            if (result.isConfirmed) {
+                // Si elige confirmar, preguntamos si está seguro
+                const confirmResult = await Swal.fire({
+                    icon: 'question',
+                    title: '¿Está seguro?',
+                    text: `¿Está seguro de que desea confirmar la reserva de la habitación ${selectedRoomNumber}?`,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Sí, confirmar',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    allowOutsideClick: false,
+                    heightAuto: false,
+                    customClass: {
+                        container: 'swal-container',
+                    },
+                });
+
+                if (confirmResult.isConfirmed) {
+                    confirmReservation();
+                }
+            } else {
+                // Si elige cancelar, preguntamos si está seguro
+                const cancelResult = await Swal.fire({
+                    icon: 'question',
+                    title: '¿Está seguro?',
+                    text: `¿Está seguro de que desea cancelar la reserva de la habitación ${selectedRoomNumber}?`,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Sí, cancelar',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    allowOutsideClick: false,
+                    heightAuto: false,
+                    customClass: {
+                        container: 'swal-container',
+                    },
+                });
+
+                if (cancelResult.isConfirmed) {
+                    cancelReservation();
+                }
+            }
+        } catch (error) {
+            console.error('Error abriendo el modal:', error);
+        }
+    }
+
+    async function confirmReservation() {
+        try {
+            if (selectedBookingId) {
+                await confirmBooking(selectedBookingId);
+                showAlert('success', `Reserva confirmada`, `La habitación ${selectedRoomNumber} ahora está reservada.`, 1500);
+                loadReservations(floorSelector.value);
+            }
+        } catch (error) {
+            console.error('Error confirming reservation:', error);
+            showAlert('error', 'Error', 'Hubo un problema al confirmar la reserva.', 1500);
+        }
+    }
+
+    async function cancelReservation() {
+        try {
+            if (selectedBookingId) {
+                await cancelBooking(selectedBookingId);
+                showAlert('success', `Reserva cancelada`, `La reserva de la habitación ${selectedRoomNumber} ha sido cancelada.`, 1500);
+                loadReservations(floorSelector.value);
+            }
+        } catch (error) {
+            console.error('Error canceling reservation:', error);
+            showAlert('error', 'Error', 'Hubo un problema al cancelar la reserva.', 1500);
+        }
+    }
+
+    function redirectToCheckIn(event) {
+        const roomElement = event.target.closest('.room-status');
+        const roomId = roomElement.getAttribute('data-id');
+        window.location.href = `../pages/G_check-in.html?id=${roomId}`;
+    }
+
+    function showAlert(icon, title, text, timer = null) {
+        Swal.fire({
+            icon,
+            title,
+            text,
+            showConfirmButton,
+            showCancelButton: showConfirmButton,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, confirmar',
+            cancelButtonText: 'Cancelar',
+            allowOutsideClick: false,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+            backdrop: true,
+            timer: timer,
+            timerProgressBar: timer !== null,
+        });
+    }
+
+    floorSelector.addEventListener('change', () => loadReservations(floorSelector.value));
+
+    loadReservations();
+}

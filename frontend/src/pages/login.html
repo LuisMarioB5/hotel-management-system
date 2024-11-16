@@ -8,6 +8,30 @@
     <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<style>
+    .password-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .password-container input {
+        padding-right: 30px; /* Espacio para el icono */
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 43%;
+        transform: translateY(-43%);
+        cursor: pointer;
+        font-size: 18px;
+        color: #888;
+    }
+
+    .toggle-password:hover {
+        color: #000;
+    }
+</style>
 <body>
     <div id="root">
         <div class="login-container">
@@ -16,16 +40,34 @@
             </div>
             <div class="login-form-section">
                 <h1 class="login-h1">Bienvenido</h1>
-                <form>
-                    <input type="text" id="username" placeholder="Nombre de usuario" required>
-                    <input type="password" id="password" placeholder="•••••••••" required>
-                    <button type="submit">Ingresar</button>
-                    <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
-                </form>
+                <div class="password-container">
+                    <form>
+                        <input type="text" id="username" placeholder="Nombre de usuario" required>
+                        <input type="password" id="password" placeholder="•••••••••" required>
+                        <span class="toggle-password" id="togglePassword">👁️</span>
+                        <button type="submit">Ingresar</button>
+                        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                    </form>
+                </div>
+
                 <p>Todos los derechos reservados &copy;</p>
             </div>
         </div>
     </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+
+        togglePassword.addEventListener('click', () => {
+            // Alternar el tipo de input entre "password" y "text"
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+
+            // Cambiar el icono según el estado
+            togglePassword.textContent = isPassword ? '🙈' : '👁️';
+        });
+    </script>
 
     <script type="module" src="../scripts/login-for-now.js"></script>
 </body>
