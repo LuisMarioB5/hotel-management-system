@@ -34,19 +34,6 @@ export function handleLoginNotification(state, username, url) {
 
 }
 
-export function parseJwt(token) {
-    // Divide el token en sus tres partes
-    const base64Url = token.split('.')[1];
-    // Decodifica el payload de Base64
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    
-    // Convierte el payload JSON a un objeto JavaScript
-    return JSON.parse(jsonPayload);
-}
-
 /**
  * Valida que un parámetro no sea nulo o indefinido.
  * @function validateParamIsNotNull
