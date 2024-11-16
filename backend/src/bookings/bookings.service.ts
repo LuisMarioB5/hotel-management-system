@@ -33,17 +33,18 @@ export class BookingsService {
             status: BookingStatus.PENDIENTE,
             isActive: true
         });
-
-        await this.updateTotalStayCost(booking.id);
-        return this.repository.save(booking);
+        
+        const saved = await this.repository.save(booking);
+        await this.updateTotalStayCost(saved);
+        return saved;
     }
     
     async findAll(): Promise<BookingEntity[]> {
-        return this.repository.find({ relations: ['customer', 'room'] });
+        return this.repository.find({ relations: ['customer', 'room', 'consumptions'] });
     }
 
     async findById(id: number): Promise<BookingEntity> {
-        const booking = await this.repository.findOne({ where: { id }, relations: ['customer', 'room'] });
+        const booking = await this.repository.findOne({ where: { id }, relations: ['customer', 'room', 'consumptions'] });
         if (!booking) this.throwBookingNotFoundException(id);
         return booking;
     }
@@ -68,11 +69,14 @@ export class BookingsService {
             oldBooking.details = newBooking.details;
         }
     
-        this.verifyDatesAreFuture(oldBooking.checkInDate, oldBooking.checkOutDate);
-        await this.isRoomAvailableWithException(oldBooking.room.id, oldBooking.checkInDate, oldBooking.checkOutDate);
-        await this.updateTotalStayCost(oldBooking.id);
+        if (oldBooking.checkInDate && oldBooking.checkOutDate) {
+            this.verifyDatesAreFuture(oldBooking.checkInDate, oldBooking.checkOutDate);
+            await this.isRoomAvailableWithException(oldBooking.room.id, oldBooking.checkInDate, oldBooking.checkOutDate);
+        }
 
-        return this.repository.save(oldBooking);
+        const b = await this.repository.save(oldBooking);
+        await this.updateTotalStayCost(b);
+        return b;
     }
 
     async confirm(id: number): Promise<BookingEntity> {
@@ -177,39 +181,77 @@ export class BookingsService {
         return overlappingBookings.length === 0;
     }
 
-    async updateTotalStayCost(bookingId: number): Promise<void> {
-        const booking = await this.repository.findOne({
-            where: { id: bookingId },
-            relations: ['room', 'consumptions'],
-        });
-
-        if(!booking) this.throwBookingNotFoundException(bookingId);
-
+    async updateTotalStayCost(booking: BookingEntity): Promise<void> {    
         // Determinar la fecha de salida efectiva
+        const checkInDate = booking.actualCheckInDate || booking.checkInDate;
         const checkOutDate = booking.actualCheckOutDate || booking.checkOutDate;
+    
+        // Normalizar las fechas a medianoche para evitar que las horas afecten el cálculo
+        const checkInDateNormalized = new Date(checkInDate);
+        checkInDateNormalized.setHours(0, 0, 0, 0); // Pone la hora en 00:00
+    
+        const checkOutDateNormalized = new Date(checkOutDate);
+        checkOutDateNormalized.setHours(0, 0, 0, 0); // Pone la hora en 00:00
+    
+        // Calcular la duración en milisegundos
+        const durationInMillis = checkOutDateNormalized.getTime() - checkInDateNormalized.getTime();
+    
+        // Calcular la duración en días (sin redondeo)
+        let durationInDays = durationInMillis / (1000 * 60 * 60 * 24);
+    
+        // Si la duración es mayor a 0, agregamos 1 al valor de días
+        if (durationInDays > 0) {
+            durationInDays = Math.ceil(durationInDays) + 1;  // Sumar 1 si pasa de un día
+        } else {
+            durationInDays = 1; // Si la fecha de salida es el mismo día que la entrada, se cuenta como 1 día
+        }
 
-        // Calcular la duración de la estancia en días redondeando hacia arriba
-        const durationInMillis = new Date(checkOutDate).getTime() - new Date(booking.actualCheckInDate).getTime();
-        const durationInDays = Math.ceil(durationInMillis / (1000 * 60 * 60 * 24)); // Redonde hacia arriba
+        // Asignar la duración calculada al booking
         booking.totalStayDays = durationInDays;
-
+    
         // Costo por noche de la habitación
         const roomCostPerNight = booking.room.price;
-
+    
         // Calcular el costo total de la habitación
-        const roomTotalCost = roomCostPerNight * durationInDays;
-
+        booking.stayCost = roomCostPerNight * durationInDays;
+    
         // Calcular el total de consumos
         booking.totalConsumption = Array.isArray(booking.consumptions)
             ? booking.consumptions.reduce((acc, consumption) => acc + Number(consumption.subtotal), 0)
             : 0;
-
-        // Costo total de la estancia
-        booking.totalStayCost = roomTotalCost + booking.totalConsumption;
-
+    
+        // Cálculo del costo total de la estancia
+        booking.totalCost = booking.stayCost + booking.totalConsumption;
+    
+        // Guardar los cambios en la base de datos
         await this.repository.save(booking);
     }
     
+    
+    async findBookingsWithinDateRange(startDate: Date, endDate: Date): Promise<BookingEntity[]> {
+        if (!startDate || !endDate) {
+            throw new BadRequestException('El rango de fechas es obligatorio');
+        }
+    
+        if (startDate > endDate) {
+            throw new BadRequestException('La fecha de inicio no puede ser posterior a la fecha de fin');
+        } else if (endDate < startDate) {
+            throw new BadRequestException('La fecha de fin no puede ser anterior a la fecha de inicio');
+        }
+    
+        const bookings = await this.repository.find({
+            where: [
+                {
+                    checkInDate: LessThanOrEqual(endDate),
+                    checkOutDate: MoreThanOrEqual(startDate),
+                },
+            ],
+            relations: ['customer', 'room', 'consumptions'],
+        });
+    
+        return bookings;
+    }
+
     private async isRoomAvailableWithException(roomId: number, checkInDate: Date, checkOutDate: Date, bookingId?: number): Promise<void> {
         if (!await this.isRoomAvailable(roomId, checkInDate, checkOutDate)) {
             throw new BadRequestException('La habitación ya tiene reservas en las fechas seleccionadas.');
