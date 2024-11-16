@@ -405,7 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
              ////ESTA PARTE ES PARA LA PAGINA DEL DASHBOARD///
 //----------------------------------------------------------------------------//
 
-
 export function initializeRoomReservations() {
     const roomsGrid = document.querySelector('.rooms-grid');
     const floorSelector = document.querySelector('.floor-selector');
@@ -414,39 +413,52 @@ export function initializeRoomReservations() {
 
     async function loadReservations(floor = 'Todos') {
         try {
+            // Obtener todas las reservas
             const allReservations = await getAllBookings();
-            const reservations = await Promise.all(
-                allReservations.map(async (reservation) => {
+
+            // Filtrar reservas con estado "PENDIENTE" o "CONFIRMADA"
+            const filteredReservations = allReservations.filter(reservation =>
+                ['pendiente', 'confirmada'].includes(reservation.status.toLowerCase())
+            );
+
+            // Procesar las reservas para agregar los datos de la habitación asociada
+            const reservationsWithRooms = await Promise.all(
+                filteredReservations.map(async (reservation) => {
+                    if (!reservation.roomId) {
+                        console.warn(`Reserva con ID ${reservation.id} no tiene roomId válido.`);
+                        return { ...reservation, roomDetails: null }; // Manejar reservas sin roomId
+                    }
+
                     try {
-                        const room = await getRoomById(reservation.roomId);
-                        if (!room) throw new Error(`Room not found for ID: ${reservation.roomId}`);
+                        const room = await getRoomById(reservation.roomId); // Obtener habitación por roomId
                         return { ...reservation, roomDetails: room };
                     } catch (error) {
-                        console.error('Error fetching room details:', error);
+                        console.error(`Error al obtener la habitación para reserva ID ${reservation.id}:`, error);
                         return { ...reservation, roomDetails: null };
                     }
                 })
             );
 
-            const filteredReservations = reservations.filter(reservation =>
-                (reservation.status.toLowerCase() === 'pendiente' || reservation.status.toLowerCase() === 'confirmada') &&
-                (floor === 'Todos' || reservation.roomDetails?.floor?.toUpperCase() === floor)
+            // Filtrar por piso si se especifica
+            const reservationsToRender = reservationsWithRooms.filter(reservation =>
+                floor === 'Todos' || reservation.roomDetails?.floor?.toUpperCase() === floor
             );
 
-            renderReservations(filteredReservations);
+            renderReservations(reservationsToRender);
         } catch (error) {
-            console.error('Error loading reservations:', error);
+            console.error('Error al cargar las reservas:', error);
             showAlert('error', 'Error', 'Hubo un problema al cargar las reservas.', 1500);
         }
     }
 
     function renderReservations(reservations) {
-        roomsGrid.innerHTML = '';
+        roomsGrid.innerHTML = ''; // Limpiar el contenedor antes de renderizar
         reservations.forEach(reservation => {
-            const { roomDetails } = reservation;
-            const statusClass = reservation.status.toLowerCase() === 'confirmada' ? 'reservado' : 'confirmar';
-            const statusText = reservation.status.toLowerCase() === 'confirmada' ? 'RESERVADO' : 'CONFIRMAR RESERVA';
+            const { roomDetails, status } = reservation;
+            const statusClass = status.toLowerCase() === 'confirmada' ? 'reservado' : 'confirmar';
+            const statusText = status.toLowerCase() === 'confirmada' ? 'RESERVADO' : 'CONFIRMAR RESERVA';
 
+            // Renderizar tarjeta de habitación
             const roomCard = `
                 <div class="room-card ${statusClass}">
                     <div class="room-header">
@@ -477,7 +489,6 @@ export function initializeRoomReservations() {
             btn.addEventListener('click', redirectToCheckIn);
         });
     }
-
     async function openActionModal(event) {
         const roomElement = event.target.closest('.room-status');
         if (!roomElement) return;
@@ -505,7 +516,7 @@ export function initializeRoomReservations() {
             });
 
             if (result.isConfirmed) {
-                // Si elige confirmar, preguntamos si está seguro
+                // Confirmar la reserva
                 const confirmResult = await Swal.fire({
                     icon: 'question',
                     title: '¿Está seguro?',
@@ -527,7 +538,7 @@ export function initializeRoomReservations() {
                     confirmReservation();
                 }
             } else {
-                // Si elige cancelar, preguntamos si está seguro
+                // Cancelar la reserva
                 const cancelResult = await Swal.fire({
                     icon: 'question',
                     title: '¿Está seguro?',
@@ -557,7 +568,7 @@ export function initializeRoomReservations() {
     async function confirmReservation() {
         try {
             if (selectedBookingId) {
-                await confirmBooking(selectedBookingId);
+                await confirmBooking(selectedBookingId); // Verifica que confirmBooking esté implementada
                 showAlert('success', `Reserva confirmada`, `La habitación ${selectedRoomNumber} ahora está reservada.`, 1500);
                 loadReservations(floorSelector.value);
             }
@@ -570,7 +581,7 @@ export function initializeRoomReservations() {
     async function cancelReservation() {
         try {
             if (selectedBookingId) {
-                await cancelBooking(selectedBookingId);
+                await cancelBooking(selectedBookingId); // Verifica que cancelBooking esté implementada
                 showAlert('success', `Reserva cancelada`, `La reserva de la habitación ${selectedRoomNumber} ha sido cancelada.`, 1500);
                 loadReservations(floorSelector.value);
             }
@@ -591,12 +602,6 @@ export function initializeRoomReservations() {
             icon,
             title,
             text,
-            showConfirmButton,
-            showCancelButton: showConfirmButton,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, confirmar',
-            cancelButtonText: 'Cancelar',
             allowOutsideClick: false,
             heightAuto: false,
             customClass: {
@@ -610,5 +615,5 @@ export function initializeRoomReservations() {
 
     floorSelector.addEventListener('change', () => loadReservations(floorSelector.value));
 
-    loadReservations();
+    loadReservations(); // Cargar reservas inicialmente
 }
