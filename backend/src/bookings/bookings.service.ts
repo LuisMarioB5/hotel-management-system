@@ -259,11 +259,16 @@ export class BookingsService {
     }
     
     private verifyDatesAreFuture(firstDate: Date, secondDate: Date) {
-        const newFistDate = new Date(firstDate);
+        const newFirstDate = new Date(firstDate);
         const newSecondDate = new Date(secondDate);
         const today = new Date();
     
-        if (newFistDate < today || newSecondDate <= newFistDate) {
+        // Establecer la hora a 00:00:00 para comparar solo las fechas
+        newFirstDate.setHours(0, 0, 0, 0);
+        newSecondDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+    
+        if (newFirstDate < today || newSecondDate <= newFirstDate) {
             throw new BadRequestException('Las fechas proporcionadas deben estar en el futuro y en un orden válido (la primera antes que la segunda).');
         }
     }
