@@ -13,7 +13,7 @@ export class ConsumptionEntity {
     @ManyToOne(() => BookingEntity, booking => booking.consumptions, { nullable: false })
     booking: BookingEntity;
 
-    @ManyToOne(() => ProductEntity, { nullable: false })
+    @ManyToOne(() => ProductEntity, { nullable: false, eager: true })
     product: ProductEntity;
 
     @Column({ type: 'int' })

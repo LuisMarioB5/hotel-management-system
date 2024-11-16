@@ -1,23 +1,16 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
-import { ReportsService } from './reports.service';
+import { Controller, Get, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
+import { ReportsService } from './reports.service';
 
 @Controller('reports')
 export class ReportsController {
-  constructor(private readonly reportsService: ReportsService) {}
+  constructor(private readonly service: ReportsService) {}
 
-  @Get('/bookings')
-  async getBookingsReport(
-    @Query('format') format: 'pdf' | 'excel',
-    @Query('startDate') startDate: Date,
-    @Query('endDate') endDate: Date,
-    @Res() res: Response,
-  ): Promise<void> {
-    const pdfBuffer = await this.reportsService.generateBookingReport(format, startDate, endDate);
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'attachment; filename="bookings-report.pdf"',
-    });
-    res.send(pdfBuffer);
+  @Get('booking/pdf/:id')
+  async getBookingReport(@Param('id') id: number, @Res() res: Response) {
+    const reportPath = await this.service.generateBookingReport('pdf', id);
+
+    // Enviar el archivo al cliente
+    res.download(reportPath, `reporte-reserva-${id}.pdf`);
   }
 }

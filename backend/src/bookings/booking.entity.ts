@@ -58,7 +58,7 @@ export class BookingEntity {
     @Column({type: 'int', default: 1})
     totalStayDays: number;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
     totalCost: number;
 
     // Estado de la reserva usando enum para evitar errores

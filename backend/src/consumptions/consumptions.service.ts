@@ -28,7 +28,7 @@ export class ConsumptionsService {
             subtotal: c.quantity * product.unitPrice,
         });
 
-        await this.bookingsService.updateTotalStayCost(booking.id);
+        await this.bookingsService.updateTotalStayCost(booking);
         return this.repository.save(consumption);
     }
 
@@ -66,7 +66,7 @@ export class ConsumptionsService {
         }
         console.log(typeof consumption.unitPrice)
         
-        await this.bookingsService.updateTotalStayCost(consumption.booking.id);
+        await this.bookingsService.updateTotalStayCost(consumption.booking);
         return this.repository.save(consumption);
     }
 
@@ -78,7 +78,7 @@ export class ConsumptionsService {
             this.throwConsumptionNotFoundException(id);
         }
 
-        await this.bookingsService.updateTotalStayCost(booking.id);
+        await this.bookingsService.updateTotalStayCost(booking);
         return { message: `El consumo con ID ${id} ha sido eliminado correctamente` };
     }
 

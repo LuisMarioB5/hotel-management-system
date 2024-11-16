@@ -1,32 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { PDFReport } from './pdf.report';
+import { BookingEntity } from 'src/bookings/booking.entity';
 
 @Injectable()
-export class PDFService {
-  /**
-   * Genera un reporte de reservas en PDF.
-   * @param bookings Reservas a incluir en el reporte.
-   * @returns Buffer con el contenido del PDF generado.
-   */
-  async generateBookingReport(bookings: any[]): Promise<Buffer> {
-    const pdfReport = new PDFReport();
-    await pdfReport.init();
+export class PDFService {    
+    /**
+     * Genera un reporte de reservas en PDF.
+     * @param booking La reserva a incluir en el reporte.
+     * @returns String con el directorio del PDF generado.
+     */
+    async generateBookingReport(booking: BookingEntity): Promise<string> {
+        const pdfReport = new PDFReport();
 
-    const page = pdfReport.addPage();
-    pdfReport.addHeader(page, 'Reporte de Reservas', 'Período de Reservas');
+        const fs = require('fs');
+        const outputPath = `C:\\Users\\LUISM\\Downloads\\booking-report-${booking.id}.pdf`;
+        try {
+            fs.writeFileSync(outputPath, 'Creación Inicial');
+        } catch (error) {
+            throw new Error(`pdf.service | Error al crear el archivo: ${error}`)
+        }
 
-    // Encabezados y filas de datos
-    const headers = ['ID Reserva', 'Huésped', 'Check-in', 'Check-out', 'Total'];
-    const rows = bookings.map((booking) => [
-      booking.id.toString(),
-      booking.customer.name,
-      booking.checkInDate,
-      booking.checkOutDate,
-      `$${booking.totalStayCost}`,
-    ]);
+        pdfReport.generateReport(booking, outputPath);
 
-    pdfReport.addTable(page, headers, rows);
-
-    return pdfReport.generate();
-  }
+        return outputPath;
+    }
 }
