@@ -65,7 +65,7 @@
                                 <option value="QUINTO">QUINTO</option>
                             </select>
                         </div>
-
+                        
                         <div class="form-group">
                             <label for="start-date"><i class="fas fa-calendar-plus" style="color: #007bff;"></i> Fecha Inicio:</label>
                             <input type="date" id="fechaEntrada" class="date-picker" placeholder="dd/mm/yyyy">
@@ -74,21 +74,13 @@
                             <label for="end-date"><i class="fas fa-calendar-minus " style="color: #007bff;"></i> Fecha Fin:</label>
                             <input type="date" id="fechaSalida" class="date-picker" placeholder="dd/mm/yyyy">
                         </div>
+                        
                         </div>
+                        
+                        <br>
+                        
                         <div class="rooms-grid">
-                            <div class="room-card reservado ">
-                                <div class="room-header">
-                                    <span class="room-number">NRO: 001</span>
-                                    <i class="fas fa-bed room-icon"></i>
-                                </div>
-                                <div class="room-category">
-                                    CATEGORIA: INDIVIDUAL
-                                </div>
-                                <div class="room-status reservado" onclick="redirectToRegistroReserva()">
-                                    RESERVAR
-                                    <i class="fas fa-chevron-right"></i>
-                                </div>
-                            </div>
+                    
                         </div>
                     </div>
                 </div>
@@ -96,7 +88,7 @@
     </div>
 
     <script>
-         function redirectToRegistroReserva() {
+         function redictToRegegistroReserva() {
             window.location.href = '../pages/G_registroReserva.html';
         }
     </script>
@@ -104,29 +96,28 @@
     <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    // Establecer la fecha actual como el mínimo para la fecha de entrada y salida
-    const fechaEntrada = document.getElementById('fechaEntrada');
-    const fechaSalida = document.getElementById('fechaSalida');
-    const hoy = new Date().toISOString().split('T')[0];
-    
-    // Establecer valor y mínimo en la fecha de entrada
-    fechaEntrada.value = hoy;
-    fechaEntrada.setAttribute('min', hoy);
-
-    // Establecer el mínimo en la fecha de salida
-    fechaSalida.setAttribute('min', hoy);
-
-    // Actualizar el mínimo de la fecha de salida al cambiar la fecha de entrada
-    fechaEntrada.addEventListener('change', function() {
-        fechaSalida.setAttribute('min', this.value);
+        // Establecer la fecha actual como el mínimo para la fecha de entrada y salida
+        const fechaEntrada = document.getElementById('fechaEntrada');
+        const fechaSalida = document.getElementById('fechaSalida');
+        const hoy = new Date().toISOString().split('T')[0];
         
-        // Ajustar la fecha de salida si es anterior a la fecha de entrada
-        if (fechaSalida.value && fechaSalida.value < this.value) {
-            fechaSalida.value = this.value;
-        }
-    });
-});
+        // Establecer valor y mínimo en la fecha de entrada
+        fechaEntrada.value = hoy;
+        fechaEntrada.setAttribute('min', hoy);
 
+        // Establecer el mínimo en la fecha de salida
+        fechaSalida.setAttribute('min', hoy);
+
+        // Actualizar el mínimo de la fecha de salida al cambiar la fecha de entrada
+        fechaEntrada.addEventListener('change', function() {
+            fechaSalida.setAttribute('min', this.value);
+            
+            // Ajustar la fecha de salida si es anterior a la fecha de entrada
+            if (fechaSalida.value && fechaSalida.value < this.value) {
+                fechaSalida.value = this.value;
+            }
+        });
+    });
     </script>
 
     <script>   
@@ -176,25 +167,30 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-    const dropdowns = document.querySelectorAll('.dropdown');
+        const dropdowns = document.querySelectorAll('.dropdown');
 
-    dropdowns.forEach(dropdown => {
-        // Agregar el evento de clic solo al botón que despliega el menú
-        dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-            e.preventDefault();
+        dropdowns.forEach(dropdown => {
+            // Agregar el evento de clic solo al botón que despliega el menú
+            dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                e.preventDefault();
 
-            // Cerrar otros menús abiertos
-            dropdowns.forEach(d => {
-                if (d !== dropdown) {
-                    d.classList.remove('active');
-                }
+                // Cerrar otros menús abiertos
+                dropdowns.forEach(d => {
+                    if (d !== dropdown) {
+                        d.classList.remove('active');
+                    }
+                });
+
+                // Alternar el menú actual
+                dropdown.classList.toggle('active');
             });
-
-            // Alternar el menú actual
-            dropdown.classList.toggle('active');
         });
     });
-});
     </script>
+
+<script type="module">
+    import { initializeAvailableRoomReservations } from '../scripts/booking.js';
+    document.addEventListener('DOMContentLoaded', initializeAvailableRoomReservations);
+</script>
 </body>
 </html>
