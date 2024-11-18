@@ -20,7 +20,6 @@ export class BookingsService {
     ) {}
 
     async create(b: CreateBookingDTO): Promise<BookingEntity> {
-        this.verifyDatesAreFuture(b.checkInDate, b.checkOutDate);
 
         await this.isRoomAvailableWithException(b.roomId, b.checkInDate, b.checkOutDate);
         
@@ -35,7 +34,6 @@ export class BookingsService {
         });
         
         const saved = await this.repository.save(booking);
-        await this.updateTotalStayCost(saved);
         return saved;
     }
     
@@ -69,13 +67,9 @@ export class BookingsService {
             oldBooking.details = newBooking.details;
         }
     
-        if (oldBooking.checkInDate && oldBooking.checkOutDate) {
-            this.verifyDatesAreFuture(oldBooking.checkInDate, oldBooking.checkOutDate);
-            await this.isRoomAvailableWithException(oldBooking.room.id, oldBooking.checkInDate, oldBooking.checkOutDate);
-        }
+        await this.isRoomAvailableWithException(oldBooking.room.id, oldBooking.checkInDate, oldBooking.checkOutDate);
 
         const b = await this.repository.save(oldBooking);
-        await this.updateTotalStayCost(b);
         return b;
     }
 
@@ -180,53 +174,6 @@ export class BookingsService {
     
         return overlappingBookings.length === 0;
     }
-
-    async updateTotalStayCost(booking: BookingEntity): Promise<void> {    
-        // Determinar la fecha de salida efectiva
-        const checkInDate = booking.actualCheckInDate || booking.checkInDate;
-        const checkOutDate = booking.actualCheckOutDate || booking.checkOutDate;
-    
-        // Normalizar las fechas a medianoche para evitar que las horas afecten el cálculo
-        const checkInDateNormalized = new Date(checkInDate);
-        checkInDateNormalized.setHours(0, 0, 0, 0); // Pone la hora en 00:00
-    
-        const checkOutDateNormalized = new Date(checkOutDate);
-        checkOutDateNormalized.setHours(0, 0, 0, 0); // Pone la hora en 00:00
-    
-        // Calcular la duración en milisegundos
-        const durationInMillis = checkOutDateNormalized.getTime() - checkInDateNormalized.getTime();
-    
-        // Calcular la duración en días (sin redondeo)
-        let durationInDays = durationInMillis / (1000 * 60 * 60 * 24);
-    
-        // Si la duración es mayor a 0, agregamos 1 al valor de días
-        if (durationInDays > 0) {
-            durationInDays = Math.ceil(durationInDays) + 1;  // Sumar 1 si pasa de un día
-        } else {
-            durationInDays = 1; // Si la fecha de salida es el mismo día que la entrada, se cuenta como 1 día
-        }
-
-        // Asignar la duración calculada al booking
-        booking.totalStayDays = durationInDays;
-    
-        // Costo por noche de la habitación
-        const roomCostPerNight = booking.room.price;
-    
-        // Calcular el costo total de la habitación
-        booking.stayCost = roomCostPerNight * durationInDays;
-    
-        // Calcular el total de consumos
-        booking.totalConsumption = Array.isArray(booking.consumptions)
-            ? booking.consumptions.reduce((acc, consumption) => acc + Number(consumption.subtotal), 0)
-            : 0;
-    
-        // Cálculo del costo total de la estancia
-        booking.totalCost = booking.stayCost + booking.totalConsumption;
-    
-        // Guardar los cambios en la base de datos
-        await this.repository.save(booking);
-    }
-    
     
     async findBookingsWithinDateRange(startDate: Date, endDate: Date): Promise<BookingEntity[]> {
         if (!startDate || !endDate) {
@@ -258,21 +205,6 @@ export class BookingsService {
         }
     }
     
-    private verifyDatesAreFuture(firstDate: Date, secondDate: Date) {
-        const newFirstDate = new Date(firstDate);
-        const newSecondDate = new Date(secondDate);
-        const today = new Date();
-    
-        // Establecer la hora a 00:00:00 para comparar solo las fechas
-        newFirstDate.setHours(0, 0, 0, 0);
-        newSecondDate.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-    
-        if (newFirstDate < today || newSecondDate <= newFirstDate) {
-            throw new BadRequestException('Las fechas proporcionadas deben estar en el futuro y en un orden válido (la primera antes que la segunda).');
-        }
-    }
-
     async desactiveBooking(id: number) {
         const booking = await this.findById(id);
         booking.isActive = false;
