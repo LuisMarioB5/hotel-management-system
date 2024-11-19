@@ -638,80 +638,66 @@ export function initializeAvailableRoomReservations() {
         const floor = floorSelector.value;
         const startDate = parseDate(startDateInput.value);
         const endDate = parseDate(endDateInput.value);
-
-        console.log('Start Date:', startDate);
-        console.log('End Date:', endDate);
-
-        if (!startDate || !endDate) {
-            console.error('Invalid date input');
-            showAlertForReservation('error', 'Error', 'Por favor, seleccione fechas válidas.', 1500);
-            return;
-        }
+       
 
         try {
             const [allRooms, allBookings] = await Promise.all([getAllRooms(), getAllBookings()]);
-            console.log('All Rooms:', allRooms);
-            console.log('All Bookings:', allBookings);
 
-            // Filter confirmed bookings within the selected date range
-            const relevantBookings = allBookings.filter(booking => 
-                booking.status.toUpperCase() === 'CONFIRMADA' &&
-                dateRangesOverlap(
-                    startDate, endDate,
-                    parseDate(booking.checkInDate), parseDate(booking.checkOutDate)
-                )
-            );
+            // Filtrar reservas confirmadas dentro del rango de fechas
+            const relevantBookings = allBookings.filter(booking => {
+                if (booking.status.toUpperCase() !== 'CONFIRMADA') return false;
 
-            console.log('Relevant Bookings:', relevantBookings);
+                const bookingStart = new Date(booking.checkInDate);
+                const bookingEnd = new Date(booking.checkOutDate);
 
-            // Get IDs of rooms that are booked during the selected period
-            const bookedRoomIds = new Set(relevantBookings.map(booking => booking.roomId));
-
-            // Filter available rooms
-            const availableRooms = allRooms.filter(room => {
-                // Exclude rooms that are out of service
-                if (room.status.toUpperCase() === 'FUERA_DE_SERVICIO') {
-                    return false;
-                }
-
-                // Filter by floor if a specific floor is selected
-                if (floor !== 'Todos' && room.floor.toUpperCase() !== floor) {
-                    return false;
-                }
-
-                // Exclude rooms that are booked during the selected period
-                return !bookedRoomIds.has(room.id);
+                // Verificar si la reserva se superpone con el rango seleccionado
+                return dateRangesOverlap(startDate, endDate, bookingStart, bookingEnd);
             });
 
-            console.log('Available Rooms:', availableRooms);
+            // Obtener IDs de habitaciones ocupadas
+            const bookedRoomIds = new Set(relevantBookings.map(booking => booking.room.id));
+
+            // Filtrar habitaciones disponibles
+            const availableRooms = allRooms.filter(room => {
+                // Excluir habitaciones fuera de servicio
+                if (room.status.toUpperCase() === 'FUERA_DE_SERVICIO') return false;
+
+                // Excluir habitaciones ocupadas
+                if (bookedRoomIds.has(room.id)) return false;
+
+                // Filtrar por piso si un piso específico está seleccionado
+                if (floor !== 'Todos' && room.floor.toUpperCase() !== floor.toUpperCase()) return false;
+
+                return true;
+            });
+
             renderAvailableRoomsForReservation(availableRooms);
         } catch (error) {
-            console.error('Error loading available rooms:', error);
+            console.error('Error al cargar habitaciones disponibles:', error);
             showAlertForReservation('error', 'Error', 'Hubo un problema al cargar las habitaciones disponibles.', 1500);
         }
     }
 
     function dateRangesOverlap(start1, end1, start2, end2) {
-        return start1 < end2 && end1 > start2;
+        start1.setHours(0, 0, 0, 0);
+        end1.setHours(0, 0, 0, 0);
+        start2.setHours(0, 0, 0, 0);
+        end2.setHours(0, 0, 0, 0);
+
+        return start1 <= end2 && end1 >= start2;
     }
 
     function parseDate(dateString) {
         if (!dateString) return null;
-        
-        // Handle timestamp format (assuming it's in milliseconds)
-        if (!isNaN(dateString)) {
-            return new Date(parseInt(dateString));
-        }
-        
-        // Handle 'yyyy/mm-dd' format
-        const parts = dateString.split(/[/\-]/);
-        if (parts.length === 3) {
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-        }
-        
-        // Fallback to default Date parsing
+
+        // Si el valor ya es un objeto Date representado como cadena
         const date = new Date(dateString);
-        return isNaN(date.getTime()) ? null : date;
+        if (!isNaN(date.getTime())) {
+            date.setHours(0, 0, 0, 0); // Ajustar a medianoche
+            return date;
+        }
+
+        return null;
     }
 
     function renderAvailableRoomsForReservation(rooms) {
@@ -720,6 +706,7 @@ export function initializeAvailableRoomReservations() {
             roomsGrid.innerHTML = '<p>No hay habitaciones disponibles para las fechas seleccionadas.</p>';
             return;
         }
+
         rooms.forEach(room => {
             const roomCard = `
                 <div class="room-card disponible">
@@ -727,7 +714,7 @@ export function initializeAvailableRoomReservations() {
                         <span class="room-number">NRO: ${room.number}</span>
                         <i class="fas fa-bed room-icon"></i>
                     </div>
-                    <div class="room-category">CATEGORIA: ${room.type}</div>
+                    <div class="room-category">CATEGORÍA: ${room.type}</div>
                     <div class="room-status disponible" onclick="redirectToNewReservation('${room.id}', '${room.number}', '${room.type}', '${room.floor}', '${encodeURIComponent(room.details || '')}', '${room.price}')">
                         RESERVAR
                         <i class="fas fa-chevron-right"></i>
@@ -770,18 +757,6 @@ export function initializeAvailableRoomReservations() {
         window.location.href = `../pages/G_registroReserva.html?id=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}&price=${price}&startDate=${startDate}&endDate=${endDate}`;
     };
 }
-
-// ... (rest of the code remains unchanged)
-
-// Initialize the appropriate function based on the current page
-document.addEventListener('DOMContentLoaded', () => {
-    const currentPage = window.location.pathname;
-    if (currentPage.includes('G_reservas.html')) {
-        initializeAvailableRoomReservations();
-    } else if (currentPage.includes('G_registroReserva.html')) {
-        initializeReservationForm();
-    }
-});
 //----------------------------------------------------------------------------//
              ////ESTA PARTE ES PARA LA PAGINA DE G_CHECK-IN///
 //----------------------------------------------------------------------------//
