@@ -1,7 +1,8 @@
 // booking.js
-import { createCustomer, getCustomerByDocumentNumber, updateCustomer } from '../integrations/customer.integration.js';
-import { createBooking, confirmBooking, cancelBooking, checkInBooking,getAllBookings } from '../integrations/booking.integration.js';
+import { createCustomer, getCustomerByDocumentNumber, updateCustomer,getCustomerById } from '../integrations/customer.integration.js';
+import { createBooking, confirmBooking, cancelBooking, checkInBooking,getAllBookings,updateBooking,getBookingById } from '../integrations/booking.integration.js';
 import { updateRoom,getAllRooms,getRoomById } from '../integrations/room.integration.js';
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const registrarBtn = document.getElementById('registrarBtn');
@@ -402,40 +403,35 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 //----------------------------------------------------------------------------//
-             ////ESTA PARTE ES PARA LA PAGINA DE RESERVACIONES///
+             ////ESTA PARTE ES PARA LA PAGINA DE G_RESERVACIONES///
 //----------------------------------------------------------------------------//
 
 export function initializeRoomReservations() {
     const roomsGrid = document.querySelector('.rooms-grid');
     const floorSelector = document.querySelector('.floor-selector');
-    let selectedBookingId = null;
-    let selectedRoomNumber = null;
 
     async function loadReservations(floor = 'Todos') {
         try {
             const allReservations = await getAllBookings();
-            console.log('All reservations:', allReservations); // Log all reservations for debugging
+            console.log('All reservations:', allReservations); // Log para depurar
 
-            const filteredReservations = allReservations.filter(reservation => {
+            // Filtrar reservas por estado y evitar duplicados por habitación usando un Map
+            const roomMap = new Map();
+            allReservations.forEach(reservation => {
                 const status = reservation.status?.toLowerCase() || '';
-                return ['pendiente', 'confirmada'].includes(status);
+                if (['pendiente', 'confirmada'].includes(status)) {
+                    const roomId = reservation.roomId || reservation.room?.id || reservation.room;
+                    if (roomId && !roomMap.has(roomId)) {
+                        roomMap.set(roomId, { roomId, reservation });
+                    }
+                }
             });
 
+            // Obtener los detalles de las habitaciones
             const reservationsWithRooms = await Promise.all(
-                filteredReservations.map(async (reservation) => {
-                    console.log('Processing reservation:', reservation); // Log each reservation being processed
-
-                    // Check for roomId in different possible locations
-                    const roomId = reservation.roomId || reservation.room?.id || reservation.room;
-
-                    if (!roomId) {
-                        console.warn(`Reserva con ID ${reservation.id} no tiene roomId válido.`);
-                        return { ...reservation, roomDetails: null };
-                    }
-
+                Array.from(roomMap.values()).map(async ({ roomId, reservation }) => {
                     try {
                         const room = await getRoomById(parseInt(roomId));
-                        console.log(`Room details for reservation ${reservation.id}:`, room); // Log room details
                         return { ...reservation, roomDetails: room };
                     } catch (error) {
                         console.error(`Error al obtener la habitación para reserva ID ${reservation.id}:`, error);
@@ -444,12 +440,13 @@ export function initializeRoomReservations() {
                 })
             );
 
-            const reservationsToRender = reservationsWithRooms.filter(reservation =>
+            // Filtrar habitaciones por piso
+            const roomsToRender = reservationsWithRooms.filter(reservation =>
                 floor === 'Todos' || reservation.roomDetails?.floor?.toUpperCase() === floor
             );
 
-            console.log('Reservations to render:', reservationsToRender); // Log reservations being rendered
-            renderReservations(reservationsToRender);
+            console.log('Reservations to render:', roomsToRender); // Log para depurar
+            renderReservations(roomsToRender);
         } catch (error) {
             console.error('Error al cargar las reservas:', error);
             showAlert('error', 'Error', 'Hubo un problema al cargar las reservas.', 1500);
@@ -457,7 +454,7 @@ export function initializeRoomReservations() {
     }
 
     function renderReservations(reservations) {
-        roomsGrid.innerHTML = '';
+        roomsGrid.innerHTML = ''; // Limpiar el contenedor antes de renderizar
         reservations.forEach(reservation => {
             const { roomDetails, status } = reservation;
             const statusClass = (status || '').toLowerCase() === 'confirmada' ? 'reservado' : 'confirmar';
@@ -472,34 +469,34 @@ export function initializeRoomReservations() {
                     <div class="room-category">
                         CATEGORÍA: ${roomDetails?.type || 'Sin categoría'}
                     </div>
-                    <div class="room-status ${statusClass}" data-id="${reservation.id}" data-number="${roomDetails?.number}">
+                    <div class="room-status ${statusClass}" data-id="${reservation.id}" data-room-id="${roomDetails?.id}">
                         ${statusText}
                         <i class="fas fa-chevron-right"></i>
                     </div>
                 </div>
             `;
-            roomsGrid.insertAdjacentHTML('beforeend', roomCard);
+            roomsGrid.insertAdjacentHTML('beforeend', roomCard); // Insertar cada tarjeta en la grilla
         });
 
         attachEventListeners();
     }
 
     function attachEventListeners() {
-        document.querySelectorAll('.room-status.confirmar').forEach(btn => {
-            btn.addEventListener('click', openActionModal);
-        });
-
         document.querySelectorAll('.room-status.reservado').forEach(btn => {
             btn.addEventListener('click', redirectToCheckIn);
         });
+
+        document.querySelectorAll('.room-status.confirmar').forEach(btn => {
+            btn.addEventListener('click', openActionModal);
+        });
     }
+
     async function openActionModal(event) {
         const roomElement = event.target.closest('.room-status');
         if (!roomElement) return;
 
-        selectedBookingId = roomElement.getAttribute('data-id');
-        selectedRoomNumber = roomElement.getAttribute('data-number');
-
+        const selectedBookingId = roomElement.getAttribute('data-id');
+        const selectedRoomNumber = roomElement.getAttribute('data-room-id');
         try {
             // Modal que pregunta si quiere confirmar o cancelar
             const result = await Swal.fire({
@@ -520,7 +517,6 @@ export function initializeRoomReservations() {
                 },
             });
             if (result.dismiss === Swal.DismissReason.close) {
-                console.log('El usuario cerró el modal usando la X');
                 return; // Detenemos la ejecución si se cierra con la "X"
             }
 
@@ -574,7 +570,7 @@ export function initializeRoomReservations() {
         }
     }
 
-    async function confirmReservation() {
+    async function confirmReservation(bookingId, roomNumber) {
         try {
             if (selectedBookingId) {
                 await confirmBooking(selectedBookingId); // Verifica que confirmBooking esté implementada
@@ -587,7 +583,7 @@ export function initializeRoomReservations() {
         }
     }
 
-    async function cancelReservation() {
+    async function cancelReservation(bookingId, roomNumber) {
         try {
             if (selectedBookingId) {
                 await cancelBooking(selectedBookingId); // Verifica que cancelBooking esté implementada
@@ -602,8 +598,9 @@ export function initializeRoomReservations() {
 
     function redirectToCheckIn(event) {
         const roomElement = event.target.closest('.room-status');
-        const roomId = roomElement.getAttribute('data-id');
-        window.location.href = `../pages/G_check-in.html?id=${roomId}`;
+        const roomId = roomElement.getAttribute('data-room-id');
+        
+        window.location.href = `../pages/G_check-in.html?roomId=${roomId}`;
     }
 
     function showAlert(icon, title, text, timer = null) {
@@ -624,165 +621,185 @@ export function initializeRoomReservations() {
 
     floorSelector.addEventListener('change', () => loadReservations(floorSelector.value));
 
-    loadReservations();
+    loadReservations(); // Cargar reservas inicialmente
 }
+
 
 
 //----------------------------------------------------------------------------//
              ////ESTA PARTE ES PARA LA PAGINA DE RESERVAR///
 //----------------------------------------------------------------------------//
 
-export function initializeAvailableRoomReservations() {
-    const roomsGrid = document.querySelector('.rooms-grid');
-    const floorSelector = document.getElementById('room-number');
-    const startDateInput = document.getElementById('fechaEntrada');
-    const endDateInput = document.getElementById('fechaSalida');
 
-    async function loadAvailableRoomsForReservation() {
-        const floor = floorSelector.value;
-        const startDate = parseDate(startDateInput.value);
-        const endDate = parseDate(endDateInput.value);
+export async function initializeCheckInPage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = parseInt(urlParams.get('roomId'), 10);
+    console.log("roomId obtenido de la URL:", roomId);
 
-        console.log('Start Date:', startDate);
-        console.log('End Date:', endDate);
+    if (isNaN(roomId)) {
+        return;
+    }
 
-        if (!startDate || !endDate) {
-            console.error('Invalid date input');
-            showAlertForReservation('error', 'Error', 'Por favor, seleccione fechas válidas.', 1500);
+    try {
+        const bookings = await getAllBookings();
+
+        const confirmedBookings = bookings.filter(
+            booking => Number(booking.room.id) === Number(roomId) && booking.status === 'CONFIRMADA'
+        );
+
+        const reservationDetailsContainer = document.getElementById('reservationDetailsContainer');
+        if (!reservationDetailsContainer) {
             return;
         }
 
-        try {
-            const [allRooms, allBookings] = await Promise.all([getAllRooms(), getAllBookings()]);
-            console.log('All Rooms:', allRooms);
-            console.log('All Bookings:', allBookings);
+        // Limpia el contenedor antes de agregar nuevas reservas
+        reservationDetailsContainer.innerHTML = '';
 
-            // Filter confirmed bookings within the selected date range
-            const relevantBookings = allBookings.filter(booking => 
-                booking.status.toUpperCase() === 'CONFIRMADA' &&
-                dateRangesOverlap(
-                    startDate, endDate,
-                    parseDate(booking.checkInDate), parseDate(booking.checkOutDate)
-                )
-            );
-
-            console.log('Relevant Bookings:', relevantBookings);
-
-            // Get IDs of rooms that are booked during the selected period
-            const bookedRoomIds = new Set(relevantBookings.map(booking => booking.roomId));
-
-            // Filter available rooms
-            const availableRooms = allRooms.filter(room => {
-                // Exclude rooms that are out of service
-                if (room.status.toUpperCase() === 'FUERA_DE_SERVICIO') {
-                    return false;
-                }
-
-                // Filter by floor if a specific floor is selected
-                if (floor !== 'Todos' && room.floor.toUpperCase() !== floor) {
-                    return false;
-                }
-
-                // Exclude rooms that are booked during the selected period
-                return !bookedRoomIds.has(room.id);
+        // Función para formatear las fechas
+        const formatDate = (isoDateString) => {
+            const date = new Date(isoDateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
             });
+        };
 
-            console.log('Available Rooms:', availableRooms);
-            renderAvailableRoomsForReservation(availableRooms);
-        } catch (error) {
-            console.error('Error loading available rooms:', error);
-            showAlertForReservation('error', 'Error', 'Hubo un problema al cargar las habitaciones disponibles.', 1500);
-        }
-    }
+        // Itera sobre cada reserva confirmada y crea un div individual
+        for (const booking of confirmedBookings) {
+            const customer = booking.customer;
+            const room = booking.room;
 
-    function dateRangesOverlap(start1, end1, start2, end2) {
-        return start1 < end2 && end1 > start2;
-    }
+            // Crea un div para cada info-card
+            const reservationDetailsDiv = document.createElement('div');
+            reservationDetailsDiv.classList.add('info-card');
 
-    function parseDate(dateString) {
-        if (!dateString) return null;
-        
-        // Handle timestamp format (assuming it's in milliseconds)
-        if (!isNaN(dateString)) {
-            return new Date(parseInt(dateString));
-        }
-        
-        // Handle 'yyyy/mm-dd' format
-        const parts = dateString.split(/[/\-]/);
-        if (parts.length === 3) {
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-        }
-        
-        // Fallback to default Date parsing
-        const date = new Date(dateString);
-        return isNaN(date.getTime()) ? null : date;
-    }
-
-    function renderAvailableRoomsForReservation(rooms) {
-        roomsGrid.innerHTML = '';
-        if (rooms.length === 0) {
-            roomsGrid.innerHTML = '<p>No hay habitaciones disponibles para las fechas seleccionadas.</p>';
-            return;
-        }
-        rooms.forEach(room => {
-            const roomCard = `
-                <div class="room-card disponible">
-                    <div class="room-header">
-                        <span class="room-number">NRO: ${room.number}</span>
-                        <i class="fas fa-bed room-icon"></i>
+            // Inserta la información de la reserva en el nuevo div
+            reservationDetailsDiv.innerHTML = `
+                <h2><i class="fas fa-bed"></i> Resumen de la Reserva: ${booking.id}</h2>
+                <div class="info-grid">
+                    <div class="info-group">
+                        <label><i class="fas fa-hashtag"></i> Habitación:</label>
+                        <input type="text" value="${room.number}" readonly>
                     </div>
-                    <div class="room-category">CATEGORIA: ${room.type}</div>
-                    <div class="room-status disponible" onclick="redirectToNewReservation('${room.id}', '${room.number}', '${room.type}', '${room.floor}', '${encodeURIComponent(room.details || '')}', '${room.price}')">
-                        RESERVAR
-                        <i class="fas fa-chevron-right"></i>
+                    <div class="info-group">
+                        <label><i class="fas fa-list"></i> Detalles:</label>
+                        <input type="text" value="${room.details}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-tag"></i> Categoría:</label>
+                        <input type="text" value="${room.type}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-building"></i> Piso:</label>
+                        <input type="text" value="${room.floor}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-user"></i> Cliente:</label>
+                        <input type="text" value="${customer.name} ${customer.lastName}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-id-card"></i> Nro Documento:</label>
+                        <input type="text" value="${customer.documentNumber}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-envelope"></i> Correo:</label>
+                        <input type="text" value="${customer.email}" readonly>
+                    </div>
+                     <div class="info-group">
+                        <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
+                        <input type="text" value="${formatDate(booking.checkInDate)}" readonly>
                     </div>
                 </div>
+                <br>
+                <h2><i class="fas fa-concierge-bell"></i> Detalle de Hospedaje</h2>
+                <div class="info-grid">
+                    <div class="info-group">
+                        <label><i class="fas fa-dollar-sign"></i> Costo Habitación:</label>
+                        <input type="text" value="RD$${room.price}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-money-bill-wave"></i> Cantidad Adelanto:</label>
+                        <input type="text" value="RD$${booking.cashAdvance}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-money-bill"></i> Cantidad Restante:</label>
+                        <input type="text" value="RD$${room.price - booking.cashAdvance}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-calendar-minus"></i> Fecha Salida:</label>
+                        <input type="text" value="${formatDate(booking.checkOutDate)}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-info"></i> Detalle:</label>
+                        <input type="text" value="${booking.details}" readonly>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button id="cancelarBtn_${booking.id}" class="cancelar-btn"><i class="fas fa-times-circle"></i> Cancelar</button>
+                    <button id="registrarBtn_${booking.id}" class="register-btn"><i class="fas fa-save"></i> Confirmar Hospedaje</button>
+                </div>
+            <div>
             `;
-            roomsGrid.insertAdjacentHTML('beforeend', roomCard);
-        });
-    }
 
-    function showAlertForReservation(icon, title, text, timer = null) {
-        return Swal.fire({
-            icon,
-            title,
-            text,
-            timer: timer,
-            timerProgressBar: timer !== null,
-            showConfirmButton: !timer,
-            showCancelButton: false,
-            allowOutsideClick: false,
-            heightAuto: false,
-            customClass: {
-                container: 'swal-container',
-            },
-        });
-    }
+            // Agrega el nuevo div al contenedor principal
+            reservationDetailsContainer.appendChild(reservationDetailsDiv);
 
-    // Event listeners
-    floorSelector.addEventListener('change', loadAvailableRoomsForReservation);
-    startDateInput.addEventListener('change', loadAvailableRoomsForReservation);
-    endDateInput.addEventListener('change', loadAvailableRoomsForReservation);
+            // Asigna eventos a los botones dinámicos
+            const cancelarBtn = reservationDetailsDiv.querySelector(`#cancelarBtn_${booking.id}`);
+            const registrarBtn = reservationDetailsDiv.querySelector(`#registrarBtn_${booking.id}`);
 
-    // Initial load
-    loadAvailableRoomsForReservation();
+            if (cancelarBtn) {
+                cancelarBtn.addEventListener('click', async () => {
+                    const result = await Swal.fire({
+                        icon: 'question',
+                        title: '¿Desea cancelar la reserva?',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Sí, cancelar',
+                        showCancelButton: true,
+                        cancelButtonText: 'No',
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        allowOutsideClick: false,
+                        backdrop: true,
+                        heightAuto: false,
+                    });
 
-    // Expose function to window object for the onclick event
-    window.redirectToNewReservation = function(id, number, type, floor, details, price) {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
-        window.location.href = `../pages/G_registroReserva.html?id=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}&price=${price}&startDate=${startDate}&endDate=${endDate}`;
-    };
+                    if (result.isConfirmed) {
+                        await cancelBooking(booking.id);
+                        Swal.fire('Cancelada', 'La reserva ha sido cancelada.', 'success').then(() => {
+                            location.reload();
+                        });
+                    }
+                });
+            }
+
+            if (registrarBtn) {
+                registrarBtn.addEventListener('click', async () => {
+                    const result = await Swal.fire({
+                        icon: 'question',
+                        title: '¿Desea confirmar la reserva?',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Sí, confirmar',
+                        showCancelButton: true,
+                        cancelButtonText: 'No',
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        allowOutsideClick: false,
+                        backdrop: true,
+                        heightAuto: false,
+                    });
+
+                    if (result.isConfirmed) {
+                        await checkInBooking(booking.id, booking.cashAdvance);
+                        Swal.fire('Confirmada', 'La reserva ha sido confirmada.', 'success').then(() => {
+                            location.reload();
+                        });
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error al inicializar la página de check-in:', error);
+    }   
 }
-
-// ... (rest of the code remains unchanged)
-
-// Initialize the appropriate function based on the current page
-document.addEventListener('DOMContentLoaded', () => {
-    const currentPage = window.location.pathname;
-    if (currentPage.includes('G_reservas.html')) {
-        initializeAvailableRoomReservations();
-    } else if (currentPage.includes('G_registroReserva.html')) {
-        initializeReservationForm();
-    }
-});

@@ -8,6 +8,7 @@ export function handleLoginNotification(state, username, url) {
                         title: 'Inicio de Sesión Exitoso',
                         text: `Bienvenido/a, ${username}. Su inicio de sesión fue exitoso. Presione 'Aceptar' para continuar.`,
                         icon: 'success',
+                        allowOutsideClick: false,
                         confirmButtonText: 'Aceptar'
                     }).then((result) => {
                         if (result.isConfirmed) {
