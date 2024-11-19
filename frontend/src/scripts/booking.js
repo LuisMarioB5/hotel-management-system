@@ -624,12 +624,185 @@ export function initializeRoomReservations() {
     loadReservations(); // Cargar reservas inicialmente
 }
 
-
-
 //----------------------------------------------------------------------------//
              ////ESTA PARTE ES PARA LA PAGINA DE RESERVAR///
 //----------------------------------------------------------------------------//
 
+export function initializeAvailableRoomReservations() {
+    const roomsGrid = document.querySelector('.rooms-grid');
+    const floorSelector = document.getElementById('room-number');
+    const startDateInput = document.getElementById('fechaEntrada');
+    const endDateInput = document.getElementById('fechaSalida');
+
+    async function loadAvailableRoomsForReservation() {
+        const floor = floorSelector.value;
+        const startDate = parseDate(startDateInput.value);
+        const endDate = parseDate(endDateInput.value);
+
+        console.log('Start Date:', startDate);
+        console.log('End Date:', endDate);
+
+        if (!startDate || !endDate) {
+            console.error('Invalid date input');
+            showAlertForReservation('error', 'Error', 'Por favor, seleccione fechas válidas.', 1500);
+            return;
+        }
+
+        try {
+            const [allRooms, allBookings] = await Promise.all([getAllRooms(), getAllBookings()]);
+            console.log('All Rooms:', allRooms);
+            console.log('All Bookings:', allBookings);
+
+            // Filter confirmed bookings within the selected date range
+            const relevantBookings = allBookings.filter(booking => 
+                booking.status.toUpperCase() === 'CONFIRMADA' &&
+                dateRangesOverlap(
+                    startDate, endDate,
+                    parseDate(booking.checkInDate), parseDate(booking.checkOutDate)
+                )
+            );
+
+            console.log('Relevant Bookings:', relevantBookings);
+
+            // Get IDs of rooms that are booked during the selected period
+            const bookedRoomIds = new Set(relevantBookings.map(booking => booking.roomId));
+
+            // Filter available rooms
+            const availableRooms = allRooms.filter(room => {
+                // Exclude rooms that are out of service
+                if (room.status.toUpperCase() === 'FUERA_DE_SERVICIO') {
+                    return false;
+                }
+
+                // Filter by floor if a specific floor is selected
+                if (floor !== 'Todos' && room.floor.toUpperCase() !== floor) {
+                    return false;
+                }
+
+                // Exclude rooms that are booked during the selected period
+                return !bookedRoomIds.has(room.id);
+            });
+
+            console.log('Available Rooms:', availableRooms);
+            renderAvailableRoomsForReservation(availableRooms);
+        } catch (error) {
+            console.error('Error loading available rooms:', error);
+            showAlertForReservation('error', 'Error', 'Hubo un problema al cargar las habitaciones disponibles.', 1500);
+        }
+    }
+
+    function dateRangesOverlap(start1, end1, start2, end2) {
+        return start1 < end2 && end1 > start2;
+    }
+
+    function parseDate(dateString) {
+        if (!dateString) return null;
+        
+        // Handle timestamp format (assuming it's in milliseconds)
+        if (!isNaN(dateString)) {
+            return new Date(parseInt(dateString));
+        }
+        
+        // Handle 'yyyy/mm-dd' format
+        const parts = dateString.split(/[/\-]/);
+        if (parts.length === 3) {
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+        }
+        
+        // Fallback to default Date parsing
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) ? null : date;
+    }
+
+    function renderAvailableRoomsForReservation(rooms) {
+        roomsGrid.innerHTML = '';
+        if (rooms.length === 0) {
+            roomsGrid.innerHTML = '<p>No hay habitaciones disponibles para las fechas seleccionadas.</p>';
+            return;
+        }
+        rooms.forEach(room => {
+            const roomCard = `
+                <div class="room-card disponible">
+                    <div class="room-header">
+                        <span class="room-number">NRO: ${room.number}</span>
+                        <i class="fas fa-bed room-icon"></i>
+                    </div>
+                    <div class="room-category">CATEGORIA: ${room.type}</div>
+                    <div class="room-status disponible" onclick="redirectToNewReservation('${room.id}', '${room.number}', '${room.type}', '${room.floor}', '${encodeURIComponent(room.details || '')}', '${room.price}')">
+                        RESERVAR
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            `;
+            roomsGrid.insertAdjacentHTML('beforeend', roomCard);
+        });
+    }
+
+    function showAlertForReservation(icon, title, text, timer = null) {
+        return Swal.fire({
+            icon,
+            title,
+            text,
+            timer: timer,
+            timerProgressBar: timer !== null,
+            showConfirmButton: !timer,
+            showCancelButton: false,
+            allowOutsideClick: false,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+    }
+
+    // Event listeners
+    floorSelector.addEventListener('change', loadAvailableRoomsForReservation);
+    startDateInput.addEventListener('change', loadAvailableRoomsForReservation);
+    endDateInput.addEventListener('change', loadAvailableRoomsForReservation);
+
+    // Initial load
+    loadAvailableRoomsForReservation();
+
+    // Expose function to window object for the onclick event
+    window.redirectToNewReservation = function(id, number, type, floor, details, price) {
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+        window.location.href = `../pages/G_registroReserva.html?id=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}&price=${price}&startDate=${startDate}&endDate=${endDate}`;
+    };
+}
+
+// ... (rest of the code remains unchanged)
+
+// Initialize the appropriate function based on the current page
+document.addEventListener('DOMContentLoaded', () => {
+    const currentPage = window.location.pathname;
+    if (currentPage.includes('G_reservas.html')) {
+        initializeAvailableRoomReservations();
+    } else if (currentPage.includes('G_registroReserva.html')) {
+        initializeReservationForm();
+    }
+});
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA DE G_CHECK-IN///
+//----------------------------------------------------------------------------//
+// Agregar CSS al documento
+const estilo = document.createElement('style');
+estilo.textContent = `
+    .highlight {
+        border: 2px solid #ff0000;
+        animation: shake 0.5s;
+        animation-iteration-count: 6;
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+    }
+`;
+document.head.append(estilo);
 
 export async function initializeCheckInPage() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -776,6 +949,29 @@ export async function initializeCheckInPage() {
 
             if (registrarBtn) {
                 registrarBtn.addEventListener('click', async () => {
+                    const previousBooking = confirmedBookings.find(b => new Date(b.checkInDate) < new Date(booking.checkInDate));
+
+                    if (previousBooking) {
+                        const previousDiv = document.querySelector(`#reservationDetailsContainer .info-card:nth-child(${confirmedBookings.indexOf(previousBooking) + 1})`);
+                        if (previousDiv) {
+                            previousDiv.classList.add('highlight');
+                            setTimeout(() => {
+                                previousDiv.classList.remove('highlight');
+                            }, 3000);
+                        }
+
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'No se puede confirmar',
+                            text: 'Hay una reserva previa que debe ser confirmada o cancelada primero.',
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#3085d6',
+                            allowOutsideClick: false,
+                            heightAuto: false,
+                        });
+                        return;
+                    }
+
                     const result = await Swal.fire({
                         icon: 'question',
                         title: '¿Desea confirmar la reserva?',

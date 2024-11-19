@@ -255,18 +255,31 @@
             actualizarDescripcion(textoTarifa, null);
         }
     
-        // Función para validar y actualizar el precio con el adelanto
-        function actualizarPrecioConAdelanto(precioActual) {
-            let adelanto = parseFloat(adelantoInput.value) || 0;
-    
-            if (adelanto > precioActual) {
-                alert("El adelanto no puede ser mayor que el precio.");
+
+
+    // Función para validar y actualizar el precio con el adelanto
+    function actualizarPrecioConAdelanto(precioActual) {
+        let adelanto = parseFloat(adelantoInput.value) || 0;
+
+        if (adelanto > precioActual) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'El adelanto no puede ser mayor que el precio.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#3085d6',
+                allowOutsideClick: true,
+                heightAuto: false,
+                timer: 1500,
+                timerProgressBar: true,
+            }).then(() => {
                 adelantoInput.value = 0; // Restablecer el adelanto a 0
-                adelanto = 0;
-            }
-    
-            precioInput.value = Math.max(precioActual - adelanto, 0).toFixed(2);
+            });
+            adelanto = 0;
         }
+
+        precioInput.value = Math.max(precioActual - adelanto, 0).toFixed(2);
+    }
     
         // Función para actualizar la descripción sin duplicados
         function actualizarDescripcion(tarifaTexto, diasTexto) {
