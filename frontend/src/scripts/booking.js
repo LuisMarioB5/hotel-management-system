@@ -3,15 +3,37 @@ import { createCustomer, getCustomerByDocumentNumber, updateCustomer,getCustomer
 import { createBooking, confirmBooking, cancelBooking, checkInBooking,getAllBookings,updateBooking,getBookingById } from '../integrations/booking.integration.js';
 import { updateRoom,getAllRooms,getRoomById } from '../integrations/room.integration.js';
 
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get('RoomId'); // Note the capital 'R' in 'RoomId'
+    const roomNumber = urlParams.get('number');
+    const roomDetails = decodeURIComponent(urlParams.get('details') || '');
+    const roomCategory = urlParams.get('type');
+    const roomFloor = urlParams.get('floor');
+    const roomPrice = urlParams.get('price');
 
-document.addEventListener('DOMContentLoaded', () => {
+    if (roomId) {
+        document.getElementById('roomId').value = roomId;
+        document.getElementById('roomNumber').value = roomNumber;
+        document.getElementById('roomDetails').value = roomDetails || 'No details available';
+        document.getElementById('roomCategory').value = roomCategory;
+        document.getElementById('roomFloor').value = roomFloor;
+        if (roomPrice) {
+            document.getElementById('precio').value = roomPrice;
+        }
+    }
+
+    console.log('Room ID set:', document.getElementById('roomId').value); // Debugging line
+
     const registrarBtn = document.getElementById('registrarBtn');
     if (registrarBtn) {
         registrarBtn.addEventListener('click', handleBookingProcess);
     }
 });
 
-async function handleBookingProcess() {
+async function handleBookingProcess(event) {
+    event.preventDefault(); // Prevent form submission if it's a submit button
+
     if (!validateForm()) {
         return;
     }
@@ -25,21 +47,46 @@ async function handleBookingProcess() {
             return;
         }
 
-        const booking = await createBooking({
+        console.log('Creating booking with data:', bookingData);
+
+        const bookingResult = await createBooking({
             customerId: customer.id,
-            roomId: bookingData.roomId,
-            checkInDate: bookingData.checkInDate,
-            checkOutDate: bookingData.checkOutDate,
-            details: bookingData.details
+            ...bookingData
         });
 
-        await handleBookingConfirmation(booking);
+        if (bookingResult.error === 'OVERLAPPING_BOOKINGS') {
+            console.log('Overlapping bookings:', bookingResult.overlappingBookings);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Reserva no disponible',
+                html: `La habitación ya tiene reservas en las fechas seleccionadas.<br><br>
+                       Fechas ocupadas:<br>
+                       ${bookingResult.overlappingBookings.map(booking => 
+                           `${new Date(booking.checkInDate).toLocaleDateString()} - ${new Date(booking.checkOutDate).toLocaleDateString()}`
+                       ).join('<br>')}`,
+                confirmButtonText: 'Entendido'
+            });
+        } else if (bookingResult) {
+            await handleBookingConfirmation(bookingResult);
+        } else {
+            console.log('Booking creation returned unexpected result');
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema inesperado al crear la reserva. Por favor, intente nuevamente.',
+                confirmButtonText: 'Entendido'
+            });
+        }
     } catch (error) {
         console.error('Error en el proceso de reserva:', error);
-        showAlert('error', 'Error', 'Hubo un problema al procesar la reserva.');
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al procesar la reserva.',
+            confirmButtonText: 'Entendido'
+        });
     }
 }
-
 function validateForm() {
     let isValid = true;
 
@@ -228,14 +275,43 @@ function getCustomerData() {
 }
 
 function getBookingData() {
+    const adelanto = parseFloat(document.getElementById('adelanto').value) || 0;
+    const precio = parseFloat(document.getElementById('precio').value) || 0;
+    
+    const checkInDate = document.getElementById('fechaEntrada').value;
+    const checkOutDate = document.getElementById('fechaSalida').value;
+    const roomId = parseInt(document.getElementById('roomId').value, 10);
+
+    console.log('Booking data:', {
+        checkInDate,
+        checkOutDate,
+        roomId
+    });
+
+    if (isNaN(roomId)) {
+        throw new Error('Invalid Room ID');
+    }
+
     return {
-        roomId: parseInt(document.getElementById('roomNumber').value),
-        checkInDate: document.getElementById('fechaEntrada').value,
-        checkOutDate: document.getElementById('fechaSalida').value,
-        details: document.getElementById('observacion').value
+        roomId: roomId,
+        checkInDate: checkInDate,
+        checkOutDate: checkOutDate,
+        details: document.getElementById('observacion').value,
+        isActive: true,
+        status: 'PENDIENTE',
+        cashAdvance: adelanto,
+        totalCost: precio,
+        stayCost: precio,
+        totalStayDays: calculateStayDays(checkInDate, checkOutDate)
     };
 }
 
+function calculateStayDays(checkIn, checkOut) {
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+    const diffTime = Math.abs(end - start);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
 async function handleCustomer(customerData) {
     let customer = await getCustomerByDocumentNumber(customerData.documentNumber);
     
@@ -254,55 +330,57 @@ async function handleCustomer(customerData) {
 }
 
 async function handleBookingConfirmation(booking) {
-    const result = await Swal.fire({
-        title: 'Reserva Pendiente',
-        text: '¿Desea confirmar la reserva?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'No',
-        allowOutsideClick: false
-    });
-
-    if (result.isConfirmed) {
-        await confirmBooking(booking.id);
-        await handleCheckIn(booking);
-    } else {
-        showAlert('info', 'Reserva Pendiente', 'La reserva se ha guardado como pendiente.', 1500);
-        setTimeout(() => {
-            window.location.href = "../pages/G_recepcion.html";
-        }, 1500);
-    }
-}
-
-async function handleCheckIn(booking) {
-    const result = await Swal.fire({
-        title: 'Reserva confirmada',
-        text: '¿Desea iniciar el hospedaje?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'No',
-        allowOutsideClick: false
-    });
-
-    if (result.isConfirmed) {
-        // Redirigir a la página de check-in con los datos de la reserva
-        const params = new URLSearchParams({
-            bookingId: booking.id,
-            roomNumber: booking.room.number,
-            customerName: `${booking.customer.name} ${booking.customer.lastName}`,
-            checkInDate: booking.checkInDate,
-            checkOutDate: booking.checkOutDate
+    try {
+        const confirmResult = await Swal.fire({
+            title: 'Reserva Pendiente',
+            text: '¿Desea confirmar la reserva?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, confirmar',
+            cancelButtonText: 'No',
+            allowOutsideClick: false
         });
-        window.location.href = `../pages/G_check_in.html?${params.toString()}`;
-    } else {
-        showAlert('success', 'Reserva Confirmada', 'La reserva ha sido confirmada sin iniciar el hospedaje.', 1500);
-        setTimeout(() => {
-            window.location.href = "../pages/G_recepcion.html";
-        }, 1500);
+
+        if (confirmResult.isConfirmed) {
+            // Confirmar la reserva directamente
+            await confirmBooking(booking.id); // Cambia el estado a CONFIRMADA en el backend
+            console.log(`Reserva confirmada para ID ${booking.id}`);
+
+            // Mostrar un modal adicional para el hospedaje
+            const hospedajeResult = await Swal.fire({
+                title: 'Reserva Confirmada',
+                text: '¿Desea iniciar el hospedaje?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, iniciar hospedaje',
+                cancelButtonText: 'No, regresar a recepción',
+                allowOutsideClick: false
+            });
+
+            if (hospedajeResult.isConfirmed) {
+                window.location.href = "../pages/G_reservaciones.html"; // Redirigir a la gestión de hospedajes
+            } else {
+                window.location.href = "../pages/G_recepcion.html"; // Redirigir a la recepción
+            }
+        } else {
+            await Swal.fire({
+                icon: 'info',
+                title: 'Reserva Pendiente',
+                text: 'La reserva se mantendrá como pendiente.',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    } catch (error) {
+        console.error('Error al confirmar la reserva:', error);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al confirmar la reserva. Intente nuevamente.',
+            confirmButtonText: 'Entendido'
+        });
     }
 }
+
 
 function showAlert(icon, title, text, timer = null) {
     Swal.fire({
@@ -639,7 +717,6 @@ export function initializeAvailableRoomReservations() {
         const startDate = parseDate(startDateInput.value);
         const endDate = parseDate(endDateInput.value);
        
-
         try {
             const [allRooms, allBookings] = await Promise.all([getAllRooms(), getAllBookings()]);
 
@@ -673,8 +750,7 @@ export function initializeAvailableRoomReservations() {
 
             renderAvailableRoomsForReservation(availableRooms);
         } catch (error) {
-            console.error('Error al cargar habitaciones disponibles:', error);
-            showAlertForReservation('error', 'Error', 'Hubo un problema al cargar las habitaciones disponibles.', 1500);
+            //alert('error', 'Error', 'Hubo un problema al cargar las habitaciones disponibles.', 1500);
         }
     }
 
@@ -725,22 +801,6 @@ export function initializeAvailableRoomReservations() {
         });
     }
 
-    function showAlertForReservation(icon, title, text, timer = null) {
-        return Swal.fire({
-            icon,
-            title,
-            text,
-            timer: timer,
-            timerProgressBar: timer !== null,
-            showConfirmButton: !timer,
-            showCancelButton: false,
-            allowOutsideClick: false,
-            heightAuto: false,
-            customClass: {
-                container: 'swal-container',
-            },
-        });
-    }
 
     // Event listeners
     floorSelector.addEventListener('change', loadAvailableRoomsForReservation);
@@ -754,7 +814,7 @@ export function initializeAvailableRoomReservations() {
     window.redirectToNewReservation = function(id, number, type, floor, details, price) {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
-        window.location.href = `../pages/G_registroReserva.html?id=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}&price=${price}&startDate=${startDate}&endDate=${endDate}`;
+        window.location.href = `../pages/G_registroReserva.html?RoomId=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}&price=${price}&startDate=${startDate}&endDate=${endDate}`;
     };
 }
 //----------------------------------------------------------------------------//
@@ -966,6 +1026,7 @@ export async function initializeCheckInPage() {
                         Swal.fire('Confirmada', 'La reserva ha sido confirmada.', 'success').then(() => {
                             location.reload();
                         });
+                        window.location.href = `../pages/G_reservaciones.html`;
                     }
                 });
             }
@@ -974,3 +1035,4 @@ export async function initializeCheckInPage() {
         console.error('Error al inicializar la página de check-in:', error);
     }   
 }
+

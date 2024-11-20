@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recepcion | Reservar</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
-    <link rel="stylesheet" href="../styles/calendar-modal.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
@@ -55,6 +54,7 @@
                 <div class="info-card">
                     <h2><i class="fas fa-bed"></i> Detalles de la Habitación</h2>
                     <div class="info-grid">
+                        <input type="hidden" id="roomId" name="roomId">
                         <div class="info-group">
                             <label><i class="fas fa-hashtag"></i> Número:</label>
                             <input type="text" id="roomNumber" readonly>
@@ -179,30 +179,52 @@
     
         document.addEventListener('DOMContentLoaded', function () {
             const fechaEntrada = document.getElementById('fechaEntrada');
-            const fechaSalida = document.getElementById('fechaSalida');
-            const tarifaSelect = document.getElementById('tarifa');
-            const observacionInput = document.getElementById('observacion');
-            const precioInput = document.getElementById('precio');
-    
-            // Establecer la fecha de entrada como la fecha actual
-            const hoy = new Date().toISOString().split('T')[0];
-            fechaEntrada.value = hoy;
-            fechaEntrada.setAttribute('min', hoy);
-    
-            // Establecer la fecha de salida como el día siguiente
-            const manana = new Date();
-            manana.setDate(manana.getDate() + 1);
-            const mananaISO = manana.toISOString().split('T')[0];
-            fechaSalida.value = mananaISO;
-            fechaSalida.setAttribute('min', mananaISO);
-    
-            // Inicializar precio original desde la URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const roomPrice = urlParams.get('price');
-            if (roomPrice) {
-                precioOriginal = parseFloat(roomPrice);
-                precioInput.value = precioOriginal.toFixed(2);
-            }
+        const fechaSalida = document.getElementById('fechaSalida');
+        const tarifaSelect = document.getElementById('tarifa');
+        const observacionInput = document.getElementById('observacion');
+        const precioInput = document.getElementById('precio');
+
+        // Función para obtener fecha en formato YYYY-MM-DD
+        const obtenerFechaLocal = (fecha) => {
+            return fecha.toLocaleDateString('en-CA'); // 'en-CA' formatea como YYYY-MM-DD
+        };
+
+        // Leer parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const startDate = urlParams.get('startDate');
+        const endDate = urlParams.get('endDate');
+        const roomPrice = urlParams.get('price');
+
+        // Definir fechas iniciales
+        const hoy = new Date();
+        const hoyLocal = obtenerFechaLocal(hoy);
+
+        const manana = new Date();
+        manana.setDate(hoy.getDate() + 1);
+        const mananaLocal = obtenerFechaLocal(manana);
+
+        // Configurar fechas basadas en URL o establecer predeterminadas
+        if (startDate) {
+            fechaEntrada.value = startDate;
+            fechaEntrada.setAttribute('min', hoyLocal); // Siempre debe ser al menos el día actual
+        } else {
+            fechaEntrada.value = hoyLocal;
+            fechaEntrada.setAttribute('min', hoyLocal);
+        }
+
+        if (endDate) {
+            fechaSalida.value = endDate;
+            fechaSalida.setAttribute('min', obtenerFechaLocal(new Date(startDate || hoyLocal)));
+        } else {
+            fechaSalida.value = mananaLocal;
+            fechaSalida.setAttribute('min', mananaLocal);
+        }
+
+        // Inicializar precio desde la URL
+        if (roomPrice) {
+            precioOriginal = parseFloat(roomPrice);
+            precioInput.value = precioOriginal.toFixed(2);
+        }
     
             // Inicializar observación con tarifa estándar y días de reserva
             tarifaSelect.value = "ESTANDAR";
@@ -332,52 +354,7 @@
                 }
             }
         });
-        </script>
-
-    <!-- MODULO DE DISPONIBILIDAD -->
-    <div class="calendar-modal" id="calendarModal">
-        <div class="calendar-modal-content">
-            <div class="calendar-modal-header">
-                <div class="calendar-nav">
-                    <button class="nav-btn" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
-                    <h3 id="currentMonth">Noviembre de 2024</h3>
-                    <button class="nav-btn" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="view-options">
-                    <button class="view-btn active">Mes</button>
-                    <button class="view-btn">Semana</button>
-                    <button class="view-btn">Día</button>
-                </div>
-                <button class="close-calendar-btn" id="closeCalendarBtn">&times;</button>
-            </div>
-            <div class="calendar-body">
-                <div class="calendar-weekdays">
-                    <div>lun</div>
-                    <div>mar</div>
-                    <div>mié</div>
-                    <div>jue</div>
-                    <div>vie</div>
-                    <div>sáb</div>
-                    <div>dom</div>
-                </div>
-                <div class="calendar-days" id="calendarDays">
-                    <!-- Los días se generarán dinámicamente con JavaScript -->
-                </div>
-            </div>
-            <div class="calendar-footer">
-                <div class="legend">
-                    <div class="legend-item">
-                        <span class="legend-color reserved"></span>
-                        <span>Reservado</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color available"></span>
-                        <span>Disponible</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </script>
 
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
@@ -395,8 +372,6 @@
             </div>
         </div>
     </div>
-
-    <script src="../scripts/calendar.js"></script>
 
     <!--MODAL De lista de clientes-->
     <div class="climodal" id="createUserModal">
@@ -507,7 +482,10 @@
             }
         });
     </script>
-
+    <script type="module"> 
+        import { calendarioReserva } from '../scripts/calendar.js'; 
+        document.addEventListener('DOMContentLoaded', calendarioReserva); 
+    </script>
  
 </body>
 </html>
