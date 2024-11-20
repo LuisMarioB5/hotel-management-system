@@ -468,7 +468,7 @@ export function initializeAllRooms() {
     window.redirectToPage = function(status, id, number, type, floor, details,price) {
         switch (status) {
             case 'disponible':
-                window.location.href = `../pages/G_registroReserva.html?id=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}&price=${price}`;
+                window.location.href = `../pages/G_registroReserva.html?RoomId=${id}&number=${number}&type=${type}&floor=${floor}&details=${details}&price=${price}`;
                 break;
             case 'ocupado':
                 window.location.href = '../pages/G_salida.html';

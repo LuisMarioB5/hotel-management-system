@@ -62,22 +62,146 @@ export async function getBookingById(id) {
  * @param {string} [params.details] - Detalles relacionados a la reserva.
  * @returns {Promise<Object>} Los datos de la reserva recién creada en formato JSON.
  */
-export async function createBooking({ customerId = null, roomId = null, checkInDate = null, checkOutDate = null, details = null} = {}) {
+
+function parseDate(dateString) {
+    if (!dateString) return null;
+    // Create date at start of day in local timezone
+    const date = new Date(dateString);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function dateRangesOverlap(start1, end1, start2, end2) {
+    // Convert all dates to timestamps for comparison
+    const s1 = start1.getTime();
+    const e1 = end1.getTime();
+    const s2 = start2.getTime();
+    const e2 = end2.getTime();
+    return s1 < e2 && e1 > s2;
+}
+
+async function checkExistingReservations(roomId, checkInDate, checkOutDate) {
+    try {
+        const response = await fetch(`${BACKEND_ROUTES.bookings.getAll}`);
+        
+        if (!response.ok) {
+            throw new Error('Error al verificar reservas existentes');
+        }
+
+        const allBookings = await response.json();
+
+        console.log('All bookings:', allBookings);
+
+        // First filter by roomId and active status
+        const overlappingBookings = allBookings.filter(booking => {
+            // Only check bookings for the same room
+            if (booking.roomId !== roomId) {
+                return false;
+            }
+
+            // Only check PENDIENTE or CONFIRMADA bookings
+            if (booking.status.toUpperCase() !== 'PENDIENTE' && 
+                booking.status.toUpperCase() !== 'CONFIRMADA') {
+                return false;
+            }
+
+            // Use checkInDate and checkOutDate for comparison, not actual dates
+            const bookingStart = parseDate(booking.checkInDate);
+            const bookingEnd = parseDate(booking.checkOutDate);
+            
+            if (!bookingStart || !bookingEnd) {
+                console.log('Invalid dates in booking:', booking);
+                return false;
+            }
+
+            console.log('Comparing dates for roomId', roomId, ':', {
+                newBooking: { 
+                    start: checkInDate.toISOString(), 
+                    end: checkOutDate.toISOString() 
+                },
+                existingBooking: { 
+                    start: bookingStart.toISOString(), 
+                    end: bookingEnd.toISOString() 
+                }
+            });
+
+            return dateRangesOverlap(checkInDate, checkOutDate, bookingStart, bookingEnd);
+        });
+
+        console.log('Overlapping bookings for roomId', roomId, ':', overlappingBookings);
+
+        return overlappingBookings;
+    } catch (error) {
+        console.error('Error al verificar reservas existentes:', error);
+        throw error;
+    }
+}
+
+export async function createBooking({ 
+    customerId = null, 
+    roomId = null, 
+    checkInDate = null, 
+    checkOutDate = null, 
+    details = null,
+    isActive = true,
+    status = 'PENDIENTE',
+    cashAdvance = 0,
+    totalCost = 0,
+    stayCost = 0,
+    totalStayDays = 0   
+    } = {}) {
     validateParamIsNotNull('customerId', customerId);
     validateParamIsNotNull('roomId', roomId);
     validateParamIsNotNull('checkInDate', checkInDate);
     validateParamIsNotNull('checkOutDate', checkOutDate);
 
-    const body = { 
-        customerId,
-        roomId,
-        checkInDate,
-        checkOutDate
-     };
-    
-     if(details !== null) body.details = details;
+    // Ensure roomId is a number
+    roomId = Number(roomId);
+
+    const parsedCheckInDate = parseDate(checkInDate);
+    const parsedCheckOutDate = parseDate(checkOutDate);
+
+    if (!parsedCheckInDate || !parsedCheckOutDate) {
+        throw new Error('Invalid date format');
+    }
+
+    console.log('Creating booking with parsed dates:', {
+        checkInDate: parsedCheckInDate.toISOString(),
+        checkOutDate: parsedCheckOutDate.toISOString(),
+        roomId
+    });
 
     try {
+        const existingReservations = await checkExistingReservations(
+            roomId,
+            parsedCheckInDate,
+            parsedCheckOutDate
+        );
+        
+        if (existingReservations.length > 0) {
+            console.log('Overlapping bookings found:', existingReservations);
+            return { 
+                error: 'OVERLAPPING_BOOKINGS', 
+                overlappingBookings: existingReservations.map(booking => ({
+                    checkInDate: booking.checkInDate,
+                    checkOutDate: booking.checkOutDate
+                }))
+            };
+        }
+
+        const body = { 
+            customerId,
+            roomId,
+            checkInDate: parsedCheckInDate.toISOString(),
+            checkOutDate: parsedCheckOutDate.toISOString(),
+            details,
+            isActive,
+            status,
+            cashAdvance,
+            totalCost,
+            stayCost,
+            totalStayDays
+        };
+
         const response = await fetch(BACKEND_ROUTES.bookings.create, {
             method: 'POST',
             headers: {
@@ -86,13 +210,16 @@ export async function createBooking({ customerId = null, roomId = null, checkInD
             body: JSON.stringify(body),
         });
 
-        if (response.ok) {
-            return await response.json();
-        } else {
-            console.error("Error en la respuesta del backend", await response.text());
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error en la respuesta del backend", errorData);
+            throw new Error(errorData.message || 'Error al crear la reserva');
         }
+
+        return await response.json();
     } catch (error) {
-        console.error('Error de red', error);
+        console.error('Error de red:', error);
+        throw error;
     }
 }
 

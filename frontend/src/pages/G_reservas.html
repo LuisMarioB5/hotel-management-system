@@ -74,24 +74,14 @@
                             <label for="end-date"><i class="fas fa-calendar-minus " style="color: #007bff;"></i> Fecha Fin:</label>
                             <input type="date" id="fechaSalida" class="date-picker" placeholder="dd/mm/yyyy">
                         </div>
-                        
-                        </div>
-                        
+                    </div>
                         <br>
-                        
                         <div class="rooms-grid">
-                    
                         </div>
                     </div>
                 </div>
             </div>
     </div>
-
-    <script>
-         function redictToRegegistroReserva() {
-            window.location.href = '../pages/G_registroReserva.html';
-        }
-    </script>
 
     <!-- Incluye jQuery y jQuery UI (para el selector de fecha) -->
     <script>
@@ -120,12 +110,6 @@
     });
     </script>
 
-    <script>   
-        function redirectTosalidaHabitacion() {
-            window.location.href = '../pages/G_salidaHabitacion.html';
-        }
-        
-    </script>
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -184,13 +168,13 @@
                 // Alternar el menú actual
                 dropdown.classList.toggle('active');
             });
+            });
         });
-    });
     </script>
 
-<script type="module">
-    import { initializeAvailableRoomReservations } from '../scripts/booking.js';
-    document.addEventListener('DOMContentLoaded', initializeAvailableRoomReservations);
-</script>
+    <script type="module">
+        import { initializeAvailableRoomReservations } from '../scripts/booking.js';
+        document.addEventListener('DOMContentLoaded', initializeAvailableRoomReservations);
+    </script>
 </body>
 </html>
