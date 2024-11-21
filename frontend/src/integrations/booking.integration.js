@@ -65,9 +65,8 @@ export async function getBookingById(id) {
 
 function parseDate(dateString) {
     if (!dateString) return null;
-    // Create date at start of day in local timezone
     const date = new Date(dateString);
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
 }
 
 function dateRangesOverlap(start1, end1, start2, end2) {
@@ -147,14 +146,13 @@ export async function createBooking({
     cashAdvance = 0,
     totalCost = 0,
     stayCost = 0,
-    totalStayDays = 0   
-    } = {}) {
+    totalStayDays = 0
+} = {}) {
     validateParamIsNotNull('customerId', customerId);
     validateParamIsNotNull('roomId', roomId);
     validateParamIsNotNull('checkInDate', checkInDate);
     validateParamIsNotNull('checkOutDate', checkOutDate);
 
-    // Ensure roomId is a number
     roomId = Number(roomId);
 
     const parsedCheckInDate = parseDate(checkInDate);
@@ -165,16 +163,20 @@ export async function createBooking({
     }
 
     console.log('Creating booking with parsed dates:', {
-        checkInDate: parsedCheckInDate.toISOString(),
-        checkOutDate: parsedCheckOutDate.toISOString(),
-        roomId
+        checkInDate: parsedCheckInDate,
+        checkOutDate: parsedCheckOutDate,
+        roomId,
+        cashAdvance,
+        totalCost,
+        stayCost,
+        totalStayDays
     });
 
     try {
         const existingReservations = await checkExistingReservations(
             roomId,
-            parsedCheckInDate,
-            parsedCheckOutDate
+            new Date(parsedCheckInDate),
+            new Date(parsedCheckOutDate)
         );
         
         if (existingReservations.length > 0) {
@@ -191,8 +193,8 @@ export async function createBooking({
         const body = { 
             customerId,
             roomId,
-            checkInDate: parsedCheckInDate.toISOString(),
-            checkOutDate: parsedCheckOutDate.toISOString(),
+            checkInDate: parsedCheckInDate,
+            checkOutDate: parsedCheckOutDate,
             details,
             isActive,
             status,
