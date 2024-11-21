@@ -5,12 +5,14 @@ import { updateRoom,getAllRooms,getRoomById } from '../integrations/room.integra
 
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get('RoomId'); // Note the capital 'R' in 'RoomId'
+    const roomId = urlParams.get('RoomId');
     const roomNumber = urlParams.get('number');
     const roomDetails = decodeURIComponent(urlParams.get('details') || '');
     const roomCategory = urlParams.get('type');
     const roomFloor = urlParams.get('floor');
     const roomPrice = urlParams.get('price');
+    const startDate = urlParams.get('startDate');
+    const endDate = urlParams.get('endDate');
 
     if (roomId) {
         document.getElementById('roomId').value = roomId;
@@ -20,10 +22,29 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('roomFloor').value = roomFloor;
         if (roomPrice) {
             document.getElementById('precio').value = roomPrice;
+            document.getElementById('roomPrice').value = roomPrice;
         }
     }
 
-    console.log('Room ID set:', document.getElementById('roomId').value); // Debugging line
+    const fechaEntrada = document.getElementById('fechaEntrada');
+    const fechaSalida = document.getElementById('fechaSalida');
+
+    // Set dates from URL parameters or default to today/tomorrow
+    if (startDate) {
+        fechaEntrada.value = startDate;
+    } else {
+        fechaEntrada.value = new Date().toISOString().split('T')[0];
+    }
+
+    if (endDate) {
+        fechaSalida.value = endDate;
+    } else {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        fechaSalida.value = tomorrow.toISOString().split('T')[0];
+    }
+
+    console.log('Room ID set:', document.getElementById('roomId').value);
 
     const registrarBtn = document.getElementById('registrarBtn');
     if (registrarBtn) {
@@ -32,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function handleBookingProcess(event) {
-    event.preventDefault(); // Prevent form submission if it's a submit button
+    event.preventDefault();
 
     if (!validateForm()) {
         return;
@@ -87,6 +108,7 @@ async function handleBookingProcess(event) {
         });
     }
 }
+
 function validateForm() {
     let isValid = true;
 
@@ -274,18 +296,27 @@ function getCustomerData() {
     };
 }
 
+
+
 function getBookingData() {
     const adelanto = parseFloat(document.getElementById('adelanto').value) || 0;
     const precio = parseFloat(document.getElementById('precio').value) || 0;
+    const roomPrice = parseFloat(document.getElementById('roomPrice').value) || 0;
     
     const checkInDate = document.getElementById('fechaEntrada').value;
     const checkOutDate = document.getElementById('fechaSalida').value;
     const roomId = parseInt(document.getElementById('roomId').value, 10);
 
+    const totalStayDays = calculateStayDays(checkInDate, checkOutDate);
+
     console.log('Booking data:', {
         checkInDate,
         checkOutDate,
-        roomId
+        roomId,
+        adelanto,
+        precio,
+        roomPrice,
+        totalStayDays
     });
 
     if (isNaN(roomId)) {
@@ -301,8 +332,8 @@ function getBookingData() {
         status: 'PENDIENTE',
         cashAdvance: adelanto,
         totalCost: precio,
-        stayCost: precio,
-        totalStayDays: calculateStayDays(checkInDate, checkOutDate)
+        stayCost: roomPrice * totalStayDays,
+        totalStayDays: totalStayDays
     };
 }
 
@@ -312,6 +343,7 @@ function calculateStayDays(checkIn, checkOut) {
     const diffTime = Math.abs(end - start);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
+
 async function handleCustomer(customerData) {
     let customer = await getCustomerByDocumentNumber(customerData.documentNumber);
     
@@ -1036,3 +1068,132 @@ export async function initializeCheckInPage() {
     }   
 }
 
+// New function to get active reservations
+export async function getActiveReservations() {
+    try {
+        const allBookings = await getAllBookings();
+        return allBookings.filter(booking => 
+            booking.status === 'CHECKED_IN' && booking.isActive
+        );
+    } catch (error) {
+        console.error('Error fetching active reservations:', error);
+        throw error;
+    }
+}
+
+// New function to initialize the check-out page
+export function initializeCheckOutPage() {
+    const roomsGrid = document.querySelector('.rooms-grid');
+    const floorSelector = document.querySelector('.floor-selector');
+
+    async function loadActiveReservations(floor = 'Todos') {
+        try {
+            const activeReservations = await getActiveReservations();
+            const reservationsToShow = activeReservations.filter(reservation =>
+                floor === 'Todos' || reservation.room.floor.toUpperCase() === floor
+            );
+            renderActiveReservations(reservationsToShow);
+        } catch (error) {
+            console.error('Error loading active reservations:', error);
+        }
+    }
+
+    function renderActiveReservations(reservations) {
+        roomsGrid.innerHTML = '';
+        reservations.forEach(reservation => {
+            const roomCard = `
+                <div class="room-card ocupado">
+                    <div class="room-header">
+                        <span class="room-number">NRO: ${reservation.room.number}</span>
+                        <i class="fas fa-user-check room-icon"></i>
+                    </div>
+                    <div class="room-category">
+                        CATEGORIA: ${reservation.room.type}
+                    </div>
+                    <div class="room-status ocupado" onclick="redirectToCheckOut('${reservation.id}')">
+                        CHECK-OUT
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            `;
+            roomsGrid.insertAdjacentHTML('beforeend', roomCard);
+        });
+    }
+
+    floorSelector.addEventListener('change', () => loadActiveReservations(floorSelector.value));
+
+    // Initial load
+    loadActiveReservations();
+
+    // Expose function to window object for the onclick event
+    window.redirectToCheckOut = function(reservationId) {
+        window.location.href = `../pages/G_salidaHabitacion.html?reservationId=${reservationId}`;
+    };
+}
+
+// New function to initialize the room check-out page
+export async function initializeRoomCheckOutPage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const reservationId = urlParams.get('reservationId');
+
+    if (!reservationId) {
+        console.error('No reservation ID provided');
+        return;
+    }
+
+    try {
+        const reservation = await getBookingById(reservationId);
+        if (!reservation) {
+            console.error('Reservation not found');
+            return;
+        }
+
+        // Populate the form fields with reservation data
+        document.getElementById('roomNumber').value = reservation.room.number;
+        document.getElementById('roomDetails').value = reservation.room.details;
+        document.getElementById('roomCategory').value = reservation.room.type;
+        document.getElementById('roomFloor').value = reservation.room.floor;
+        document.getElementById('clientName').value = `${reservation.customer.name} ${reservation.customer.lastName}`;
+        document.getElementById('nroDocumento').value = reservation.customer.documentNumber;
+        document.getElementById('correo').value = reservation.customer.email;
+        document.getElementById('checkInDate').value = new Date(reservation.checkInDate).toLocaleDateString();
+        document.getElementById('roomCost').value = reservation.totalCost;
+        document.getElementById('advancePayment').value = reservation.cashAdvance;
+        document.getElementById('remainingAmount').value = reservation.totalCost - reservation.cashAdvance;
+
+        // Add event listener for the finish check-out button
+        document.querySelector('.finish-sale-btn').addEventListener('click', () => finishCheckOut(reservationId));
+    } catch (error) {
+        console.error('Error initializing room check-out page:', error);
+    }
+}
+
+async function finishCheckOut(reservationId) {
+    try {
+        const reservation = await getBookingById(reservationId);
+        if (!reservation) {
+            console.error('Reservation not found');
+            return;
+        }
+
+        // Update booking status
+        await updateBooking({
+            id: reservationId,
+            status: 'CHECKED_OUT',
+            isActive: false
+        });
+
+        // Update room status
+        await updateRoom({
+            id: reservation.room.id,
+            status: 'LIMPIEZA',
+            isAvailable: false
+        });
+
+        alert('Check-out Completado correctamente');
+        window.location.href = '../pages/G_salida.html';
+    } catch (error) {
+        console.error('Error during check-out:', error);
+        alert('Un error ha ocurrido durante el check-out.');
+    }
+}

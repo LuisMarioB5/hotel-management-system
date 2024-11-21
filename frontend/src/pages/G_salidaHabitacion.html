@@ -53,35 +53,35 @@
                     <div class="info-grid">
                         <div class="info-group">
                             <label><i class="fas fa-hashtag"></i> Habitacion:</label>
-                            <input type="text" value="001" readonly>
+                            <input type="text" id="roomNumber" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-list"></i> Detalles:</label>
-                            <input type="text" value="WIFI + BAÑO + TV + CABLE" readonly>
-                        </div>
+                            <input type="text" id="roomDetails" readonly>
+                        </div>        
                         <div class="info-group">
                             <label><i class="fas fa-tag"></i> Categoría:</label>
-                            <input type="text" value="Individual" readonly>
+                            <input type="text" id="roomCategory" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-building"></i> Piso:</label>
-                            <input type="text" value="PRIMERO" readonly>
+                            <input type="text" id="roomFloor" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-user"></i> Cliente:</label>
-                            <input type="text" value="Willy Reyes" readonly>
+                            <input type="text" id="clientName" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-id-card"></i> Nro Documento:</label>
-                            <input type="text" value="60605050" readonly>
+                            <input type="text" id="nroDocumento" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-envelope"></i> Correo:</label>
-                            <input type="text" value="WillyR@gmail.com" readonly>
+                            <input type="email" id="correo" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
-                            <input type="text" value="17/07/2021" readonly>
+                            <input type="date" id="fechaEntrada" readonly>
                         </div>
                     </div>
                 </div>
@@ -92,19 +92,19 @@
                     <div class="info-grid">
                         <div class="info-group">
                             <label><i class="fas fa-dollar-sign"></i> Costo Habitacion:</label>
-                            <input type="text" value="$70.00" readonly>
+                            <input type="text" id="roomCost" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-money-bill-wave"></i> Cantidad Adelanto:</label>
-                            <input type="text" value="0.00" readonly>
+                            <input type="text" id="advancePayment" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-money-bill"></i> Cantidad Restante:</label>
-                            <input type="text" value="$70.00" readonly>
+                            <input type="text" id="remainingAmount" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-exclamation-circle"></i> Costo por penalidad:</label>
-                            <input id="adelanto" class="cant" type="text" value="0" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                            <input id="adelanto" class="cant" type="number" value="0" min="0" oninput="this.value = Math.max(0, this.value)">
                         </div>
                     </div>
                 </div>
@@ -227,6 +227,11 @@
                 });
             });
         });
+    </script>
+
+    <script type="module">
+        import { initializeRoomCheckOutPage } from '../scripts/booking.js';
+        document.addEventListener('DOMContentLoaded', initializeRoomCheckOutPage);
     </script>
 </body>
 </html>
