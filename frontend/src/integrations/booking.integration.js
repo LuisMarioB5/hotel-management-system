@@ -50,19 +50,6 @@ export async function getBookingById(id) {
     }
 }
 
-/**
- * Crea una nueva reserva.
- * @async
- * @function createBooking
- * @param {Object} params - Datos de la reserva.
- * @param {number} params.customerId - ID del cliente vinculado a la reserva (requerido).
- * @param {number} params.roomId - ID de la habitación vinculada a la reserva (requerido).
- * @param {Date} params.checkInDate - Fecha en la que se espera iniciar la estadía (requerido).
- * @param {Date} params.checkOutDate - Fecha en la que se espera concluir la estadía (requerido).
- * @param {string} [params.details] - Detalles relacionados a la reserva.
- * @returns {Promise<Object>} Los datos de la reserva recién creada en formato JSON.
- */
-
 function parseDate(dateString) {
     if (!dateString) return null;
     const date = new Date(dateString);
@@ -135,23 +122,40 @@ async function checkExistingReservations(roomId, checkInDate, checkOutDate) {
     }
 }
 
+/**
+ * Crea una nueva reserva.
+ * @async
+ * @function createBooking
+ * @param {Object} params - Datos de la reserva.
+ * @param {number} params.customerId - ID del cliente vinculado a la reserva (requerido).
+ * @param {number} params.roomId - ID de la habitación vinculada a la reserva (requerido).
+ * @param {Date} params.checkInDate - Fecha en la que se espera iniciar la estadía (requerido).
+ * @param {Date} [params.checkOutDate] - Fecha en la que se espera concluir la estadía.
+ * @param {string} [params.details] - Detalles relacionados a la reserva.
+ * @param {number} [params.cashAdvance] - Efectivo adelantado a pagar por la reserva.
+ * @param {number} [params.totalStayDays] - Cantidad de días que se opedara el cliente.
+ * @param {number} [params.stayCost] - Costo del hospedaje, calculado por el precio de la habitacion por las noches.
+ * @param {number} [params.totalCost] - Costo Total del hospedaje más cualquier consumo.
+ * @param {string} [params.status] - Estado atual de la reserva, empleando el enum BookingStatus.
+ * @param {boolean} [params.isActive] - Muestra si la reserva esta activa o no.
+ * @returns {Promise<Object>} Los datos de la reserva recién creada en formato JSON.
+ */
 export async function createBooking({ 
     customerId = null, 
     roomId = null, 
     checkInDate = null, 
     checkOutDate = null, 
     details = null,
-    isActive = true,
-    status = 'PENDIENTE',
     cashAdvance = 0,
-    totalCost = 0,
+    totalStayDays = 0,
     stayCost = 0,
-    totalStayDays = 0
+    totalCost = 0,
+    status = 'PENDIENTE',
+    isActive = true,
 } = {}) {
     validateParamIsNotNull('customerId', customerId);
     validateParamIsNotNull('roomId', roomId);
     validateParamIsNotNull('checkInDate', checkInDate);
-    validateParamIsNotNull('checkOutDate', checkOutDate);
 
     roomId = Number(roomId);
 
@@ -228,23 +232,53 @@ export async function createBooking({
 /**
  * Actualiza los datos de una reserva.
  * @async
- * @function updateBooking
+ * @function createBooking
  * @param {Object} params - Datos de la reserva.
- * @param {number} params.id -ID de la reserva (requerido).
+ * @param {number} params.id - ID de la reserva a modificar (requerido).
  * @param {number} [params.roomId] - ID de la habitación vinculada a la reserva.
  * @param {Date} [params.checkInDate] - Fecha en la que se espera iniciar la estadía.
  * @param {Date} [params.checkOutDate] - Fecha en la que se espera concluir la estadía.
+ * @param {Date} [params.actualCheckInDate] - Fecha en la que en realidad se inició la estadía.
+ * @param {Date} [params.actualCheckOutDate] - Fecha en la que en realidad se concluyó la estadía.
  * @param {string} [params.details] - Detalles relacionados a la reserva.
- * @returns {Promise<Object>} Los datos de la reserva actualizados en formato JSON.
+ * @param {number} [params.cashAdvance] - Efectivo adelantado a pagar por la reserva.
+ * @param {number} [params.totalStayDays] - Cantidad de días que se opedara el cliente.
+ * @param {number} [params.stayCost] - Costo del hospedaje, calculado por el precio de la habitacion por las noches.
+ * @param {number} [params.totalCost] - Costo Total del hospedaje más cualquier consumo.
+ * @param {string} [params.status] - Estado atual de la reserva, empleando el enum BookingStatus.
+ * @param {boolean} [params.isActive] - Muestra si la reserva esta activa o no.
+ * @returns {Promise<Object>} Los datos de la reserva recién creada en formato JSON.
  */
-export async function updateBooking({ id = null, customerId = null, roomId = null, checkInDate = null, checkOutDate = null, details = null} = {}) {
+export async function updateBooking({
+    id = null,
+    roomId = null, 
+    checkInDate = null, 
+    checkOutDate = null, 
+    actualCheckInDate = null, 
+    actualCheckOutDate = null, 
+    details = null,
+    cashAdvance = null,
+    totalStayDays = null,
+    stayCost = null,
+    totalCost = null,
+    status = null,
+    isActive = null,
+} = {}) {
     validateParamIsNotNull('id', id);
 
     const body = {};
     if(roomId !== null) body.roomId = roomId;
     if(checkInDate !== null) body.checkInDate = checkInDate;
     if(checkOutDate !== null) body.checkOutDate = checkOutDate;
+    if(actualCheckInDate !== null) body.actualCheckInDate = actualCheckInDate;
+    if(actualCheckOutDate !== null) body.actualCheckOutDate = actualCheckOutDate;
     if(details !== null) body.details = details;
+    if(cashAdvance !== null) body.cashAdvance = cashAdvance;
+    if(totalStayDays !== null) body.totalStayDays = totalStayDays;
+    if(stayCost !== null) body.stayCost = stayCost;
+    if(totalCost !== null) body.totalCost = totalCost;
+    if(status !== null) body.status = status;
+    if(isActive !== null) body.isActive = isActive;
 
     try {
         const response = await fetch(BACKEND_ROUTES.bookings.update(id), {
@@ -284,4 +318,42 @@ export async function getBookingEnumsValues() {
     } catch (error) {
         console.error('Error de red', error);
     }
+}
+
+/**
+ * Confirma una reserva por su ID.
+ * @async
+ * @function confirmBooking
+ * @param {number} id - El ID de la reserva.
+ */
+export async function confirmBooking(id) {
+    validateParamIsNotNull('id', id);
+
+    await updateBooking({id: id, status: 'CONFIRMADA'});
+}
+
+/**
+ * Cancela una reserva por su ID.
+ * @async
+ * @function cancelBooking
+ * @param {number} id - El ID de la reserva.
+ */
+export async function cancelBooking(id) {
+    validateParamIsNotNull('id', id);
+
+    await updateBooking({id: id, status: 'CANCELADA'});
+}
+
+/**
+ * Realiza el check-in (entrada o inicio) de una reserva por su ID.
+ * @async
+ * @function checkInBooking
+ * @param {number} id - El ID de la reserva.
+ * @param {number} cashAdvance - El adelanto que se debe depositar para iniciar la estadía.
+ */
+export async function checkInBooking(id, cashAdvance) {
+    validateParamIsNotNull('id', id);
+    validateParamIsNotNull('cashAdvance', cashAdvance);
+    
+    await updateBooking({id: id, cashAdvance: cashAdvance});
 }
