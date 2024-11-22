@@ -1,6 +1,5 @@
-// booking.js
-import { createCustomer, getCustomerByDocumentNumber, updateCustomer,getCustomerById } from '../integrations/customer.integration.js';
-import { createBooking, confirmBooking, cancelBooking, checkInBooking,getAllBookings,updateBooking,getBookingById } from '../integrations/booking.integration.js';
+import { createCustomer, getCustomerByDocumentNumber, updateCustomer } from '../integrations/customer.integration.js';
+import { createBooking, confirmBooking, cancelBooking, checkInBooking, getAllBookings, updateBooking, getBookingById } from '../integrations/booking.integration.js';
 import { updateRoom,getAllRooms,getRoomById } from '../integrations/room.integration.js';
 
 document.addEventListener('DOMContentLoaded', function() {
