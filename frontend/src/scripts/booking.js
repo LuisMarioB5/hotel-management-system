@@ -33,7 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (startDate) {
         fechaEntrada.value = startDate;
     } else {
-        fechaEntrada.value = new Date().toISOString().split('T')[0];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        fechaEntrada.value = today.toISOString().split('T')[0];
     }
 
     if (endDate) {
@@ -41,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
         fechaSalida.value = tomorrow.toISOString().split('T')[0];
     }
 
@@ -332,7 +335,7 @@ function getBookingData() {
         status: 'PENDIENTE',
         cashAdvance: adelanto,
         totalCost: precio,
-        stayCost: roomPrice * totalStayDays,
+        stayCost: roomPrice,
         totalStayDays: totalStayDays
     };
 }
