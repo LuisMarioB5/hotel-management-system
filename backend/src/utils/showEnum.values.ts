@@ -13,13 +13,3 @@ export function getEnumValues(enumObjs: EnumObject): { [key: string]: string[] }
 
     return result;
 }
-
-// Llamada a la función
-// const enums = getEnumValues({ Role, Status });
-// console.log(enums);
-/* Salida:
-{
-    Role: ["admin", "user", "guest"],
-    Status: ["active", "inactive", "pending"]
-}
-*/

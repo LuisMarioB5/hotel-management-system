@@ -26,34 +26,24 @@ export class BookingEntity {
     consumptions: ConsumptionEntity[];
 
     // Fechas planeadas de check-in y check-out
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', nullable: false })
     checkInDate: Date;
 
-    @Column({ type: 'timestamp' })
-    checkOutDate?: Date;
-    
-    @Column({ type: 'varchar', nullable: true, default: null })
-    details?: string;
-    
-    // Campo para indicar si la reserva está activa o no
-    @Column({ type: 'boolean', default: true })
-    isActive: boolean;
+    @Column({ type: 'timestamp', nullable: true, default: null })
+    checkOutDate: Date;
     
     // Fecha y hora reales de check-in y check-out
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamp', nullable: true, default: null })
     actualCheckInDate?: Date;
 
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamp', nullable: true, default: null })
     actualCheckOutDate?: Date;
 
-    @Column({ type: 'decimal', nullable: true})
+    @Column({ type: 'decimal', precision: 10, scale: 2, default: 0})
     cashAdvance?: number;
     
-    @Column({ type: 'decimal', default: 0})
-    totalConsumption: number
-    
-    @Column({ type: 'decimal', default: 0})
-    stayCost: number
+    @Column({ type: 'decimal', precision: 10, scale: 2, default: 0})
+    stayCost: number;
     
     @Column({type: 'int', default: 1})
     totalStayDays: number;
@@ -61,7 +51,14 @@ export class BookingEntity {
     @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
     totalCost: number;
 
+    @Column({ type: 'varchar', nullable: true, default: null })
+    details: string;
+    
     // Estado de la reserva usando enum para evitar errores
     @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.PENDIENTE })
     status: BookingStatus;
+    
+    // Campo para indicar si la reserva está activa o no
+    @Column({ type: 'boolean', default: true })
+    isActive: boolean;
 }
