@@ -154,6 +154,10 @@ export async function createBooking({
     validateParamIsNotNull('checkOutDate', checkOutDate);
 
     roomId = Number(roomId);
+    cashAdvance = Number(cashAdvance);
+    totalCost = Number(totalCost);
+    stayCost = Number(stayCost);
+    totalStayDays = Number(totalStayDays);
 
     const parsedCheckInDate = parseDate(checkInDate);
     const parsedCheckOutDate = parseDate(checkOutDate);
@@ -162,10 +166,14 @@ export async function createBooking({
         throw new Error('Invalid date format');
     }
 
-    console.log('Creating booking with parsed dates:', {
+    console.log('Creating booking with parsed data:', {
+        customerId,
+        roomId,
         checkInDate: parsedCheckInDate,
         checkOutDate: parsedCheckOutDate,
-        roomId,
+        details,
+        isActive,
+        status,
         cashAdvance,
         totalCost,
         stayCost,
@@ -298,18 +306,25 @@ export async function confirmBooking(id) {
     validateParamIsNotNull('id', id);
     
     try {
-        const response = await fetch(BACKEND_ROUTES.bookings.confirm(id), {
+        const updateUrl = BACKEND_ROUTES.bookings.update(id);
+
+        const response = await fetch(updateUrl, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
+            body: JSON.stringify({ status: 'CONFIRMADA' })
         });
 
         if (response.ok) {
             return await response.json();
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al confirmar la reserva');
         }
     } catch (error) {
         console.error('Error de red', error);
+        throw error;
     }
 }
 
