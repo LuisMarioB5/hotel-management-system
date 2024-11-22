@@ -154,10 +154,6 @@ export async function createBooking({
     validateParamIsNotNull('checkOutDate', checkOutDate);
 
     roomId = Number(roomId);
-    cashAdvance = Number(cashAdvance);
-    totalCost = Number(totalCost);
-    stayCost = Number(stayCost);
-    totalStayDays = Number(totalStayDays);
 
     const parsedCheckInDate = parseDate(checkInDate);
     const parsedCheckOutDate = parseDate(checkOutDate);
@@ -166,14 +162,10 @@ export async function createBooking({
         throw new Error('Invalid date format');
     }
 
-    console.log('Creating booking with parsed data:', {
-        customerId,
-        roomId,
+    console.log('Creating booking with parsed dates:', {
         checkInDate: parsedCheckInDate,
         checkOutDate: parsedCheckOutDate,
-        details,
-        isActive,
-        status,
+        roomId,
         cashAdvance,
         totalCost,
         stayCost,
@@ -311,17 +303,13 @@ export async function confirmBooking(id) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ status: 'CONFIRMADA' })
         });
 
         if (response.ok) {
             return await response.json();
-        } else {
-            throw new Error('Failed to confirm booking');
         }
     } catch (error) {
         console.error('Error de red', error);
-        throw error;
     }
 }
 

@@ -202,10 +202,16 @@ export class PDFReport {
     this.doc.moveTo(startX, currentY).lineTo(this.doc.page.width - startX, currentY).stroke();
     currentY += 5; // Espaciado debajo de la línea
   
+    // Calcula el total de de los consumos
+    let totalConsumption = 0;    
+    booking.consumptions.forEach(consumption => {
+      totalConsumption += consumption.subtotal;
+    });
+
     // Imprimir cada fila de resumen de costos
     const summaryData = [
       { description: 'Costo de Estadía', amount: booking.stayCost },
-      ...(booking.consumptions.length > 0 ? [{ description: 'Total de Consumos', amount: booking.totalConsumption }] : []),
+      ...(booking.consumptions.length > 0 ? [{ description: 'Total de Consumos', amount: totalConsumption }] : []),
       { description: 'Costo Total de la Reserva', amount: booking.totalCost }
     ];
   
