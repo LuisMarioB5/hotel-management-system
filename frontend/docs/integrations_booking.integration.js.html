@@ -78,6 +78,78 @@ export async function getBookingById(id) {
     }
 }
 
+function parseDate(dateString) {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
+}
+
+function dateRangesOverlap(start1, end1, start2, end2) {
+    // Convert all dates to timestamps for comparison
+    const s1 = start1.getTime();
+    const e1 = end1.getTime();
+    const s2 = start2.getTime();
+    const e2 = end2.getTime();
+    return s1 &lt; e2 &amp;&amp; e1 > s2;
+}
+
+async function checkExistingReservations(roomId, checkInDate, checkOutDate) {
+    try {
+        const response = await fetch(`${BACKEND_ROUTES.bookings.getAll}`);
+        
+        if (!response.ok) {
+            throw new Error('Error al verificar reservas existentes');
+        }
+
+        const allBookings = await response.json();
+
+        console.log('All bookings:', allBookings);
+
+        // First filter by roomId and active status
+        const overlappingBookings = allBookings.filter(booking => {
+            // Only check bookings for the same room
+            if (booking.roomId !== roomId) {
+                return false;
+            }
+
+            // Only check PENDIENTE or CONFIRMADA bookings
+            if (booking.status.toUpperCase() !== 'PENDIENTE' &amp;&amp; 
+                booking.status.toUpperCase() !== 'CONFIRMADA') {
+                return false;
+            }
+
+            // Use checkInDate and checkOutDate for comparison, not actual dates
+            const bookingStart = parseDate(booking.checkInDate);
+            const bookingEnd = parseDate(booking.checkOutDate);
+            
+            if (!bookingStart || !bookingEnd) {
+                console.log('Invalid dates in booking:', booking);
+                return false;
+            }
+
+            console.log('Comparing dates for roomId', roomId, ':', {
+                newBooking: { 
+                    start: checkInDate.toISOString(), 
+                    end: checkOutDate.toISOString() 
+                },
+                existingBooking: { 
+                    start: bookingStart.toISOString(), 
+                    end: bookingEnd.toISOString() 
+                }
+            });
+
+            return dateRangesOverlap(checkInDate, checkOutDate, bookingStart, bookingEnd);
+        });
+
+        console.log('Overlapping bookings for roomId', roomId, ':', overlappingBookings);
+
+        return overlappingBookings;
+    } catch (error) {
+        console.error('Error al verificar reservas existentes:', error);
+        throw error;
+    }
+}
+
 /**
  * Crea una nueva reserva.
  * @async
@@ -86,26 +158,92 @@ export async function getBookingById(id) {
  * @param {number} params.customerId - ID del cliente vinculado a la reserva (requerido).
  * @param {number} params.roomId - ID de la habitación vinculada a la reserva (requerido).
  * @param {Date} params.checkInDate - Fecha en la que se espera iniciar la estadía (requerido).
- * @param {Date} params.checkOutDate - Fecha en la que se espera concluir la estadía (requerido).
+ * @param {Date} [params.checkOutDate] - Fecha en la que se espera concluir la estadía.
  * @param {string} [params.details] - Detalles relacionados a la reserva.
+ * @param {number} [params.cashAdvance] - Efectivo adelantado a pagar por la reserva.
+ * @param {number} [params.totalStayDays] - Cantidad de días que se opedara el cliente.
+ * @param {number} [params.stayCost] - Costo del hospedaje, calculado por el precio de la habitacion por las noches.
+ * @param {number} [params.totalCost] - Costo Total del hospedaje más cualquier consumo.
+ * @param {string} [params.status] - Estado atual de la reserva, empleando el enum BookingStatus.
+ * @param {boolean} [params.isActive] - Muestra si la reserva esta activa o no.
  * @returns {Promise&lt;Object>} Los datos de la reserva recién creada en formato JSON.
  */
-export async function createBooking({ customerId = null, roomId = null, checkInDate = null, checkOutDate = null, details = null} = {}) {
+export async function createBooking({ 
+    customerId = null, 
+    roomId = null, 
+    checkInDate = null, 
+    checkOutDate = null, 
+    details = null,
+    cashAdvance = 0,
+    totalStayDays = 0,
+    stayCost = 0,
+    totalCost = 0,
+    status = 'PENDIENTE',
+    isActive = true,
+} = {}) {
     validateParamIsNotNull('customerId', customerId);
     validateParamIsNotNull('roomId', roomId);
     validateParamIsNotNull('checkInDate', checkInDate);
-    validateParamIsNotNull('checkOutDate', checkOutDate);
 
-    const body = { 
+    roomId = Number(roomId);
+    cashAdvance = Number(cashAdvance);
+    totalCost = Number(totalCost);
+    stayCost = Number(stayCost);
+    totalStayDays = Number(totalStayDays);
+
+    const parsedCheckInDate = parseDate(checkInDate);
+    const parsedCheckOutDate = parseDate(checkOutDate);
+
+    if (!parsedCheckInDate || !parsedCheckOutDate) {
+        throw new Error('Invalid date format');
+    }
+
+    console.log('Creating booking with parsed data:', {
         customerId,
         roomId,
-        checkInDate,
-        checkOutDate
-     };
-    
-     if(details !== null) body.details = details;
+        checkInDate: parsedCheckInDate,
+        checkOutDate: parsedCheckOutDate,
+        details,
+        isActive,
+        status,
+        cashAdvance,
+        totalCost,
+        stayCost,
+        totalStayDays
+    });
 
     try {
+        const existingReservations = await checkExistingReservations(
+            roomId,
+            new Date(parsedCheckInDate),
+            new Date(parsedCheckOutDate)
+        );
+        
+        if (existingReservations.length > 0) {
+            console.log('Overlapping bookings found:', existingReservations);
+            return { 
+                error: 'OVERLAPPING_BOOKINGS', 
+                overlappingBookings: existingReservations.map(booking => ({
+                    checkInDate: booking.checkInDate,
+                    checkOutDate: booking.checkOutDate
+                }))
+            };
+        }
+
+        const body = { 
+            customerId,
+            roomId,
+            checkInDate: parsedCheckInDate,
+            checkOutDate: parsedCheckOutDate,
+            details,
+            isActive,
+            status,
+            cashAdvance,
+            totalCost,
+            stayCost,
+            totalStayDays
+        };
+
         const response = await fetch(BACKEND_ROUTES.bookings.create, {
             method: 'POST',
             headers: {
@@ -114,13 +252,16 @@ export async function createBooking({ customerId = null, roomId = null, checkInD
             body: JSON.stringify(body),
         });
 
-        if (response.ok) {
-            return await response.json();
-        } else {
-            console.error("Error en la respuesta del backend", await response.text());
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error en la respuesta del backend", errorData);
+            throw new Error(errorData.message || 'Error al crear la reserva');
         }
+
+        return await response.json();
     } catch (error) {
-        console.error('Error de red', error);
+        console.error('Error de red:', error);
+        throw error;
     }
 }
 
@@ -129,21 +270,51 @@ export async function createBooking({ customerId = null, roomId = null, checkInD
  * @async
  * @function updateBooking
  * @param {Object} params - Datos de la reserva.
- * @param {number} params.id -ID de la reserva (requerido).
+ * @param {number} params.id - ID de la reserva a modificar (requerido).
  * @param {number} [params.roomId] - ID de la habitación vinculada a la reserva.
  * @param {Date} [params.checkInDate] - Fecha en la que se espera iniciar la estadía.
  * @param {Date} [params.checkOutDate] - Fecha en la que se espera concluir la estadía.
+ * @param {Date} [params.actualCheckInDate] - Fecha en la que en realidad se inició la estadía.
+ * @param {Date} [params.actualCheckOutDate] - Fecha en la que en realidad se concluyó la estadía.
  * @param {string} [params.details] - Detalles relacionados a la reserva.
- * @returns {Promise&lt;Object>} Los datos de la reserva actualizados en formato JSON.
+ * @param {number} [params.cashAdvance] - Efectivo adelantado a pagar por la reserva.
+ * @param {number} [params.totalStayDays] - Cantidad de días que se opedara el cliente.
+ * @param {number} [params.stayCost] - Costo del hospedaje, calculado por el precio de la habitacion por las noches.
+ * @param {number} [params.totalCost] - Costo Total del hospedaje más cualquier consumo.
+ * @param {string} [params.status] - Estado atual de la reserva, empleando el enum BookingStatus.
+ * @param {boolean} [params.isActive] - Muestra si la reserva esta activa o no.
+ * @returns {Promise&lt;Object>} Los datos de la reserva recién creada en formato JSON.
  */
-export async function updateBooking({ id = null, customerId = null, roomId = null, checkInDate = null, checkOutDate = null, details = null} = {}) {
+export async function updateBooking({
+    id = null,
+    roomId = null, 
+    checkInDate = null, 
+    checkOutDate = null, 
+    actualCheckInDate = null, 
+    actualCheckOutDate = null, 
+    details = null,
+    cashAdvance = null,
+    totalStayDays = null,
+    stayCost = null,
+    totalCost = null,
+    status = null,
+    isActive = null,
+} = {}) {
     validateParamIsNotNull('id', id);
 
     const body = {};
     if(roomId !== null) body.roomId = roomId;
     if(checkInDate !== null) body.checkInDate = checkInDate;
     if(checkOutDate !== null) body.checkOutDate = checkOutDate;
+    if(actualCheckInDate !== null) body.actualCheckInDate = actualCheckInDate;
+    if(actualCheckOutDate !== null) body.actualCheckOutDate = actualCheckOutDate;
     if(details !== null) body.details = details;
+    if(cashAdvance !== null) body.cashAdvance = cashAdvance;
+    if(totalStayDays !== null) body.totalStayDays = totalStayDays;
+    if(stayCost !== null) body.stayCost = stayCost;
+    if(totalCost !== null) body.totalCost = totalCost;
+    if(status !== null) body.status = status;
+    if(isActive !== null) body.isActive = isActive;
 
     try {
         const response = await fetch(BACKEND_ROUTES.bookings.update(id), {
@@ -152,6 +323,29 @@ export async function updateBooking({ id = null, customerId = null, roomId = nul
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Muestra todos los enums (variables constantes) que se emplean en la reserva.
+ * @async
+ * @function getBookingEnumsValues
+ * @returns {Promise&lt;Object>} Lista de los enums en formato JSON.
+ */
+export async function getBookingEnumsValues() {
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.getEnumsValues, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
         });
 
         if (response.ok) {
@@ -293,29 +487,6 @@ export async function checkOutBooking(id) {
         console.error('Error de red', error);
     }
 }
-
-/**
- * Muestra todos los enums (variables constantes) que se emplean en la reserva.
- * @async
- * @function getBookingEnumsValues
- * @returns {Promise&lt;Object>} Lista de los enums en formato JSON.
- */
-export async function getBookingEnumsValues() {
-    try {
-        const response = await fetch(BACKEND_ROUTES.bookings.getEnumsValues, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
 </code></pre>
         </article>
     </section>
@@ -326,13 +497,13 @@ export async function getBookingEnumsValues() {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#cancelBooking">cancelBooking</a></li><li><a href="global.html#changeRoomStatusToAvailable">changeRoomStatusToAvailable</a></li><li><a href="global.html#checkInBooking">checkInBooking</a></li><li><a href="global.html#checkOutBooking">checkOutBooking</a></li><li><a href="global.html#confirmBooking">confirmBooking</a></li><li><a href="global.html#createBooking">createBooking</a></li><li><a href="global.html#createCustomer">createCustomer</a></li><li><a href="global.html#createProduct">createProduct</a></li><li><a href="global.html#createRoom">createRoom</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteCustomer">deleteCustomer</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#deleteUser">deleteUser</a></li><li><a href="global.html#desactiveBooking">desactiveBooking</a></li><li><a href="global.html#desactiveProduct">desactiveProduct</a></li><li><a href="global.html#getAllBookings">getAllBookings</a></li><li><a href="global.html#getAllCustomers">getAllCustomers</a></li><li><a href="global.html#getAllProducts">getAllProducts</a></li><li><a href="global.html#getAllRooms">getAllRooms</a></li><li><a href="global.html#getAllUsers">getAllUsers</a></li><li><a href="global.html#getBookingById">getBookingById</a></li><li><a href="global.html#getBookingEnumsValues">getBookingEnumsValues</a></li><li><a href="global.html#getConsumptionByBookingId">getConsumptionByBookingId</a></li><li><a href="global.html#getConsumptionById">getConsumptionById</a></li><li><a href="global.html#getCustomerByDocumentNumber">getCustomerByDocumentNumber</a></li><li><a href="global.html#getCustomerById">getCustomerById</a></li><li><a href="global.html#getCustomerEnumsValues">getCustomerEnumsValues</a></li><li><a href="global.html#getProductById">getProductById</a></li><li><a href="global.html#getProductByName">getProductByName</a></li><li><a href="global.html#getProductEnumsValues">getProductEnumsValues</a></li><li><a href="global.html#getRoomById">getRoomById</a></li><li><a href="global.html#getRoomByRoomNumber">getRoomByRoomNumber</a></li><li><a href="global.html#getRoomEnumsValues">getRoomEnumsValues</a></li><li><a href="global.html#getRoomsAvailable">getRoomsAvailable</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#getUserEnumsValues">getUserEnumsValues</a></li><li><a href="global.html#loginIntegration">loginIntegration</a></li><li><a href="global.html#updateBooking">updateBooking</a></li><li><a href="global.html#updateCustomer">updateCustomer</a></li><li><a href="global.html#updateProduct">updateProduct</a></li><li><a href="global.html#updateRoom">updateRoom</a></li><li><a href="global.html#updateRoomNotAvailable">updateRoomNotAvailable</a></li><li><a href="global.html#updateUser">updateUser</a></li><li><a href="global.html#validateParamIsNotNull">validateParamIsNotNull</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#cancelBooking">cancelBooking</a></li><li><a href="global.html#changeRoomStatusToAvailable">changeRoomStatusToAvailable</a></li><li><a href="global.html#checkInBooking">checkInBooking</a></li><li><a href="global.html#checkOutBooking">checkOutBooking</a></li><li><a href="global.html#confirmBooking">confirmBooking</a></li><li><a href="global.html#createBooking">createBooking</a></li><li><a href="global.html#createCustomer">createCustomer</a></li><li><a href="global.html#createProduct">createProduct</a></li><li><a href="global.html#createRoom">createRoom</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteCustomer">deleteCustomer</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#deleteUser">deleteUser</a></li><li><a href="global.html#desactiveBooking">desactiveBooking</a></li><li><a href="global.html#desactiveProduct">desactiveProduct</a></li><li><a href="global.html#getAllBookings">getAllBookings</a></li><li><a href="global.html#getAllCustomers">getAllCustomers</a></li><li><a href="global.html#getAllProducts">getAllProducts</a></li><li><a href="global.html#getAllRooms">getAllRooms</a></li><li><a href="global.html#getAllUsers">getAllUsers</a></li><li><a href="global.html#getBookingById">getBookingById</a></li><li><a href="global.html#getBookingEnumsValues">getBookingEnumsValues</a></li><li><a href="global.html#getConsumptionByBookingId">getConsumptionByBookingId</a></li><li><a href="global.html#getConsumptionById">getConsumptionById</a></li><li><a href="global.html#getCustomerByDocumentNumber">getCustomerByDocumentNumber</a></li><li><a href="global.html#getCustomerById">getCustomerById</a></li><li><a href="global.html#getCustomerEnumsValues">getCustomerEnumsValues</a></li><li><a href="global.html#getProductById">getProductById</a></li><li><a href="global.html#getProductByName">getProductByName</a></li><li><a href="global.html#getProductEnumsValues">getProductEnumsValues</a></li><li><a href="global.html#getRoomById">getRoomById</a></li><li><a href="global.html#getRoomByRoomNumber">getRoomByRoomNumber</a></li><li><a href="global.html#getRoomEnumsValues">getRoomEnumsValues</a></li><li><a href="global.html#getRoomsAvailable">getRoomsAvailable</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#getUserEnumsValues">getUserEnumsValues</a></li><li><a href="global.html#loginIntegration">loginIntegration</a></li><li><a href="global.html#parseJwt">parseJwt</a></li><li><a href="global.html#updateBooking">updateBooking</a></li><li><a href="global.html#updateCustomer">updateCustomer</a></li><li><a href="global.html#updateProduct">updateProduct</a></li><li><a href="global.html#updateRoom">updateRoom</a></li><li><a href="global.html#updateRoomNotAvailable">updateRoomNotAvailable</a></li><li><a href="global.html#updateUser">updateUser</a></li><li><a href="global.html#validateJwt">validateJwt</a></li><li><a href="global.html#validateParamIsNotNull">validateParamIsNotNull</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Thu Nov 14 2024 19:23:55 GMT-0400 (Bolivia Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Nov 23 2024 08:37:58 GMT-0400 (Bolivia Time)
 </footer>
 
 <script> prettyPrint(); </script>

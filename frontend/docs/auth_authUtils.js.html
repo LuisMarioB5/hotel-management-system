@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: integrations/login.integration.js</title>
+    <title>JSDoc: Source: auth/authUtils.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: integrations/login.integration.js</h1>
+    <h1 class="page-title">Source: auth/authUtils.js</h1>
 
     
 
@@ -26,55 +26,89 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { checkAuthorizationLoginPage } from '../auth/pages/login.auth.js';
-import { BACKEND_ROUTES } from '../config/backend.routes.js';
-import { handleLoginNotification } from '../scripts/utils.js'
+            <pre class="prettyprint source linenums"><code>/**
+ * Valida el JWT almacenado en localStorage.
+ * - Comprueba si el token existe.
+ * - Valida el formato del token utilizando parseJwt.
+ * - Verifica si el token ha expirado.
+ * 
+ * @returns {Object} `user` Objecto clave-valor si el token es válido, `false` si no lo es.
+ */
+export function validateJwt() {
+    const token = localStorage.getItem('jwt');
+
+    // 1. Validar si el token existe
+    if (!token) {
+        Swal.fire({
+            icon: 'error',
+            title: 'No autorizado',
+            text: 'Debes iniciar sesión para acceder a esta página.',
+        }).then(() => {
+            window.location.href = 'login.html';
+        });
+        return false;
+    }
+
+    // 2. Decodificar el token
+    const user = parseJwt(token);
+    if (!user) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error en el token',
+            text: 'El token es inválido o está malformado.',
+        }).then(() => {
+            localStorage.removeItem('jwt');
+            window.location.href = 'login.html';
+        });
+        return false;
+    }
+
+    // 3. Verificar si el token ha expirado
+    const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+    if (user.exp &lt; currentTime) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Sesión expirada',
+            text: 'Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.',
+        }).then(() => {
+            localStorage.removeItem('jwt');
+            window.location.href = 'login.html';
+        });
+        return false;
+    }
+
+    // Token válido
+    return user;
+}
 
 /**
- * Inicializa el detector de eventos de envío del formulario de inicio de sesión.
- * Esta función intercepta el envío del formulario, envía las credenciales de inicio de sesión al backend y almacena el token JWT si el inicio de sesión es exitoso.
- * En caso de éxito o fracaso, se muestran las notificaciones correspondientes al usuario.
- * 
- * @async
- * @function loginIntegration
+ * Decodifica un token JWT.
+ * @param {string} token - El token JWT.
+ * @returns {Object|null} El payload decodificado o `null` si el token no es válido.
  */
-export async function loginIntegration() {
-    document.querySelector('.login-form-section form').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        var username = document.getElementById('username').value;
-        var password = document.getElementById('password').value;
-
-        try {
-            const response = await fetch(BACKEND_ROUTES.auth.login, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password })
-            });
-
-            if (response.ok) {
-                const token = await response.json();
-                localStorage.removeItem('jwt');
-                localStorage.setItem('jwt', token.access_token);
-                console.log('Inicio de sesión exitoso. Token almacenado correctamente');
-                const status = checkAuthorizationLoginPage();
-                console.log(status)
-                handleLoginNotification(status[0], username, status[1]);
-            } 
-            
-            if (response.status === 401 || response.status === 404) {
-                console.error('No tiene autorización para logearse, sus credenciales son incorrectas');
-                handleLoginNotification('failed');
-            }
-            
-        } catch (error) {
-            console.error('Error de red', error);
-            handleLoginNotification('network');
-        }
-    });
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error('Error decodificando el token:', error);
+        return null;
+    }
 }
-</code></pre>
+
+export function setLogoutButton(user) {
+    const btn = document.getElementById('logoutButton');
+    if(btn) {
+        btn.innerHTML = `${user.username} &lt;i class="fas fa-user">&lt;/i>`;
+    }
+}</code></pre>
         </article>
     </section>
 
