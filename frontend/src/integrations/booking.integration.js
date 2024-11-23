@@ -240,7 +240,7 @@ export async function createBooking({
 /**
  * Actualiza los datos de una reserva.
  * @async
- * @function createBooking
+ * @function updateBooking
  * @param {Object} params - Datos de la reserva.
  * @param {number} params.id - ID de la reserva a modificar (requerido).
  * @param {number} [params.roomId] - ID de la habitación vinculada a la reserva.
@@ -306,6 +306,29 @@ export async function updateBooking({
 }
 
 /**
+ * Muestra todos los enums (variables constantes) que se emplean en la reserva.
+ * @async
+ * @function getBookingEnumsValues
+ * @returns {Promise<Object>} Lista de los enums en formato JSON.
+ */
+export async function getBookingEnumsValues() {
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.getEnumsValues, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
  * Desactiva una reserva por su ID.
  * @async
  * @function desactiveBooking
@@ -340,25 +363,18 @@ export async function confirmBooking(id) {
     validateParamIsNotNull('id', id);
     
     try {
-        const updateUrl = BACKEND_ROUTES.bookings.update(id);
-
-        const response = await fetch(updateUrl, {
+        const response = await fetch(BACKEND_ROUTES.bookings.confirm(id), {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ status: 'CONFIRMADA' })
         });
 
         if (response.ok) {
             return await response.json();
-        } else {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Error al confirmar la reserva');
         }
     } catch (error) {
         console.error('Error de red', error);
-        throw error;
     }
 }
 
@@ -442,65 +458,4 @@ export async function checkOutBooking(id) {
     } catch (error) {
         console.error('Error de red', error);
     }
-}
-
-/**
- * Muestra todos los enums (variables constantes) que se emplean en la reserva.
- * @async
- * @function getBookingEnumsValues
- * @returns {Promise<Object>} Lista de los enums en formato JSON.
- */
-export async function getBookingEnumsValues() {
-    try {
-        const response = await fetch(BACKEND_ROUTES.bookings.getEnumsValues, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-/**
- * Confirma una reserva por su ID.
- * @async
- * @function confirmBooking
- * @param {number} id - El ID de la reserva.
- */
-export async function confirmBooking(id) {
-    validateParamIsNotNull('id', id);
-
-    await updateBooking({id: id, status: 'CONFIRMADA'});
-}
-
-/**
- * Cancela una reserva por su ID.
- * @async
- * @function cancelBooking
- * @param {number} id - El ID de la reserva.
- */
-export async function cancelBooking(id) {
-    validateParamIsNotNull('id', id);
-
-    await updateBooking({id: id, status: 'CANCELADA'});
-}
-
-/**
- * Realiza el check-in (entrada o inicio) de una reserva por su ID.
- * @async
- * @function checkInBooking
- * @param {number} id - El ID de la reserva.
- * @param {number} cashAdvance - El adelanto que se debe depositar para iniciar la estadía.
- */
-export async function checkInBooking(id, cashAdvance) {
-    validateParamIsNotNull('id', id);
-    validateParamIsNotNull('cashAdvance', cashAdvance);
-    
-    await updateBooking({id: id, cashAdvance: cashAdvance});
 }
