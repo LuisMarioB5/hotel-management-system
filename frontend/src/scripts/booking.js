@@ -32,7 +32,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (startDate) {
         fechaEntrada.value = startDate;
     } else {
-        fechaEntrada.value = new Date().toISOString().split('T')[0];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        fechaEntrada.value = today.toISOString().split('T')[0];
     }
 
     if (endDate) {
@@ -40,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
         fechaSalida.value = tomorrow.toISOString().split('T')[0];
     }
 
@@ -331,7 +334,7 @@ function getBookingData() {
         status: 'PENDIENTE',
         cashAdvance: adelanto,
         totalCost: precio,
-        stayCost: roomPrice * totalStayDays,
+        stayCost: roomPrice,
         totalStayDays: totalStayDays
     };
 }
@@ -411,7 +414,6 @@ async function handleBookingConfirmation(booking) {
         });
     }
 }
-
 
 function showAlert(icon, title, text, timer = null) {
     Swal.fire({
@@ -563,12 +565,12 @@ export function initializeRoomReservations() {
     }
 
     function renderReservations(reservations) {
-        roomsGrid.innerHTML = ''; // Limpiar el contenedor antes de renderizar
+        roomsGrid.innerHTML = ''; // Clear the container before rendering
         reservations.forEach(reservation => {
-            const { roomDetails, status } = reservation;
+            const { roomDetails, status, id } = reservation;
             const statusClass = (status || '').toLowerCase() === 'confirmada' ? 'reservado' : 'confirmar';
             const statusText = (status || '').toLowerCase() === 'confirmada' ? 'RESERVADO' : 'CONFIRMAR RESERVA';
-
+    
             const roomCard = `
                 <div class="room-card ${statusClass}">
                     <div class="room-header">
@@ -578,15 +580,15 @@ export function initializeRoomReservations() {
                     <div class="room-category">
                         CATEGORÍA: ${roomDetails?.type || 'Sin categoría'}
                     </div>
-                    <div class="room-status ${statusClass}" data-id="${reservation.id}" data-room-id="${roomDetails?.id}">
+                    <div class="room-status ${statusClass}" data-id="${id}" data-room-id="${roomDetails?.id}">
                         ${statusText}
                         <i class="fas fa-chevron-right"></i>
                     </div>
                 </div>
             `;
-            roomsGrid.insertAdjacentHTML('beforeend', roomCard); // Insertar cada tarjeta en la grilla
+            roomsGrid.insertAdjacentHTML('beforeend', roomCard);
         });
-
+    
         attachEventListeners();
     }
 
@@ -603,11 +605,11 @@ export function initializeRoomReservations() {
     async function openActionModal(event) {
         const roomElement = event.target.closest('.room-status');
         if (!roomElement) return;
-
-        const selectedBookingId = roomElement.getAttribute('data-id');
-        const selectedRoomNumber = roomElement.getAttribute('data-room-id');
+    
+        const bookingId = roomElement.getAttribute('data-id');
+        const roomNumber = roomElement.closest('.room-card').querySelector('.room-number').textContent.split(': ')[1];
+    
         try {
-            // Modal que pregunta si quiere confirmar o cancelar
             const result = await Swal.fire({
                 icon: 'question',
                 title: '¿Desea cancelar o confirmar la reserva?',
@@ -625,66 +627,45 @@ export function initializeRoomReservations() {
                     container: 'swal-container',
                 },
             });
+    
             if (result.dismiss === Swal.DismissReason.close) {
-                return; // Detenemos la ejecución si se cierra con la "X"
+                return; // Stop execution if closed with "X"
             }
-
+    
             if (result.isConfirmed) {
-                // Confirmar la reserva
-                const confirmResult = await Swal.fire({
-                    icon: 'question',
-                    title: '¿Está seguro?',
-                    text: `¿Está seguro de que desea confirmar la reserva de la habitación ${selectedRoomNumber}?`,
-                    showConfirmButton: true,
-                    confirmButtonText: 'Sí, confirmar',
-                    showCancelButton: true,
-                    cancelButtonText: 'Cancelar',
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    allowOutsideClick: false,
-                    heightAuto: false,
-                    customClass: {
-                        container: 'swal-container',
-                    },
-                });
-
-                if (confirmResult.isConfirmed) {
-                    confirmReservation();
-                }
+                await confirmReservation(bookingId, roomNumber);
             } else {
-                // Cancelar la reserva
-                const cancelResult = await Swal.fire({
-                    icon: 'question',
-                    title: '¿Está seguro?',
-                    text: `¿Está seguro de que desea cancelar la reserva de la habitación ${selectedRoomNumber}?`,
-                    showConfirmButton: true,
-                    confirmButtonText: 'Sí, cancelar',
-                    showCancelButton: true,
-                    cancelButtonText: 'Cancelar',
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    allowOutsideClick: false,
-                    heightAuto: false,
-                    customClass: {
-                        container: 'swal-container',
-                    },
-                });
-
-                if (cancelResult.isConfirmed) {
-                    cancelReservation();
-                }
+                await cancelReservation(bookingId, roomNumber);
             }
         } catch (error) {
-            console.error('Error abriendo el modal:', error);
+            console.error('Error opening the modal:', error);
+            showAlert('error', 'Error', 'Hubo un problema al procesar la acción.', 1500);
         }
     }
 
     async function confirmReservation(bookingId, roomNumber) {
         try {
-            if (selectedBookingId) {
-                await confirmBooking(selectedBookingId); // Verifica que confirmBooking esté implementada
-                showAlert('success', `Reserva confirmada`, `La habitación ${selectedRoomNumber} ahora está reservada.`, 1500);
-                loadReservations(floorSelector.value);
+            const confirmResult = await Swal.fire({
+                icon: 'question',
+                title: '¿Está seguro?',
+                text: `¿Está seguro de que desea confirmar la reserva de la habitación ${roomNumber}?`,
+                showConfirmButton: true,
+                confirmButtonText: 'Sí, confirmar',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                allowOutsideClick: false,
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
+            });
+    
+            if (confirmResult.isConfirmed) {
+                await confirmBooking(bookingId);
+                showAlert('success', `Reserva confirmada`, `La habitación ${roomNumber} ahora está reservada.`, 1500);
+                await loadReservations(floorSelector.value);
             }
         } catch (error) {
             console.error('Error confirming reservation:', error);
@@ -873,7 +854,6 @@ document.head.append(estilo);
 export async function initializeCheckInPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = parseInt(urlParams.get('roomId'), 10);
-    console.log("roomId obtenido de la URL:", roomId);
 
     if (isNaN(roomId)) {
         return;
@@ -1057,7 +1037,7 @@ export async function initializeCheckInPage() {
                         Swal.fire('Confirmada', 'La reserva ha sido confirmada.', 'success').then(() => {
                             location.reload();
                         });
-                        window.location.href = `../pages/G_reservaciones.html`;
+                        //window.location.href = `../pages/G_reservaciones.html`;
                     }
                 });
             }

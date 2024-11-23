@@ -158,6 +158,10 @@ export async function createBooking({
     validateParamIsNotNull('checkInDate', checkInDate);
 
     roomId = Number(roomId);
+    cashAdvance = Number(cashAdvance);
+    totalCost = Number(totalCost);
+    stayCost = Number(stayCost);
+    totalStayDays = Number(totalStayDays);
 
     const parsedCheckInDate = parseDate(checkInDate);
     const parsedCheckOutDate = parseDate(checkOutDate);
@@ -166,10 +170,14 @@ export async function createBooking({
         throw new Error('Invalid date format');
     }
 
-    console.log('Creating booking with parsed dates:', {
+    console.log('Creating booking with parsed data:', {
+        customerId,
+        roomId,
         checkInDate: parsedCheckInDate,
         checkOutDate: parsedCheckOutDate,
-        roomId,
+        details,
+        isActive,
+        status,
         cashAdvance,
         totalCost,
         stayCost,
@@ -287,6 +295,145 @@ export async function updateBooking({
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Desactiva una reserva por su ID.
+ * @async
+ * @function desactiveBooking
+ * @param {number} id - El ID de la reserva.
+ */
+export async function desactiveBooking(id) {
+    validateParamIsNotNull('id', id);
+    
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.desactive(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Confirma una reserva por su ID.
+ * @async
+ * @function confirmBooking
+ * @param {number} id - El ID de la reserva.
+ */
+export async function confirmBooking(id) {
+    validateParamIsNotNull('id', id);
+    
+    try {
+        const updateUrl = BACKEND_ROUTES.bookings.update(id);
+
+        const response = await fetch(updateUrl, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'CONFIRMADA' })
+        });
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al confirmar la reserva');
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+        throw error;
+    }
+}
+
+/**
+ * Cancela una reserva por su ID.
+ * @async
+ * @function cancelBooking
+ * @param {number} id - El ID de la reserva.
+ */
+export async function cancelBooking(id) {
+    validateParamIsNotNull('id', id);
+    
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.cancel(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Realiza el check-in (entrada o inicio) de una reserva por su ID.
+ * @async
+ * @function checkInBooking
+ * @param {number} id - El ID de la reserva.
+ * @param {number} cashAdvance - El adelanto que se debe depositar para iniciar la estadía.
+ */
+export async function checkInBooking(id, cashAdvance) {
+    validateParamIsNotNull('id', id);
+    validateParamIsNotNull('cashAdvance', cashAdvance);
+    
+    const body = {
+        cashAdvance,
+    };
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.checkIn(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Realiza el check-out (salida o finalización) de una reserva por su ID.
+ * @async
+ * @function checkOutBooking
+ * @param {number} id - El ID de la reserva.
+ */
+export async function checkOutBooking(id) {
+    validateParamIsNotNull('id', id);
+    
+    try {
+        const response = await fetch(BACKEND_ROUTES.bookings.checkOut(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
         });
 
         if (response.ok) {
