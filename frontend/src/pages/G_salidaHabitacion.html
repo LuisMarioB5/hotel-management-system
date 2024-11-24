@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 </head>
 <body>
     <div class="dashboard-page">
@@ -91,12 +92,12 @@
                     <h2><i class="fas fa-concierge-bell"></i> Detalle de Hospedaje</h2>
                     <div class="info-grid">
                         <div class="info-group">
-                            <label><i class="fas fa-dollar-sign"></i> Costo Habitacion:</label>
+                            <label><i class="fas fa-dollar-sign"></i> Costo Total Habitacion:</label>
                             <input type="text" id="roomCost" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-money-bill-wave"></i> Cantidad Adelanto:</label>
-                            <input type="text" id="advancePayment" readonly>
+                            <input type="text" id="cashAdvance" readonly>
                         </div>
                         <div class="info-group">
                             <label><i class="fas fa-money-bill"></i> Cantidad Restante:</label>
@@ -106,6 +107,10 @@
                             <label><i class="fas fa-exclamation-circle"></i> Costo por penalidad:</label>
                             <input id="adelanto" class="cant" type="number" value="0" min="0" oninput="this.value = Math.max(0, this.value)">
                         </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-list"></i> Detalles:</label>
+                            <input type="text" id="bookingDetails" readonly>
+                        </div> 
                     </div>
                 </div>
                  <!-- Servicio a la Habitación -->

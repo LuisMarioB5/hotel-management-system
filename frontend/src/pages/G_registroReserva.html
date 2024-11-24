@@ -262,13 +262,13 @@
             let precioBase = precioOriginal * diasReserva; // Precio original multiplicado por los días
             let precioFinal = precioBase;
     
-            let textoTarifa = "Tarifa: Tarifa normal"; // Valor por defecto
+            let textoTarifa = "Tarifa: Tarifa normal "; // Valor por defecto
             if (tarifa === "ANTICIPADA") {
                 precioFinal *= 0.85; // Descuento del 15%
-                textoTarifa = "Tarifa: 15% de descuento por reserva anticipada";
+                textoTarifa = "Tarifa: 15% de descuento por reserva anticipada ";
             } else if (tarifa === "ALTA") {
                 precioFinal *= 1.20; // Incremento del 20%
-                textoTarifa = "Tarifa: 20% de aumento por tarifa alta";
+                textoTarifa = "Tarifa: 20% de aumento por tarifa alta ";
             }
     
             // Validar y actualizar precio con adelanto
@@ -293,6 +293,7 @@
                 confirmButtonColor: '#3085d6',
                 allowOutsideClick: true,
                 heightAuto: false,
+                backdrop: true,
                 timer: 1500,
                 timerProgressBar: true,
             }).then(() => {
