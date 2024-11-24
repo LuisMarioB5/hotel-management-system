@@ -1,5 +1,5 @@
 import { createCustomer, getCustomerByDocumentNumber, updateCustomer } from '../integrations/customer.integration.js';
-import { createBooking, confirmBooking, cancelBooking, checkInBooking, getAllBookings, updateBooking, getBookingById } from '../integrations/booking.integration.js';
+import { createBooking, confirmBooking, cancelBooking, checkInBooking, getAllBookings, updateBooking, getBookingById,checkOutBooking, desactiveBooking } from '../integrations/booking.integration.js';
 import { updateRoom,getAllRooms,getRoomById } from '../integrations/room.integration.js';
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -606,10 +606,13 @@ export function initializeRoomReservations() {
         const roomElement = event.target.closest('.room-status');
         if (!roomElement) return;
     
-        const bookingId = roomElement.getAttribute('data-id');
+        const bookingId  = roomElement.getAttribute('data-id');
         const roomNumber = roomElement.closest('.room-card').querySelector('.room-number').textContent.split(': ')[1];
+
+        
     
         try {
+             // Modal que pregunta si quiere confirmar o cancelar
             const result = await Swal.fire({
                 icon: 'question',
                 title: '¿Desea cancelar o confirmar la reserva?',
@@ -629,55 +632,77 @@ export function initializeRoomReservations() {
             });
     
             if (result.dismiss === Swal.DismissReason.close) {
-                return; // Stop execution if closed with "X"
+                return; // Detenemos la ejecución si se cierra con la "X"
             }
     
             if (result.isConfirmed) {
-                await confirmReservation(bookingId, roomNumber);
+                // Confirmar la reserva
+                const confirmResult = await Swal.fire({
+                    icon: 'question',
+                    title: '¿Está seguro?',
+                    text: `¿Está seguro de que desea confirmar la reserva de la habitación ${roomNumber}?`,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Sí, confirmar',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    allowOutsideClick: false,
+                    heightAuto: false,
+                    customClass: {
+                        container: 'swal-container',
+                    },
+                });
+
+                if (confirmResult.isConfirmed) {
+                    confirmReservation(bookingId,roomNumber);
+                }
             } else {
-                await cancelReservation(bookingId, roomNumber);
+                // Cancelar la reserva
+                const cancelResult = await Swal.fire({
+                    icon: 'question',
+                    title: '¿Está seguro?',
+                    text: `¿Está seguro de que desea cancelar la reserva de la habitación ${roomNumber}?`,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Sí, cancelar',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    allowOutsideClick: false,
+                    heightAuto: false,
+                    customClass: {
+                        container: 'swal-container',
+                    },
+                });
+
+                if (cancelResult.isConfirmed) {
+                    cancelReservation(bookingId,roomNumber);
+                }
             }
         } catch (error) {
-            console.error('Error opening the modal:', error);
-            showAlert('error', 'Error', 'Hubo un problema al procesar la acción.', 1500);
+            console.error('Error abriendo el modal:', error);
         }
     }
 
     async function confirmReservation(bookingId, roomNumber) {
         try {
-            const confirmResult = await Swal.fire({
-                icon: 'question',
-                title: '¿Está seguro?',
-                text: `¿Está seguro de que desea confirmar la reserva de la habitación ${roomNumber}?`,
-                showConfirmButton: true,
-                confirmButtonText: 'Sí, confirmar',
-                showCancelButton: true,
-                cancelButtonText: 'Cancelar',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                allowOutsideClick: false,
-                heightAuto: false,
-                customClass: {
-                    container: 'swal-container',
-                },
-            });
-    
-            if (confirmResult.isConfirmed) {
+            if (bookingId) {
                 await confirmBooking(bookingId);
                 showAlert('success', `Reserva confirmada`, `La habitación ${roomNumber} ahora está reservada.`, 1500);
                 await loadReservations(floorSelector.value);
             }
         } catch (error) {
-            console.error('Error confirming reservation:', error);
+            console.error('Error Confirmando la reservacion:', error);
             showAlert('error', 'Error', 'Hubo un problema al confirmar la reserva.', 1500);
         }
     }
 
     async function cancelReservation(bookingId, roomNumber) {
         try {
-            if (selectedBookingId) {
-                await cancelBooking(selectedBookingId); // Verifica que cancelBooking esté implementada
-                showAlert('success', `Reserva cancelada`, `La reserva de la habitación ${selectedRoomNumber} ha sido cancelada.`, 1500);
+            if (bookingId) {
+                await cancelBooking(bookingId); // Verifica que cancelBooking esté implementada
+                showAlert('success', `Reserva cancelada`, `La reserva de la habitación ${roomNumber} ha sido cancelada.`, 1500);
                 loadReservations(floorSelector.value);
             }
         } catch (error) {
@@ -854,6 +879,7 @@ document.head.append(estilo);
 export async function initializeCheckInPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = parseInt(urlParams.get('roomId'), 10);
+    console.log("roomId obtenido de la URL:", roomId);
 
     if (isNaN(roomId)) {
         return;
@@ -934,8 +960,8 @@ export async function initializeCheckInPage() {
                 <h2><i class="fas fa-concierge-bell"></i> Detalle de Hospedaje</h2>
                 <div class="info-grid">
                     <div class="info-group">
-                        <label><i class="fas fa-dollar-sign"></i> Costo Habitación:</label>
-                        <input type="text" value="RD$${room.price}" readonly>
+                        <label><i class="fas fa-dollar-sign"></i> Precio Total:</label>
+                        <input type="text" value="RD$${room.price * booking.totalStayDays}" readonly>
                     </div>
                     <div class="info-group">
                         <label><i class="fas fa-money-bill-wave"></i> Cantidad Adelanto:</label>
@@ -943,11 +969,15 @@ export async function initializeCheckInPage() {
                     </div>
                     <div class="info-group">
                         <label><i class="fas fa-money-bill"></i> Cantidad Restante:</label>
-                        <input type="text" value="RD$${room.price - booking.cashAdvance}" readonly>
+                        <input type="text" value="RD$${booking.totalCost }" readonly>
                     </div>
                     <div class="info-group">
                         <label><i class="fas fa-calendar-minus"></i> Fecha Salida:</label>
                         <input type="text" value="${formatDate(booking.checkOutDate)}" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label><i class="fas fa-dollar-sign"></i> Precio Habitacion:</label>
+                        <input type="text" value="RD$${room.price}" readonly>
                     </div>
                     <div class="info-group">
                         <label><i class="fas fa-info"></i> Detalle:</label>
@@ -1037,7 +1067,7 @@ export async function initializeCheckInPage() {
                         Swal.fire('Confirmada', 'La reserva ha sido confirmada.', 'success').then(() => {
                             location.reload();
                         });
-                        //window.location.href = `../pages/G_reservaciones.html`;
+                        window.location.href = `../pages/G_reservaciones.html`;
                     }
                 });
             }
@@ -1060,7 +1090,9 @@ export async function getActiveReservations() {
     }
 }
 
-// New function to initialize the check-out page
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA DE G_SALIDA///
+//----------------------------------------------------------------------------//
 export function initializeCheckOutPage() {
     const roomsGrid = document.querySelector('.rooms-grid');
     const floorSelector = document.querySelector('.floor-selector');
@@ -1089,7 +1121,7 @@ export function initializeCheckOutPage() {
                     <div class="room-category">
                         CATEGORIA: ${reservation.room.type}
                     </div>
-                    <div class="room-status ocupado" onclick="redirectToCheckOut('${reservation.id}')">
+                    <div class="room-status ocupado" onclick="redirectTosalidaHabitacion('${reservation.id}')">
                         CHECK-OUT
                         <i class="fas fa-chevron-right"></i>
                     </div>
@@ -1105,12 +1137,15 @@ export function initializeCheckOutPage() {
     loadActiveReservations();
 
     // Expose function to window object for the onclick event
-    window.redirectToCheckOut = function(reservationId) {
+    window.redirectTosalidaHabitacion = function(reservationId) {
         window.location.href = `../pages/G_salidaHabitacion.html?reservationId=${reservationId}`;
     };
 }
 
-// New function to initialize the room check-out page
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA DE G_SALIDAHABITACION///
+//----------------------------------------------------------------------------//
 export async function initializeRoomCheckOutPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const reservationId = urlParams.get('reservationId');
@@ -1122,26 +1157,48 @@ export async function initializeRoomCheckOutPage() {
 
     try {
         const reservation = await getBookingById(reservationId);
+        console.log('Reservation data:', reservation);
         if (!reservation) {
             console.error('Reservation not found');
             return;
         }
 
+        // Helper function to safely set input values
+        const setInputValue = (id, value) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.value = value;
+            } else {
+                console.warn(`Element with id '${id}' not found`);
+            }
+        };
+
         // Populate the form fields with reservation data
-        document.getElementById('roomNumber').value = reservation.room.number;
-        document.getElementById('roomDetails').value = reservation.room.details;
-        document.getElementById('roomCategory').value = reservation.room.type;
-        document.getElementById('roomFloor').value = reservation.room.floor;
-        document.getElementById('clientName').value = `${reservation.customer.name} ${reservation.customer.lastName}`;
-        document.getElementById('nroDocumento').value = reservation.customer.documentNumber;
-        document.getElementById('correo').value = reservation.customer.email;
-        document.getElementById('checkInDate').value = new Date(reservation.checkInDate).toLocaleDateString();
-        document.getElementById('roomCost').value = reservation.totalCost;
-        document.getElementById('advancePayment').value = reservation.cashAdvance;
-        document.getElementById('remainingAmount').value = reservation.totalCost - reservation.cashAdvance;
+        setInputValue('roomNumber', reservation.room.number);
+        setInputValue('roomDetails', reservation.room.details);
+        setInputValue('roomCategory', reservation.room.type);
+        setInputValue('roomFloor', reservation.room.floor);
+        setInputValue('clientName', `${reservation.customer.name} ${reservation.customer.lastName}`);
+        setInputValue('nroDocumento', reservation.customer.documentNumber);
+        setInputValue('correo', reservation.customer.email);
+        
+        // Format the date to 'yyyy-MM-dd'
+        const checkInDate = new Date(reservation.checkInDate);
+        const formattedDate = checkInDate.toISOString().split('T')[0];
+        setInputValue('fechaEntrada', formattedDate);
+
+        setInputValue('bookingDetails', reservation.details);
+        setInputValue('roomCost', 'RD$' + reservation.stayCost * reservation.totalStayDays);
+        setInputValue('cashAdvance','RD$' + reservation.cashAdvance);
+        setInputValue('remainingAmount','RD$' +  reservation.totalCost);
 
         // Add event listener for the finish check-out button
-        document.querySelector('.finish-sale-btn').addEventListener('click', () => finishCheckOut(reservationId));
+        const finishButton = document.querySelector('.finish-sale-btn');
+        if (finishButton) {
+            finishButton.addEventListener('click', () => finishCheckOut(reservationId));
+        } else {
+            console.warn('Finish check-out button not found');
+        }
     } catch (error) {
         console.error('Error initializing room check-out page:', error);
     }
@@ -1149,30 +1206,48 @@ export async function initializeRoomCheckOutPage() {
 
 async function finishCheckOut(reservationId) {
     try {
-        const reservation = await getBookingById(reservationId);
-        if (!reservation) {
-            console.error('Reservation not found');
-            return;
+        const result = await Swal.fire({
+            title: '¿Finalizar hospedaje?',
+            text: '¿Está seguro de que desea finalizar este hospedaje?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, finalizar',
+            cancelButtonText: 'Cancelar',
+            allowOutsideClick: true,
+            allowEscapeKey: true,
+            showCloseButton: true,
+            backdrop: true,
+        });
+
+        if (result.isConfirmed) {
+            const reservation = await getBookingById(reservationId);
+            if (!reservation) {
+                console.error('Reservation not found');
+                showAlert('error', 'Error', 'No se encontró la reserva.');
+                return;
+            }
+
+            // Update booking status
+            await checkOutBooking(reservationId);
+            await desactiveBooking(reservationId);
+
+            // Update room status
+            await updateRoom({
+                id: reservation.room.id,
+                status: 'LIMPIEZA',
+                isAvailable: false
+            });
+
+            // Show completion message
+            showAlert('success', 'Finalización Completa', 'El hospedaje ha sido finalizado correctamente.', 2000);
+
+            // Redirect after the alert closes
+            setTimeout(() => {
+                window.location.href = '../pages/G_salida.html';
+            }, 2000);
         }
-
-        // Update booking status
-        await updateBooking({
-            id: reservationId,
-            status: 'CHECKED_OUT',
-            isActive: false
-        });
-
-        // Update room status
-        await updateRoom({
-            id: reservation.room.id,
-            status: 'LIMPIEZA',
-            isAvailable: false
-        });
-
-        alert('Check-out Completado correctamente');
-        window.location.href = '../pages/G_salida.html';
     } catch (error) {
         console.error('Error during check-out:', error);
-        alert('Un error ha ocurrido durante el check-out.');
+        showAlert('error', 'Error', 'Un error ha ocurrido durante el check-out.');
     }
 }
