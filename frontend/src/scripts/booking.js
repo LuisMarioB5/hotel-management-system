@@ -1077,7 +1077,11 @@ export async function initializeCheckInPage() {
     }   
 }
 
-// New function to get active reservations
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA DE G_SALIDA///
+//----------------------------------------------------------------------------//
+// Funcion para obtener reservaciones activas
 export async function getActiveReservations() {
     try {
         const allBookings = await getAllBookings();
@@ -1090,9 +1094,6 @@ export async function getActiveReservations() {
     }
 }
 
-//----------------------------------------------------------------------------//
-             ////ESTA PARTE ES PARA LA PAGINA DE G_SALIDA///
-//----------------------------------------------------------------------------//
 export function initializeCheckOutPage() {
     const roomsGrid = document.querySelector('.rooms-grid');
     const floorSelector = document.querySelector('.floor-selector');
