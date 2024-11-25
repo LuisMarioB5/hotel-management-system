@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RoomEntity, RoomFloor, RoomStatus, RoomType } from './room.entity';
-import { UpdateRoomDTO } from './dtos/update-room.dto';
-import { CreateRoomDTO } from './dtos/create-room.dto';
+import { UpdateRoomDTO } from './dtos/update.room.dto';
+import { CreateRoomDTO } from './dtos/create.room.dto';
 import { getEnumValues } from 'src/utils/showEnum.values';
 
 @Injectable()
@@ -24,17 +24,13 @@ export class RoomsService {
 
   async findById(id: number): Promise<RoomEntity> {
     const room = await this.repository.findOne({ where: { id } });
-    if (!room) {
-      this.throwRoomNotFoundException(id);
-    }
+    if (!room) this.throwRoomNotFoundException(id);
     return room;
   }
 
   async findByRoomNumber(number: number): Promise<RoomEntity> {
     const room = await this.repository.findOne({ where: { number } });
-    if (!room) {
-      throw new NotFoundException(`Habitación con el número ${number} no encontrada`);
-    }
+    if (!room) throw new NotFoundException(`Habitación con el número ${number} no encontrada`);
     return room;
   }
 
@@ -66,10 +62,8 @@ export class RoomsService {
     return await this.repository.save(room);
   }
 
-  async findByStatus(s: RoomStatus): Promise<RoomEntity[]> {
-    return this.repository.find({
-      where: { status: s }
-    });
+  async findByStatus(status: RoomStatus): Promise<RoomEntity[]> {
+    return this.repository.find({ where: { status } });
   }
 
   getEnumValues() {

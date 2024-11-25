@@ -1,8 +1,8 @@
 import { Controller, Post, Get, Param, Body, Patch, Delete, Query, BadRequestException } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { BookingEntity } from './booking.entity';
-import { CreateBookingDTO } from './dtos/create-booking.dto';
-import { UpdateBookingDTO } from './dtos/update-booking.dto';
+import { CreateBookingDTO } from './dtos/create.booking.dto';
+import { UpdateBookingDTO } from './dtos/update.booking.dto';
 import { RoomEntity } from 'src/rooms/room.entity';
 
 @Controller('bookings')

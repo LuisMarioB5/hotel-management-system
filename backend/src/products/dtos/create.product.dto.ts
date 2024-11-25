@@ -22,7 +22,7 @@ export class CreateProductDTO {
 
   @IsEnum(ProductCategory, 
     {
-      message: 'La categoria del producto debe ser un valor válido (PRODUCTO ó SERVICIO)'
+      message: 'La categoria del producto debe ser un valor válido (PRODUCTO o SERVICIO)'
     })
   @IsOptional()
   category: ProductCategory;

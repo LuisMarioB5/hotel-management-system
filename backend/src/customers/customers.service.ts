@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CustomerDocumentType, CustomerEntity, CustomerGender } from './customer.entity';
-import { CreateCustomerDTO } from './dtos/create-customer.dto';
-import { UpdateCustomerDTO } from './dtos/update-customer.dto';
+import { CreateCustomerDTO } from './dtos/create.customer.dto';
+import { UpdateCustomerDTO } from './dtos/update.customer.dto';
 import { getEnumValues } from 'src/utils/showEnum.values';
 
 @Injectable()
@@ -14,8 +14,8 @@ export class CustomersService {
   ) {}
 
   async create(customer: CreateCustomerDTO): Promise<CustomerEntity> {
-    const newRoom = this.repository.create(customer);
-    return this.repository.save(newRoom);
+    const newCustomer = this.repository.create(customer);
+    return this.repository.save(newCustomer);
   }
 
   async findAll(): Promise<CustomerEntity[]> {
@@ -24,9 +24,7 @@ export class CustomersService {
 
   async findById(id: number): Promise<CustomerEntity> {
     const customer = await this.repository.findOne({ where: { id } });
-    if (!customer) {
-      this.throwCustomerNotFoundException(id);
-    }
+    if (!customer) this.throwCustomerNotFoundException(id);
     return customer;
   }
 

@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, Query, BadRequestException } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
-import { CreateRoomDTO } from './dtos/create-room.dto';
+import { CreateRoomDTO } from './dtos/create.room.dto';
 import { RoomEntity, RoomStatus } from './room.entity';
-import { UpdateRoomDTO } from './dtos/update-room.dto';
+import { UpdateRoomDTO } from './dtos/update.room.dto';
 
 @Controller('rooms')
 export class RoomsController {

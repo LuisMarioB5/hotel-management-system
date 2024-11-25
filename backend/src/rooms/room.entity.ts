@@ -44,7 +44,7 @@ export class RoomEntity {
   @Column({ type: 'enum', enum: RoomStatus, default: RoomStatus.DISPONIBLE })
   status: RoomStatus;
 
-  @Column()
+  @Column({ type: 'decimal', nullable: false})
   price: number;
 
   @Column({ default: true })

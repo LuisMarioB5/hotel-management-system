@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { ProductCategory, ProductEntity } from './product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateProductDTO } from './dtos/create-product.dto';
-import { UpdateProductDTO } from './dtos/update-product.dto';
+import { CreateProductDTO } from './dtos/create.product.dto';
+import { UpdateProductDTO } from './dtos/update.product.dto';
 import { getEnumValues } from 'src/utils/showEnum.values';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class ProductsService {
         return this.repository.save(newProduct);
     }
 
-    async findByAll(): Promise<ProductEntity[]> {
+    async findAll(): Promise<ProductEntity[]> {
         return this.repository.find();
     }
 

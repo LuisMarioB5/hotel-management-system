@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDTO } from './dtos/create-product.dto';
+import { CreateProductDTO } from './dtos/create.product.dto';
 import { ProductEntity } from './product.entity';
-import { UpdateProductDTO } from './dtos/update-product.dto';
+import { UpdateProductDTO } from './dtos/update.product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -17,7 +17,7 @@ export class ProductsController {
 
     @Get()
     async findAll(): Promise<ProductEntity[]> {
-        return this.service.findByAll();
+        return this.service.findAll();
     }
 
     @Get(':id')

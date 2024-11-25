@@ -13,10 +13,10 @@ export class ProductEntity {
   @Column()
   name: string;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', nullable: false })
   unitPrice: number;
   
-  @Column()
+  @Column({ type: 'int', default: 1 })
   quantity: number;
 
   @Column({ nullable: true, default: null })
