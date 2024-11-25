@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 </head>
 <body>
     <div class="dashboard-page">
@@ -63,30 +64,12 @@
                         </select>
                         </select>
                         <div class="rooms-grid">
-                            <div class="room-card ocupado">
-                                <div class="room-header">
-                                    <span class="room-number">NRO: 003</span>
-                                    <i class="fas fa-user-check room-icon"></i>
-                                </div>
-                                <div class="room-category">
-                                    CATEGORIA: MATRIMONIAL
-                                </div>
-                                <div class="room-status ocupado" onclick="redirectToT_ventaHabitacion()">
-                                    Iniciar Venta
-                                    <i class="fas fa-chevron-right"></i>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
     </div>
 
-    <script>   
-        function redirectToT_ventaHabitacion() {
-            window.location.href = '../pages/T_ventaHabitacion.html';
-        }
-    </script>
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -128,25 +111,31 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-    const dropdowns = document.querySelectorAll('.dropdown');
+        const dropdowns = document.querySelectorAll('.dropdown');
 
-    dropdowns.forEach(dropdown => {
-        // Agregar el evento de clic solo al botón que despliega el menú
-        dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
-            e.preventDefault();
+        dropdowns.forEach(dropdown => {
+            // Agregar el evento de clic solo al botón que despliega el menú
+            dropdown.querySelector('.dropbtn').addEventListener('click', function(e) {
+                e.preventDefault();
 
-            // Cerrar otros menús abiertos
-            dropdowns.forEach(d => {
-                if (d !== dropdown) {
-                    d.classList.remove('active');
-                }
+                // Cerrar otros menús abiertos
+                dropdowns.forEach(d => {
+                    if (d !== dropdown) {
+                        d.classList.remove('active');
+                    }
+                });
+
+                // Alternar el menú actual
+                dropdown.classList.toggle('active');
             });
-
-            // Alternar el menú actual
-            dropdown.classList.toggle('active');
         });
     });
-});
     </script>
+
+    
+<script type="module">
+    import { initializeRoomSale } from '../scripts/consumibles.js';
+    document.addEventListener('DOMContentLoaded', initializeRoomSale);
+</script>
 </body>
 </html>
