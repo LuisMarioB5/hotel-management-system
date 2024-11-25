@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ConsumptionsService } from './consumptions.service';
 import { CreateConsumptionDTO } from './dtos/create.consumption';
-import { ChangeQuantityConsumptionDTO } from './dtos/change.quantity.consumption';
+import { ChangeConsumptionDTO } from './dtos/change.consumption';
 import { ConsumptionEntity } from './consumption.entity';
 import { BookingEntity } from 'src/bookings/booking.entity';
 
@@ -30,8 +30,8 @@ export class ConsumptionsController {
     }
 
     @Patch(':id')
-    async updateQuantity(@Param('id') id: number, @Body() body: ChangeQuantityConsumptionDTO): Promise<ConsumptionEntity> {
-        return await this.service.updateQuantity(id, body);
+    async update(@Param('id') id: number, @Body() body: ChangeConsumptionDTO): Promise<ConsumptionEntity> {
+        return await this.service.update(id, body);
     }
 
     @Delete(':id')

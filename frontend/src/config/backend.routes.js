@@ -67,7 +67,7 @@ export const BACKEND_ROUTES = {
     getAll: `${BASE_URL}/${consumptions}`,
     getById: (id) => `${BASE_URL}/${consumptions}/${id}`,
     getByBookingId: (bookingId) => `${BASE_URL}/${consumptions}/booking/${bookingId}`,
-    updateQuantity: (id) => `${BASE_URL}/${consumptions}/${id}`,
+    update: (id) => `${BASE_URL}/${consumptions}/${id}`,
     delete: (id) => `${BASE_URL}/${consumptions}/${id}`,
   },
 };
