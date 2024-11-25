@@ -1,14 +1,12 @@
 import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { validateFields } from "../validations/login-form";
-import { loginIntegration } from "../integrations/login-integration";
+import { loginIntegration } from "../integrations/login.integration";
 import "../styles/login.css";
 
 
 function Login() {
   useEffect(() => {
     loginIntegration();
-    validateFields();
   }, []);
 
   return (
