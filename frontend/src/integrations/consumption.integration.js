@@ -4,7 +4,7 @@ import { validateParamIsNotNull } from '../scripts/utils.js';
 /**
  * Obtiene todos los consumos.
  * @async
- * @function getAllProducts
+ * @function getAllConsumptions
  * @returns {Promise<Object[]>} Una lista con los consumos en formato JSON.
  */
 export async function getAllConsumptions() {
@@ -79,22 +79,25 @@ export async function getConsumptionByBookingId(bookingId) {
 /**
  * Crea un nuevo consumo.
  * @async
- * @function createProduct
+ * @function createConsumption
  * @param {Object} params - Datos del consumo.
  * @param {number} params.bookingId - ID de la reserva vinculada al consumo (requerido).
  * @param {number} params.productID - ID del producto a ser consumido (requerido).
  * @param {number} params.quantity - Cantidad del consumo (requerido).
+ * @param {string} params.availability - Disponibilidad del consumo {PENDIENTE o SEPARADO} (requerido).
  * @returns {Promise<Object>} Los datos del consumo recién creado en formato JSON.
  */
-export async function createProduct({ bookingId = null, productID = null, quantity = null} = {}) {
+export async function createConsumption({ bookingId = null, productID = null, quantity = null, availability = null} = {}) {
     validateParamIsNotNull('bookingId', bookingId);
     validateParamIsNotNull('productID', productID);
     validateParamIsNotNull('quantity', quantity);
+    validateParamIsNotNull('availability', availability);
 
     const body = { 
         bookingId,
         productID,
-        quantity
+        quantity,
+        availability
      };
 
     try {
@@ -117,21 +120,24 @@ export async function createProduct({ bookingId = null, productID = null, quanti
 }
 
 /**
- * Actualiza la cantidad de un producto a consumir.
+ * Actualiza la disponibilidad o la cantidad de un producto a consumir.
  * @async
- * @function updateProduct
- * @param {number} id - ID del consumo.
- * @param {number} quantity - Nueva cantidad del producto a consumir.
+ * @function updateConsumption
+ * @param {Object} params - Datos del consumo.
+ * @param {number} params.id - ID del consumo (requerido).
+ * @param {number} [params.quantity] - Nueva cantidad del producto a consumir.
+ * @param {string} [params.availability] - Disponibilidad del consumo {PENDIENTE o SEPARADO}.
  * @returns {Promise<Object>} Los datos del consumo actualizados en formato JSON.
  */
-export async function updateProduct(id, quantity) {
+export async function updateConsumption({id = null, quantity = null, availability = null} = null) {
     validateParamIsNotNull('id', id);
-    validateParamIsNotNull('quantity', quantity);
 
-    const body = {quantity};
+    const body = {};
+    if(quantity) body.quantity = quantity;
+    if(availability) body.availability = availability;
 
     try {
-        const response = await fetch(BACKEND_ROUTES.consumptions.updateQuantity(id), {
+        const response = await fetch(BACKEND_ROUTES.consumptions.update(id), {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -150,10 +156,10 @@ export async function updateProduct(id, quantity) {
 /**
  * Elimina un consumo por su ID.
  * @async
- * @function deleteProduct
+ * @function deleteConsumption
  * @param {number} id - El ID del consumo.
  */
-export async function deleteProduct(id) {
+export async function deleteConsumption(id) {
     validateParamIsNotNull('id', id);
 
     try {
