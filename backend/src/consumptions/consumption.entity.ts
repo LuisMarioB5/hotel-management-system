@@ -2,6 +2,11 @@ import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } f
 import { ProductEntity } from "src/products/product.entity";
 import { BookingEntity } from "src/bookings/booking.entity";
 
+export enum ConsumptionAvailability {
+    PENDIENTE = 'PENDIENTE',
+    SEPARADO = 'SEPARADO',
+}
+
 @Entity('consumptions')
 export class ConsumptionEntity {
     @PrimaryGeneratedColumn()
@@ -24,4 +29,7 @@ export class ConsumptionEntity {
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     subtotal: number;
+
+    @Column({ type: 'enum', enum: ConsumptionAvailability, default: ConsumptionAvailability.PENDIENTE})
+    availability: ConsumptionAvailability;
 }

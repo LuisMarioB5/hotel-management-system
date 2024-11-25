@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateConsumptionDTO } from './dtos/create.consumption';
 import { BookingsService } from 'src/bookings/bookings.service';
 import { ProductsService } from 'src/products/products.service';
-import { ChangeQuantityConsumptionDTO } from './dtos/change.quantity.consumption';
+import { ChangeConsumptionDTO } from './dtos/change.consumption';
 
 @Injectable()
 export class ConsumptionsService {
@@ -26,6 +26,7 @@ export class ConsumptionsService {
             quantity: c.quantity,
             unitPrice: product.unitPrice,
             subtotal: c.quantity * product.unitPrice,
+            availability: c.availability,
         });
 
         return this.repository.save(consumption);
@@ -56,14 +57,15 @@ export class ConsumptionsService {
         });
     }
 
-    async updateQuantity(id: number, c: ChangeQuantityConsumptionDTO): Promise<ConsumptionEntity> {
+    async update(id: number, c: ChangeConsumptionDTO): Promise<ConsumptionEntity> {
         const consumption = await this.findById(id);
         
-        if (c.quantity != null) {
+        if(c.quantity) {
             consumption.quantity = c.quantity;
             consumption.subtotal = c.quantity * consumption.unitPrice; // Actualiza el subtotal
         }
-        console.log(typeof consumption.unitPrice)
+
+        if(c.availability) consumption.availability = c.availability;
         
         return this.repository.save(consumption);
     }
