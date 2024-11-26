@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css"> <!--Aqui tambien estaran los estilos de esta pagina-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
 </head>
 <body>
     <div class="dashboard-page">
@@ -92,35 +93,38 @@
                 <div class="info-card">
                     <h2><i class="fas fa-cart-arrow-down"></i> Detalle de venta</h2>
                     <div class="info-grid" style="margin-bottom: 10px;">
+                        <input type="hidden" id="idproduct" name="idproduct">
+                        <input type="hidden" id="stock" name="stock">
+                        <input type="hidden" id="category" name="category">
                         <div class="info-group">
-                            <label for="productSearch"><i class="fas fa-utensils"></i> Producto:</label>
-                            <input  id="productSearch" class="cant" type="text" placeholder="Pulsa para buscar Servicio/Producto" readonly style='cursor: pointer;'>
+                            <label for="productSearch"><i class="fas fa-utensils"></i> Producto/Servicio:</label>
+                            <input  id="productSearch" class="search-btn" data-toggle="modal" data-target="#createUserModal"  type="text" readonly style='cursor: pointer;' placeholder="Presione para buscar">
                         </div>    
                         <div class="info-group">
                             <label><i class="fas fa-dollar-sign"></i> Precio:</label>
-                            <input type="text"  readonly>
+                            <input type="text" id="UnitPrice" readonly placeholder="RD$0.00">
                             </div>
                         <div class="info-group">
                             <label><i class="fas fa-th-list"></i> Cantidad:</label>
-                            <input class="cant" type="number" value="1" min="1" oninput="this.value = Math.max(1, this.value)">
+                            <input id="cantidad" class="cant" type="number" value="1" min="1" oninput="this.value = Math.max(1, this.value)">
                         </div>
                         <div class="">
                             <label class="info-group">‎</label>
-                            <button class="add-btn"><i class="fas fa-chevron-down"></i> Agregar <i class="fas fa-chevron-down"></i></button>                            
+                            <button id="add-btn" class="add-btn"><i class="fas fa-chevron-down"></i> Agregar <i class="fas fa-chevron-down"></i></button>                            
                         </div>
                     </div>
                         <div class="table-container">
-                            <table class="service-table">
+                            <table id="bodyProductTable" class="service-table">
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>Producto</th>
+                                        <th>Producto/Servicio</th>
                                         <th>Cantidad</th>
                                         <th>Precio Unitario</th>
                                         <th>Sub Total</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="tablabody">
                                    
                                 </tbody>
                             </table>
@@ -132,18 +136,18 @@
                     <div class="sale-actions">
                         <div class="sale-status">
                             <label>Estado Venta</label>
-                            <select>
-                                <option>Pendiente</option>
-                                <option>Separado</option>
+                            <select for="estadoV">
+                                <option id="PENDIENTE">Pendiente</option>
+                                <option id="SEPARADO">Separado</option>
                             </select>
                         </div>
-                        <button class="finish-sale-btn">Finalizar Venta</button>
+                        <button id="finalize-sale-btn" class="finish-sale-btn"><i class="fas fa-check-circle"></i> Finalizar Venta</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <script type="module" src="../scripts/ventamodalproducto.js"></script>
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -162,25 +166,66 @@
     </div>
     
 
-    
+    <!--MODAL De lista de clientes-->
+    <div class="climodal" id="createUserModal">
+        <div class="climodal-content">
+            <div class="climodal-header">
+                <h2>Lista de Productos</h2>
+                <span class="cliclose-button" onclick="closeModal()">&times;</span>
+            </div>
+
+            <div class="user-actions">
+                <div class="table-controls">
+                    <label for="recordsPerPage">Mostrar:</label>
+                    <select id="recordsPerPage">
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                    </select>
+                    <label>Registros:</label>
+                    <input type="text" id="searchUser" placeholder="Buscar Producto">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="modalProductTable"  class="service-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Categoria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                     </tbody>
+                </table>
+                    <!-- Div de paginación y conteo de registros -->
+                <div class="pagination-info">
+                    <label></label>
+                    <div class="pagination-buttons">
+                        <button class="pagination-btn">&lt;</button>
+                        <button class="pagination-btn">&gt;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Script para abrir y cerrar el modal
-        document.getElementById('logoutButton').addEventListener('click', function() {
-            document.getElementById('logoutModal').style.display = 'block';
-        });
 
-        document.getElementById('closeModal').addEventListener('click', function() {
-            document.getElementById('logoutModal').style.display = 'none';
-        });
+        // Abrir modal
+       document.querySelector('.search-btn').addEventListener('click', function() {
+           document.getElementById('createUserModal').style.display = 'flex';
+       });
+   
+       // Cerrar modal
+       function closeModal() {
+           document.getElementById('createUserModal').style.display = 'none';
+       }
 
-        document.getElementById('cancelLogout').addEventListener('click', function() {
-            document.getElementById('logoutModal').style.display = 'none';
-        });
-
-        // Cerrar el modal al hacer clic fuera de él
-        window.addEventListener('click', function(event) {
-            if (event.target === document.getElementById('logoutModal')) {
-                document.getElementById('logoutModal').style.display = 'none';
+       // Cerrar modal al hacer clic fuera de él
+       window.addEventListener('click', function(event) {
+            if (event.target === createUserModal) {
+                createUserModal.style.display = 'none';
             }
         });
     </script>
@@ -204,6 +249,28 @@
                     dropdown.classList.toggle('active');
                 });
             });
+        });
+    </script>
+
+    <script>
+        // Script para abrir y cerrar el modal
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'block';
+        });
+
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'none';
+        });
+
+        document.getElementById('cancelLogout').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'none';
+        });
+
+        // Cerrar el modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('logoutModal')) {
+                document.getElementById('logoutModal').style.display = 'none';
+            }
         });
     </script>
     <script type="module">

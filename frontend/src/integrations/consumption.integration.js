@@ -82,20 +82,20 @@ export async function getConsumptionByBookingId(bookingId) {
  * @function createConsumption
  * @param {Object} params - Datos del consumo.
  * @param {number} params.bookingId - ID de la reserva vinculada al consumo (requerido).
- * @param {number} params.productID - ID del producto a ser consumido (requerido).
+ * @param {number} params.productId - ID del producto a ser consumido (requerido).
  * @param {number} params.quantity - Cantidad del consumo (requerido).
  * @param {string} params.availability - Disponibilidad del consumo {PENDIENTE o SEPARADO} (requerido).
  * @returns {Promise<Object>} Los datos del consumo recién creado en formato JSON.
  */
-export async function createConsumption({ bookingId = null, productID = null, quantity = null, availability = null} = {}) {
+export async function createConsumption({ bookingId = null, productId = null, quantity = null, availability = null} = {}) {
     validateParamIsNotNull('bookingId', bookingId);
-    validateParamIsNotNull('productID', productID);
+    validateParamIsNotNull('productId', productId);
     validateParamIsNotNull('quantity', quantity);
     validateParamIsNotNull('availability', availability);
 
     const body = { 
         bookingId,
-        productID,
+        productId,
         quantity,
         availability
      };
