@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'ty
 import { CustomerEntity } from '../customers/customer.entity';
 import { RoomEntity } from '../rooms/room.entity';
 import { ConsumptionEntity } from 'src/consumptions/consumption.entity';
+import { InvoiceEntity } from 'src/billing/invoice.entity';
 
 export enum BookingStatus {
     PENDIENTE = 'PENDIENTE',
@@ -24,6 +25,9 @@ export class BookingEntity {
 
     @OneToMany(() => ConsumptionEntity, consumption => consumption.booking, { cascade: true })
     consumptions: ConsumptionEntity[];
+
+    @OneToMany(() => InvoiceEntity, (invoice) => invoice.bookings, { cascade: true })
+    invoices: InvoiceEntity[];
 
     // Fechas planeadas de check-in y check-out
     @Column({ type: 'timestamp', nullable: false })
