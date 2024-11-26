@@ -10,7 +10,7 @@ export enum InvoiceType {
 
 export enum PaymentStatus {
     PENDIENTE = 'PENDIENTE',
-    PAGADO = 'PAGADO',
+    PAGADO = 'PAGADA',
 }
 
 @Entity('invoices')
@@ -22,7 +22,7 @@ export class InvoiceEntity {
     issueDate: Date;
 
     @ManyToOne(() => BookingEntity, (booking) => booking.invoices, { nullable: true })
-    bookings: BookingEntity;
+    booking: BookingEntity;
 
     @ManyToOne(() => CustomerEntity, { nullable: false })
     customer: CustomerEntity;
