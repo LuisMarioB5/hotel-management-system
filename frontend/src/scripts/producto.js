@@ -194,11 +194,11 @@ async function handleSaveProduct() {
     }
 
     // Validación para servicios
-    if (categoria === 'SERVICIO' && parseInt(cantidad) > 0) {
+    if (categoria === 'SERVICIO' && (parseInt(cantidad) > 1) || parseInt(cantidad) == 0){
         Swal.fire({
             icon: 'warning',
             title: 'Cantidad inválida para servicio',
-            text: 'La cantidad para un servicio debe ser 0.',
+            text: 'La cantidad para un servicio debe ser 1.',
         });
         return;
     }

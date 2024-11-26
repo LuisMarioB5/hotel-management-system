@@ -55,7 +55,7 @@
                     <h2><i class="fas fa-bed"></i> Detalles de la Habitación</h2>
                     <div class="info-grid">
                         <input type="hidden" id="roomId" name="roomId">
-                        <input type="hidden" id="roomPrice" name="roomPrice" value="">
+                        <input type="hidden" id="roomPrice" name="roomPrice">
                         <div class="info-group">
                             <label><i class="fas fa-hashtag"></i> Número:</label>
                             <input type="text" id="roomNumber" readonly>
@@ -173,6 +173,7 @@
             </div>
         </div>
     </div>
+
     <!--CODIGOS PARA PARTE DE DETALLE RESERVACION-->
     <script>
         let precioOriginal = 0; // Precio base
@@ -277,7 +278,6 @@
             // Actualizar descripción de tarifa
             actualizarDescripcion(textoTarifa, null);
         }
-    
 
 
     // Función para validar y actualizar el precio con el adelanto
