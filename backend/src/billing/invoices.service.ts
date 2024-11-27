@@ -85,8 +85,8 @@ export class InvoicesService {
         const newInvoice = this.invoiceRepository.create({
             booking,
             customer,
-            invoiceType,
-            paymentStatus: paymentStatus ?? PaymentStatus.PENDIENTE,
+            invoiceType: invoiceType || InvoiceType.CONTADO,
+            paymentStatus: paymentStatus || PaymentStatus.PAGADA,
             items: [stayItem, ...consumptionItem, ...additionalItems].filter(item => item !== null),
         });
 

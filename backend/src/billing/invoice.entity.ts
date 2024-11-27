@@ -10,7 +10,7 @@ export enum InvoiceType {
 
 export enum PaymentStatus {
     PENDIENTE = 'PENDIENTE',
-    PAGADO = 'PAGADA',
+    PAGADA = 'PAGADA',
 }
 
 @Entity('invoices')
@@ -30,7 +30,7 @@ export class InvoiceEntity {
     @OneToMany(() => InvoiceItemEntity, (item) => item.invoice, { cascade: true })
     items: InvoiceItemEntity[];
 
-    @Column({ type: 'enum', enum: InvoiceType })
+    @Column({ type: 'enum', enum: InvoiceType, default: InvoiceType.CONTADO })
     invoiceType: InvoiceType;
 
     @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDIENTE })
