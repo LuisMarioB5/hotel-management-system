@@ -104,13 +104,17 @@
                             <input type="text" id="remainingAmount" readonly>
                         </div>
                         <div class="info-group">
+                            <label><i class="fas fa-list"></i> Detalles:</label>
+                            <input type="text" id="bookingDetails" readonly>
+                        </div> 
+                        <div class="info-group">
                             <label><i class="fas fa-exclamation-circle"></i> Costo por penalidad:</label>
                             <input id="adelanto" class="cant" type="number" value="0" min="0" oninput="this.value = Math.max(0, this.value)">
                         </div>
                         <div class="info-group">
-                            <label><i class="fas fa-list"></i> Detalles:</label>
-                            <input type="text" id="bookingDetails" readonly>
-                        </div> 
+                            <label><i class="fas fa-exclamation-circle"></i> Descripcion de la penalidad:</label>
+                            <input id="infoPenality" class="cant" type="text" placeholder="Escriba razon de Penalidad Aqui...">
+                        </div>
                     </div>
                 </div>
                  <!-- Servicio a la Habitación -->
@@ -123,23 +127,17 @@
                                     <th>Producto</th>
                                     <th>Cantidad</th>
                                     <th>Precio Unitario</th>
-                                    <th>Estado Venta</th>
                                     <th>Sub Total</th>
+                                    <th>Estado Venta</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Jugo</td>
-                                    <td>1</td>
-                                    <td>$30</td>
-                                    <td><label>Pendiente</label></td>
-                                    <td>$35</td>
-                                </tr>
+                              
                             </tbody>
                         </table>
                         <div class="total-section">
                             <div class="total-label">Total Pagar</div>
-                            <div class="total-amount">$5.60</div>
+                            <div class="total-amount" style="text-align: left;"></div>
                             <button class="finish-sale-btn">Finalizar Hospedaje</button>
                         </div>
 
@@ -165,30 +163,6 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        const searchBtn = document.querySelector('.search-btn');
-        const clientListModal = document.getElementById('clientListModal');
-        const closeClientList = document.getElementById('closeClientList');
-
-        // Abrir modal al hacer clic en el botón de búsqueda
-        searchBtn.addEventListener('click', function() {
-            clientListModal.style.display = 'block';
-        });
-
-        // Cerrar modal
-        closeClientList.addEventListener('click', function() {
-            clientListModal.style.display = 'none';
-        });
-
-        // Cerrar modal al hacer clic fuera de él
-        window.addEventListener('click', function(event) {
-            if (event.target === clientListModal) {
-                clientListModal.style.display = 'none';
-            }
-        });
-    });   
-    </script>
     
     <script>
         // Script para abrir y cerrar el modal
@@ -235,7 +209,7 @@
     </script>
 
     <script type="module">
-        import { initializeRoomCheckOutPage } from '../scripts/booking.js';
+        import { initializeRoomCheckOutPage } from '../scripts/consumibles.js';
         document.addEventListener('DOMContentLoaded', initializeRoomCheckOutPage);
     </script>
 </body>
