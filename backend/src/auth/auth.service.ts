@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
@@ -12,13 +12,28 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(login: LoginUserDto): Promise<any> {
+  private readonly MAX_FAILED_ATTEMPTS = 3;
+
+  async validateUser(login: LoginUserDto): Promise<any> {    
     const user = await this.usersService.findByUsername(login.username);
-    if (user.isActive && await bcrypt.compare(login.password, user.password)) {
-      const { password, ...result } = user;
-      return result;
+
+    if(!user) {
+      throw new UnauthorizedException('Credenciales incorrectas');
     }
-    return null;
+  
+    if(!user.isActive) {
+      throw new UnauthorizedException('Usuario bloqueado. Contacte al administrador.');
+    }
+    
+    const passwordMatches = await bcrypt.compare(login.password, user.password);
+    if (!passwordMatches) {
+      await this.handleFailedLogin(user);
+      throw new UnauthorizedException('Credenciales incorrectas');
+    }
+
+    await this.resetFailedAttempts(user);
+    const { password, ...result } = user;
+    return result;
   }
 
   async login(user: UserEntity) {
@@ -26,5 +41,24 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  private async handleFailedLogin(user: UserEntity): Promise<void> {
+    user.failedLoginAttempts++;
+    user.lastFailedAttempt = new Date();
+  
+    if (user.failedLoginAttempts >= this.MAX_FAILED_ATTEMPTS) {
+      user.isActive = false;
+    }
+  
+    await this.usersService.updateEntity(user);
+  }
+  
+  private async resetFailedAttempts(user: UserEntity): Promise<void> {
+    if (user.failedLoginAttempts > 0) {
+      user.failedLoginAttempts = 0;
+      user.lastFailedAttempt = null;
+      await this.usersService.updateEntity(user);
+    }
   }
 }

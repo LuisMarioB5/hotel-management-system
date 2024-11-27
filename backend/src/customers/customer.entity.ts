@@ -1,3 +1,4 @@
+import { InvoiceEntity } from 'src/billing/invoice.entity';
 import { BookingEntity } from 'src/bookings/booking.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 
@@ -55,4 +56,7 @@ export class CustomerEntity {
 
   @OneToMany(() => BookingEntity, booking => booking.customer)
   bookings: BookingEntity[];
+
+  @OneToMany(() => InvoiceEntity, (invoice) => invoice.customer, { cascade: true })
+  invoices: InvoiceEntity[];
 }

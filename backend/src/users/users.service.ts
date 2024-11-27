@@ -55,6 +55,10 @@ export class UsersService {
     return this.repository.save(user);
   }
 
+  async updateEntity(user: UserEntity): Promise<UserEntity> {
+    return this.repository.save(user);
+  }
+
   async delete(id: number): Promise<void> {
     const result = await this.repository.delete(id);
     if (result.affected === 0) {

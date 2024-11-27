@@ -31,11 +31,19 @@ export async function loginIntegration() {
                 localStorage.setItem('jwt', token.access_token);
                 console.log('Inicio de sesión exitoso. Token almacenado correctamente');
                 const status = checkAuthorizationLoginPage();
-                console.log(status)
                 handleLoginNotification(status[0], username, status[1]);
             } 
-            
-            if (response.status === 401 || response.status === 404) {
+            else if (response.status === 401) {
+                const errorMsg = await response.json();
+                if(errorMsg.message === 'Usuario bloqueado. Contacte al administrador.') {
+                    console.error('Su usuario esta bloqueado, debe contactar a un administrador para desbloquear su cuenta.');
+                    handleLoginNotification('userBlocked');
+                } else {
+                    console.error('No tiene autorización para logearse, sus credenciales son incorrectas');
+                    handleLoginNotification('failed');
+                }
+            }
+            else if(response.status === 404) {
                 console.error('No tiene autorización para logearse, sus credenciales son incorrectas');
                 handleLoginNotification('failed');
             }

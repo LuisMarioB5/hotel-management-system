@@ -16,6 +16,14 @@ export function handleLoginNotification(state, username, url) {
                         }
                     });
         
+        case 'userBlocked':
+            return  Swal.fire({
+                        title: 'Su cuenta esta bloqueada',
+                        text: 'Por favor, contacte a un administrador para desbloquear su cuenta.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });       
+        
         case 'failed':
             return  Swal.fire({
                         title: 'Error de Inicio de Sesión',
