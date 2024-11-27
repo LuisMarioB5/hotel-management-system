@@ -4,7 +4,7 @@ import { BookingEntity } from "src/bookings/booking.entity";
 
 export enum ConsumptionAvailability {
     PENDIENTE = 'PENDIENTE',
-    SEPARADO = 'SEPARADO',
+    PAGADO = 'PAGADO',
 }
 
 @Entity('consumptions')

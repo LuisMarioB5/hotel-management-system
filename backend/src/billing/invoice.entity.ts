@@ -27,6 +27,9 @@ export class InvoiceEntity {
     @ManyToOne(() => CustomerEntity, { nullable: false })
     customer: CustomerEntity;
 
+    @OneToMany(() => InvoiceItemEntity, (item) => item.invoice, { cascade: true })
+    items: InvoiceItemEntity[];
+
     @Column({ type: 'enum', enum: InvoiceType })
     invoiceType: InvoiceType;
 
@@ -36,6 +39,6 @@ export class InvoiceEntity {
     @Column({ type: 'decimal', precision: 10, scale: 2, default: 0})
     total: number;
 
-    @OneToMany(() => InvoiceItemEntity, (item) => item.invoice, { cascade: true })
-    items: InvoiceItemEntity[];
+    @Column({ type: 'boolean', default: false })
+    isDisable: boolean;
 }

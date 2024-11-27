@@ -9,5 +9,6 @@ export class ChangeConsumptionDTO {
     @IsEnum(ConsumptionAvailability, {
         message: 'La disponibilidad debe ser un valor válido (PENDIENTE, SEPARADO)'
     })
-    availability: ConsumptionAvailability;
+    @IsOptional()
+    availability?: ConsumptionAvailability;
 }

@@ -10,7 +10,7 @@ import { BookingsModule } from './bookings/bookings.module';
 import { ProductsModule } from './products/products.module';
 import { ConsumptionsModule } from './consumptions/consumptions.module';
 import { ReportsModule } from './reports/reports.module';
-import { InvoicesService } from './invoices/invoices.service';
+import { BillingModule } from './billing/billing.module';
 
 @Module({
   imports: [
@@ -34,7 +34,7 @@ import { InvoicesService } from './invoices/invoices.service';
     ProductsModule,
     ConsumptionsModule,
     ReportsModule,
+    BillingModule,
   ],
-  providers: [InvoicesService],
 })
 export class AppModule {}

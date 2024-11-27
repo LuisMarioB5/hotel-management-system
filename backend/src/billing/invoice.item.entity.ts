@@ -1,6 +1,12 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { InvoiceEntity } from "./invoice.entity";
 
+export enum InvoiceItemType {
+    ESTANCIA = 'ESTANCIA',
+    CONSUMO = 'CONSUMO',
+    PENALIDAD = 'PENALIDAD',
+}
+
 @Entity('invoice_items')
 export class InvoiceItemEntity {
     @PrimaryGeneratedColumn()
@@ -21,6 +27,9 @@ export class InvoiceItemEntity {
     @Column({ type: 'date' })
     date: Date;
 
+    @Column({ type: 'enum', enum: InvoiceItemType, default: InvoiceItemType.PENALIDAD })
+    type: InvoiceItemType;
+    
     @ManyToOne(() => InvoiceEntity, (invoice) => invoice.items, { onDelete: 'CASCADE' })
     invoice: InvoiceEntity;
 }

@@ -26,7 +26,7 @@ export class BookingEntity {
     @OneToMany(() => ConsumptionEntity, consumption => consumption.booking, { cascade: true })
     consumptions: ConsumptionEntity[];
 
-    @OneToMany(() => InvoiceEntity, (invoice) => invoice.bookings, { cascade: true })
+    @OneToMany(() => InvoiceEntity, (invoice) => invoice.booking, { cascade: true })
     invoices: InvoiceEntity[];
 
     // Fechas planeadas de check-in y check-out
