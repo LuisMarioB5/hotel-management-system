@@ -6,6 +6,7 @@ const rooms = 'rooms';
 const bookings = 'bookings';
 const products = 'products';
 const consumptions = 'consumptions';
+const billing = 'billing/invoices';
 
 export const BACKEND_ROUTES = {
   auth: {
@@ -69,5 +70,13 @@ export const BACKEND_ROUTES = {
     getByBookingId: (bookingId) => `${BASE_URL}/${consumptions}/booking/${bookingId}`,
     update: (id) => `${BASE_URL}/${consumptions}/${id}`,
     delete: (id) => `${BASE_URL}/${consumptions}/${id}`,
+  },
+  billing: {
+    create: `${BASE_URL}/${consumptions}`,
+    getAll: `${BASE_URL}/${consumptions}`,
+    getById: (id) => `${BASE_URL}/${consumptions}/${id}`,
+    getEnumsValues: `${BASE_URL}/${consumptions}/enums/values`,
+    updatePaymentStatus: (id) => `${BASE_URL}/${consumptions}/${id}/payment-status`,
+    disable: (id) => `${BASE_URL}/${consumptions}/${id}`,
   },
 };
