@@ -12,11 +12,11 @@ export class CreateInvoiceDTO {
     @IsNumber()
     customerId?: number;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsEnum(InvoiceType, {
         message: 'El tipo de factura debe tener un valor válido (CONTADO o CREDITO)',
     })
-    invoiceType: InvoiceType;
+    invoiceType?: InvoiceType;
 
     @IsOptional()
     @IsEnum(PaymentStatus, {
@@ -24,8 +24,9 @@ export class CreateInvoiceDTO {
     })
     paymentStatus?: PaymentStatus;
 
+    @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => InvoiceItemDTO)
-    items: InvoiceItemDTO[];
+    items?: InvoiceItemDTO[];
 }

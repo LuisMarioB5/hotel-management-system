@@ -1,13 +1,16 @@
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { InvoiceItemType } from '../invoice.item.entity';
 
 export class InvoiceItemDTO {
+    @IsNotEmpty()
     @IsString()
     description: string;
 
+    @IsNotEmpty()
     @IsNumber()
     quantity: number;
 
+    @IsNotEmpty()
     @IsNumber()
     unitPrice: number;
 

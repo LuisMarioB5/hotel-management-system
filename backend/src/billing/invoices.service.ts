@@ -77,7 +77,7 @@ export class InvoicesService {
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
                 subtotal: item.subtotal || this.calculateSubtotal(item.quantity, item.unitPrice) || 0,
-                date: item.date,
+                date: item.date || new Date(),
                 type: item.type || InvoiceItemType.PENALIDAD,
             }),
         ) || [];
