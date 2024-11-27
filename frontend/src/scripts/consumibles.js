@@ -1,6 +1,7 @@
 import { getProductById,updateProduct, desactiveProduct } from '../integrations/product.integration.js';
-import {  getAllBookings, getBookingById } from '../integrations/booking.integration.js';
-import { createConsumption  } from '../integrations/consumption.integration.js';
+import {  getAllBookings, getBookingById,checkOutBooking,desactiveBooking } from '../integrations/booking.integration.js';
+import { createConsumption,getConsumptionByBookingId  } from '../integrations/consumption.integration.js';
+import { updateRoom } from '../integrations/room.integration.js';
 
 
 //----------------------------------------------------------------------------//
@@ -447,4 +448,189 @@ function setupProductManagement() {
 
     finalizeSaleBtn.addEventListener('click', finalizarVenta);
     
+}
+
+//----------------------------------------------------------------------------//
+             ////ESTA PARTE ES PARA LA PAGINA DE G_SALIDAHABITACION///
+//----------------------------------------------------------------------------//
+export async function initializeRoomCheckOutPage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const reservationId = urlParams.get('reservationId');
+
+    if (!reservationId) {
+        console.error('No reservation ID provided');
+        return;
+    }
+
+    try {
+        const reservation = await getBookingById(reservationId);
+        //console.log('Reservation data:', reservation);
+        if (!reservation) {
+            console.error('Reservation not found');
+            return;
+        }
+        
+        // Helper function to safely set input values
+        const setInputValue = (id, value) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.value = value;
+            } else {
+                console.warn(`Element with id '${id}' not found`);
+            }
+        };
+
+        // Populate the form fields with reservation data
+        setInputValue('roomNumber', reservation.room.number);
+        setInputValue('roomDetails', reservation.room.details);
+        setInputValue('roomCategory', reservation.room.type);
+        setInputValue('roomFloor', reservation.room.floor);
+        setInputValue('clientName', `${reservation.customer.name} ${reservation.customer.lastName}`);
+        setInputValue('nroDocumento', reservation.customer.documentNumber);
+        setInputValue('correo', reservation.customer.email);
+        setInputValue('fechaEntrada', new Date(reservation.checkInDate).toISOString().split('T')[0]);
+        setInputValue('bookingDetails', reservation.details);
+        setInputValue('roomCost', 'RD$' + reservation.stayCost * reservation.totalStayDays);
+        setInputValue('cashAdvance','RD$' + reservation.cashAdvance);
+        setInputValue('remainingAmount','RD$' +  reservation.totalCost);
+
+        // Load consumption data
+        await renderConsumptions(reservationId);
+
+        // Add event listener for the finish check-out button
+        const finishButton = document.querySelector('.finish-sale-btn');
+        if (finishButton) {
+            finishButton.addEventListener('click', () => finishCheckOut(reservationId));
+        } else {
+            console.warn('Finish check-out button not found');
+        }
+    } catch (error) {
+        console.error('Error initializing room check-out page:', error);
+    }
+}
+
+async function renderConsumptions(reservationId) {
+    try {
+        const consumptions = await getConsumptionByBookingId(reservationId);
+        const tbody = document.querySelector('.service-table tbody');
+        if (!tbody) {
+            console.warn('Table body for consumptions not found');
+            return;
+        }
+
+        tbody.innerHTML = ''; // Clear the table
+        let totalPending = 0;
+
+        consumptions.forEach((consumption) => {
+            const { product, quantity, unitPrice, availability } = consumption;
+
+            // Validar unitPrice y quantity
+            const validUnitPrice = parseFloat(unitPrice) || 0;
+            const validQuantity = parseInt(quantity, 10) || 0;
+            const subtotal = validUnitPrice * validQuantity;
+
+            if (availability === 'PENDIENTE') {
+                totalPending += subtotal;
+            }
+
+            // Determinar estilo basado en el estado de venta
+            let estadoEstilo = '';
+            if (availability === 'PENDIENTE') {
+                estadoEstilo = 'color: white; background-color: orange; padding: 3px 8px; border-radius: 8px;';
+            } else if (availability === 'SEPARADO') {
+                estadoEstilo = 'color: white; background-color: green; padding: 3px 8px; border-radius: 8px;' ;
+            }
+            
+            const row = `
+                <tr>
+                    <td>${product.name || 'Producto desconocido'}</td>
+                    <td>${validQuantity}</td>
+                    <td>RD$${validUnitPrice.toFixed(2)}</td>
+                    <td><label style="${estadoEstilo}">${availability}</label></td>
+                    <td>RD$${subtotal.toFixed(2)}</td>
+                </tr>
+            `;
+
+            tbody.insertAdjacentHTML('beforeend', row);
+        });
+
+        updateTotal(totalPending);
+    } catch (error) {
+        console.error('Error loading consumptions:', error);
+    }
+}
+
+
+function updateTotal(totalPending = 0) {
+    // Obtener valores dinámicos de los campos
+    const remainingAmount = parseFloat(document.getElementById('remainingAmount').value.replace('RD$', '')) || 0;
+    const penaltyAmount = parseFloat(document.getElementById('adelanto').value) || 0;
+
+    // Sumar los subtotales de los consumos pendientes
+    totalPending = [...document.querySelectorAll('.service-table tbody tr')]
+        .filter(row => row.cells[3].textContent.trim() === 'PENDIENTE')
+        .reduce((sum, row) => sum + parseFloat(row.cells[4].textContent.replace('RD$', '')), 0);
+
+    const totalToPay = totalPending + remainingAmount + penaltyAmount;
+
+    const totalAmountElement = document.querySelector('.total-amount');
+    if (totalAmountElement) {
+        totalAmountElement.textContent = `RD$${totalToPay.toFixed(2)}`;
+    }
+
+    document.getElementById('adelanto').addEventListener('input', () => {
+        updateTotal();
+    });
+}
+
+
+async function finishCheckOut(reservationId) {
+    try {
+        const result = await Swal.fire({
+            title: '¿Finalizar hospedaje?',
+            text: '¿Está seguro de que desea finalizar este hospedaje?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, finalizar',
+            cancelButtonText: 'Cancelar',
+            allowOutsideClick: false,
+            backdrop: true,
+        });
+
+        if (result.isConfirmed) {
+            const reservation = await getBookingById(reservationId);
+            if (!reservation) {
+                console.error('Reservation not found');
+                return;
+            }
+
+            await checkOutBooking(reservationId);
+            await desactiveBooking(reservationId);
+
+            await updateRoom({
+                id: reservation.room.id,
+                status: 'LIMPIEZA',
+                isAvailable: false,
+            });
+
+            const printResult = await Swal.fire({
+                title: 'Hospedaje finalizado',
+                text: '¿Desea imprimir la factura?',
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonText: 'Imprimir',
+                cancelButtonText: 'No',
+            });
+
+            if (printResult.isConfirmed) {
+                console.log('Impresión de factura solicitada');
+                // Implementar funcionalidad de impresión
+            }
+
+            window.location.href = '../pages/G_salida.html';
+        }
+    } catch (error) {
+        console.error('Error during check-out:', error);
+        Swal.fire('Error', 'Ocurrió un problema al finalizar el hospedaje.', 'error');
+    }
 }
