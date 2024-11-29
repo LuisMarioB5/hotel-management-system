@@ -139,7 +139,7 @@ export class InvoicesService {
         }
 
         const stayItem = booking ? this.createInvoiceItem({
-            description: 'Costo de estandía',
+            description: 'Costo de estadía',
             quantity: Number(booking.totalStayDays),
             unitPrice: Number(booking.room.price),
             subtotal: this.calculateSubtotal(Number(booking.totalStayDays), Number(booking.room.price)),
