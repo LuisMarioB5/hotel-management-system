@@ -5,11 +5,7 @@ import { ConsumptionEntity } from 'src/consumptions/consumption.entity';
 import { CustomerEntity } from 'src/customers/customer.entity';
 
 export class PDFReport {
-  private doc: PDFDocument;
-
-  constructor() {
-    this.doc = new PDFDocument({ margin: 30 });
-  }
+  private doc = new PDFDocument({ margin: 30 });
 
   generateReport(booking: BookingEntity, outputPath: string): void {
     const checkinDate = this.formatDate(booking.actualCheckInDate || booking.checkInDate);
