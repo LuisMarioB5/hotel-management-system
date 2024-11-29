@@ -18,13 +18,13 @@ export class InvoiceEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @CreateDateColumn({ name: 'issue_date' })
-    issueDate: Date;
+    @CreateDateColumn({ name: 'create_at' })
+    createdAt: Date;
 
-    @ManyToOne(() => BookingEntity, (booking) => booking.invoices, { nullable: true })
+    @ManyToOne(() => BookingEntity, booking => booking.invoices, { nullable: true })
     booking: BookingEntity;
 
-    @ManyToOne(() => CustomerEntity, { nullable: false })
+    @ManyToOne(() => CustomerEntity, { nullable: true })
     customer: CustomerEntity;
 
     @OneToMany(() => InvoiceItemEntity, (item) => item.invoice, { cascade: true })

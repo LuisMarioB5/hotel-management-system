@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: integrations/user.integration.js</title>
+    <title>JSDoc: Source: integrations/billing.integration.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: integrations/user.integration.js</h1>
+    <h1 class="page-title">Source: integrations/billing.integration.js</h1>
 
     
 
@@ -30,14 +30,14 @@
 import { validateParamIsNotNull } from '../scripts/utils.js';
 
 /**
- * Obtiene todos los usuarios.
+ * Obtiene todas las facturas.
  * @async
- * @function getAllUsers
- * @returns {Promise&lt;Object[]>} Una lista de usuarios en formato JSON.
+ * @function getAllInvoices
+ * @returns {Promise&lt;Object[]>} Una lista con las facturas en formato JSON.
  */
-export async function getAllUsers() {
+export async function getAllInvoices() {
     try {
-        const response = await fetch(BACKEND_ROUTES.users.getAll, {
+        const response = await fetch(BACKEND_ROUTES.billing.getAll, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -53,17 +53,17 @@ export async function getAllUsers() {
 }
 
 /**
- * Obtiene un usuario por su ID.
+ * Obtiene una factura por su ID.
  * @async
- * @function getUserById
- * @param {number} id - El ID del usuario.
- * @returns {Promise&lt;Object>} Los datos del usuario en formato JSON.
+ * @function getInvoiceById
+ * @param {number} id - El ID de la factura.
+ * @returns {Promise&lt;Object>} Los datos de la factura en formato JSON.
  */
-export async function getUserById(id) {
+export async function getInvoiceById(id) {
     validateParamIsNotNull('id', id);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.getById(id), {
+        const response = await fetch(BACKEND_ROUTES.billing.getById(id), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -79,17 +79,60 @@ export async function getUserById(id) {
 }
 
 /**
- * Obtiene un usuario por su nombre de usuario.
+ * Genera y descarga el PDF de una factura por su ID.
  * @async
- * @function getUserByUsername
- * @param {string} username - El nombre de usuario del usuario.
- * @returns {Promise&lt;Object>} Los datos del usuario en formato JSON.
+ * @function generateInvoicePDF
+ * @param {number} id - El ID de la factura (requerido).
+ * @returns {Promise&lt;Blob>} El archivo pdf en formato Blob listo para descargar.
+ * @throws {error} Si ocurre algún error al generar o descargar el PDF.
  */
-export async function getUserByUsername(username) {
-    validateParamIsNotNull('username', username);
+export async function generateInvoicePDF(id) {
+    validateParamIsNotNull('id', id);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.getByUsername(username), {
+        const response = await fetch(BACKEND_ROUTES.billing.generatePDF(id), {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/pdf'
+            },
+        });
+
+        // Verificar el estado de la respuesta
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Error al generar el PDF:", errorText);
+            throw new Error("No se pudo generar el PDF.");
+        }
+
+        // Obtener el archivo como Blob
+        const blob = await response.blob();
+
+        // Crear un enlace para descargar el archivo
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `factura_${id}.pdf`;
+        link.click();
+
+        // Limpiar el objeto URL creado
+        URL.revokeObjectURL(link.href);
+
+        return blob;
+    } catch (error) {
+        console.error("Error al intentar descargar el PDF:", error);
+        throw error;
+    }
+}
+
+/**
+ * Obtiene los enums (variables constantes) de la factura
+ * @async
+ * @function getInvoiceEnums
+ * @returns {Promise&lt;Object[]>} Lista de los enums en formato JSON.
+ */
+export async function getInvoiceEnums() {
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.billing.getEnumsValues(), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -105,29 +148,68 @@ export async function getUserByUsername(username) {
 }
 
 /**
- * Crea un nuevo usuario.
+ * Crea una nueva factura.
  * @async
- * @function createUser
- * @param {Object} params - Datos del usuario.
- * @param {string} params.username - Nombre de usuario del usuario (requerido).
- * @param {string} params.password - Contraseña del usuario (requerido).
- * @param {string} params.role - Rol del usuario (requerido).
- * @param {boolean} [params.isActive] - Estado del usuario.
- * @returns {Promise&lt;Object>} Los datos del usuario recién creado en formato JSON.
+ * @function createInvoice
+ * @param {Object} params - Datos de la factura.
+ * @param {number} params.bookingId - ID de la reserva asociada (requerido).
+ * @param {number} [params.customerId] - ID del cliente asociado (opcional).
+ * @param {string} [params.invoiceType] - Tipo de factura ('CONTADO' o 'CREDITO') (opcional).
+ * @param {string} [params.paymentStatus] - Estado del pago ('PENDIENTE' o 'PAGADO') (opcional).
+ * @param {Array&lt;Object>} [params.items] - Lista de ítems de la factura (opcional).
+ * @param {string} params.items[].description - Descripción del ítem (requerido).
+ * @param {number} params.items[].quantity - Cantidad del ítem (requerido).
+ * @param {number} params.items[].unitPrice - Precio unitario del ítem (requerido).
+ * @param {number} [params.items[].subtotal] - Subtotal del ítem (cantidad * precio unitario) (opcional).
+ * @param {string} [params.items[].date] - Fecha del ítem (opcional).
+ * @param {string} [params.items[].type] - Tipo del ítem ('ESTANCIA', 'CONSUMO', 'PENALIDAD') (opcional).
+ * @returns {Promise&lt;Object>} Los datos de la factura recién creada en formato JSON.
  */
-export async function createUser({ username = null, password = null, role = null, isActive = null } = {}) {
-    validateParamIsNotNull('username', username);
-    validateParamIsNotNull('password', password);
-    validateParamIsNotNull('role', role);
+export async function createInvoice({
+    bookingId = null,
+    customerId = null,
+    invoiceType = null,
+    paymentStatus = null,
+    items = []
+} = {}) {
+    // Validar parámetros obligatorios
+    validateParamIsNotNull('bookingId', bookingId);
+    if (typeof bookingId !== 'number') {
+        throw new TypeError('bookingId debe ser un número.');
+    }
 
-    const body = { username, password, role };
-    body.isActive = isActive ?? true;
+    // Construir lista de ítems validada
+    const validatedItems = items.length > 0
+        ? items.map((item, index) => {
+            validateParamIsNotNull(`items[${index}].description`, item.description);
+            validateParamIsNotNull(`items[${index}].quantity`, item.quantity);
+            validateParamIsNotNull(`items[${index}].unitPrice`, item.unitPrice);
+
+            return {
+                description: item.description,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                subtotal: item.subtotal ?? item.quantity * item.unitPrice,
+                date: item.date ?? new Date().toISOString(), // Fecha actual si no se proporciona
+                type: item.type ?? 'PENALIDAD', // Valor por defecto
+            };
+        })
+        : undefined;
+
+    // Construir el cuerpo de la solicitud
+    const body = {
+        bookingId,
+        ...(customerId &amp;&amp; { customerId }),
+        ...(invoiceType &amp;&amp; { invoiceType }),
+        ...(paymentStatus &amp;&amp; { paymentStatus }),
+        ...(validatedItems &amp;&amp; { items: validatedItems }),
+    };
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.create, {
+        const response = await fetch(BACKEND_ROUTES.billing.create, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(body),
         });
@@ -135,37 +217,31 @@ export async function createUser({ username = null, password = null, role = null
         if (response.ok) {
             return await response.json();
         } else {
-            console.error("Error en la respuesta del backend", await response.text());
+            console.error("Error en la respuesta del backend:", await response.text());
         }
     } catch (error) {
-        console.error('Error de red', error);
+        console.error('Error de red:', error);
     }
 }
 
-
 /**
- * Actualiza los datos de un usuario.
+ * Actualiza el estado del pago de la factura.
  * @async
- * @function updateUser
- * @param {Object} params - Datos del usuario.
- * @param {number} params.id -ID del usuario (requerido).
- * @param {string} [params.username] - Nombre de usuario del usuario.
- * @param {string} [params.password] - Contraseña del usuario.
- * @param {string} [params.role] - Rol del usuario.
- * @param {boolean} [params.isActive] - Estado del usuario.
- * @returns {Promise&lt;Object>} Los datos del usuario actualizados en formato JSON.
+ * @function updateInvoicePaymentStatus
+ * @param {number} id - ID de la factura (requerido).
+ * @param {string} status - Estado del pago (PENDIENTE o PAGADA) a colocarle a la factura.
+ * @returns {Promise&lt;Object>} Los datos de la factura actualizados en formato JSON.
  */
-export async function updateUser({ id = null, username = null, password = null, role = null, isActive = null } = {}) {
+export async function updateInvoicePaymentStatus(id, status) {
     validateParamIsNotNull('id', id);
+    validateParamIsNotNull('status', status);
 
-    const body = {};
-    if (username !== null) body.username = username;
-    if (password !== null) body.password = password;
-    if (role !== null) body.role = role;
-    if (isActive !== null) body.isActive = isActive;
+    const body = {
+        paymentStatus: status,
+    };
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.update(id), {
+        const response = await fetch(BACKEND_ROUTES.billing.update(id), {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -182,42 +258,17 @@ export async function updateUser({ id = null, username = null, password = null, 
 }
 
 /**
- * Elimina un usuario por su ID.
+ * Desactiva una factura por su ID.
  * @async
- * @function deleteUser
- * @param {number} id - El ID del usuario.
- * @returns {Promise&lt;Object>} Los datos de la operación de eliminación en formato JSON.
+ * @function disableInvoice
+ * @param {number} id - El ID de la factura.
  */
-export async function deleteUser(id) {
+export async function disableInvoice(id) {
     validateParamIsNotNull('id', id);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.users.delete(id), {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-
-/**
- * Muestra todos los enums (variables constantes) que se emplean en el usuario.
- * @async
- * @function getUserEnumsValues
- * @returns {Promise&lt;Object>} Lista de los enums en formato JSON.
- */
-export async function getUserEnumsValues() {
-    try {
-        const response = await fetch(BACKEND_ROUTES.users.getEnumsValues, {
-            method: 'GET',
+        const response = await fetch(BACKEND_ROUTES.billing.disable(id), {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },

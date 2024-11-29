@@ -1,15 +1,38 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Res } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
-import { InvoiceEntity, InvoiceType, PaymentStatus } from './invoice.entity';
+import { InvoiceEntity } from './invoice.entity';
 import { CreateInvoiceDTO } from './dtos/create.invoice.dto';
 import { UpdatePaymentStatusDTO } from './dtos/update.payment.status.dto';
 import { InvoiceItemType } from './invoice.item.entity';
+import { Response } from 'express';
 
 @Controller('billing/invoices')
 export class InvoicesController {
     constructor(
         private readonly service: InvoicesService,
     ) {}
+
+    @Get(':id/pdf')
+    async generateInvoicePDF(@Param('id') id: number, @Res() res: Response) {
+        try {
+            const pdfBuffer = await this.service.generateInvoicePDF(id);
+
+            // Configuración de headers para la descarga
+            res.set({
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': `attachment; filename="factura-de-venta-${id}.pdf"`,
+                'Content-Length': pdfBuffer.length,
+            });
+
+            // Enviar el archivo PDF al cliente
+            res.status(HttpStatus.OK).send(pdfBuffer);
+        } catch (error) {
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+                message: 'Error al generar la factura',
+                error: error.message,
+            });
+        }
+    }
 
     @Get()
     async getAllInvoices(): Promise<InvoiceEntity[]> {

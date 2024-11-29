@@ -51,6 +51,51 @@ export async function getInvoiceById(id) {
 }
 
 /**
+ * Genera y descarga el PDF de una factura por su ID.
+ * @async
+ * @function generateInvoicePDF
+ * @param {number} id - El ID de la factura (requerido).
+ * @returns {Promise<Blob>} El archivo pdf en formato Blob listo para descargar.
+ * @throws {error} Si ocurre algún error al generar o descargar el PDF.
+ */
+export async function generateInvoicePDF(id) {
+    validateParamIsNotNull('id', id);
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.billing.generatePDF(id), {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/pdf'
+            },
+        });
+
+        // Verificar el estado de la respuesta
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Error al generar el PDF:", errorText);
+            throw new Error("No se pudo generar el PDF.");
+        }
+
+        // Obtener el archivo como Blob
+        const blob = await response.blob();
+
+        // Crear un enlace para descargar el archivo
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `factura_${id}.pdf`;
+        link.click();
+
+        // Limpiar el objeto URL creado
+        URL.revokeObjectURL(link.href);
+
+        return blob;
+    } catch (error) {
+        console.error("Error al intentar descargar el PDF:", error);
+        throw error;
+    }
+}
+
+/**
  * Obtiene los enums (variables constantes) de la factura
  * @async
  * @function getInvoiceEnums

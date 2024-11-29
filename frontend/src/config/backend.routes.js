@@ -72,11 +72,12 @@ export const BACKEND_ROUTES = {
     delete: (id) => `${BASE_URL}/${consumptions}/${id}`,
   },
   billing: {
-    create: `${BASE_URL}/${consumptions}`,
-    getAll: `${BASE_URL}/${consumptions}`,
-    getById: (id) => `${BASE_URL}/${consumptions}/${id}`,
-    getEnumsValues: `${BASE_URL}/${consumptions}/enums/values`,
-    updatePaymentStatus: (id) => `${BASE_URL}/${consumptions}/${id}/payment-status`,
-    disable: (id) => `${BASE_URL}/${consumptions}/${id}`,
+    create: `${BASE_URL}/${billing}`,
+    getAll: `${BASE_URL}/${billing}`,
+    getById: (id) => `${BASE_URL}/${billing}/${id}`,
+    generatePDF: (id) => `${BASE_URL}/${billing}/${id}/pdf`,
+    getEnumsValues: `${BASE_URL}/${billing}/enums/values`,
+    updatePaymentStatus: (id) => `${BASE_URL}/${billing}/${id}/payment-status`,
+    disable: (id) => `${BASE_URL}/${billing}/${id}`,
   },
 };
