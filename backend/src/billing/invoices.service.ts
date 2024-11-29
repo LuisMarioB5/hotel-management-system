@@ -9,7 +9,8 @@ import { CreateInvoiceDTO } from './dtos/create.invoice.dto';
 import { getEnumValues } from 'src/utils/showEnum.values';
 import { ConsumptionAvailability } from 'src/consumptions/consumption.entity';
 import { ConsumptionsService } from 'src/consumptions/consumptions.service';
-import PDFDocument from 'pdfkit'
+import PDFDocument from 'pdfkit';
+import { DateFormatter } from 'src/utils/date.formatter';
 
 @Injectable()
 export class InvoicesService {
@@ -34,10 +35,11 @@ export class InvoicesService {
     
         // Encabezado
         doc.fontSize(18).text('HOTEL HODELPA', { align: 'center' });
-        doc.text('Factura de Venta', { align: 'center' });
+        doc.text('Factura de Hospedaje', { align: 'center' });
+        doc.fontSize(14).text(`${DateFormatter.getSimpleDatetime(new Date())}`, { align: 'center' });
         doc.moveDown();
-        doc.fontSize(14).text(`Factura No. ${invoice.id}`);
-        doc.text(`Fecha de Emisión: ${new Date(invoice.createdAt).toLocaleDateString()}`);
+        doc.text(`Factura No. ${invoice.id}`);
+        doc.text(`Fecha de Emisión: ${DateFormatter.getSimpleDate(new Date(invoice.createdAt))}`);
         doc.text(`Tipo de Factura: ${invoice.invoiceType}`);
         doc.text(`Estado del Pago: ${invoice.paymentStatus}`);
         doc.moveDown();
@@ -52,8 +54,8 @@ export class InvoicesService {
         // Información de la reserva, si aplica
         if (invoice.booking) {
           doc.text(`ID de Reserva: ${invoice.booking.id}`);
-          doc.text(`Check-in: ${(invoice.booking.actualCheckInDate || invoice.booking.checkOutDate).toLocaleDateString()}`);
-          doc.text(`Check-out: ${(invoice.booking.actualCheckOutDate || invoice.booking.checkOutDate).toLocaleDateString()}`);
+          doc.text(`Check-in: ${DateFormatter.getSimpleDate(invoice.booking.actualCheckInDate || invoice.booking.checkOutDate)}`);
+          doc.text(`Check-out: ${DateFormatter.getSimpleDate(invoice.booking.actualCheckOutDate || invoice.booking.checkOutDate)}`);
           doc.text(`Habitación No. ${invoice.booking.room.number}`);
           if(!invoice.items) doc.text(`Costo de la Estancia: $${Number(invoice.booking.stayCost).toFixed(2)}`);
           doc.moveDown();
