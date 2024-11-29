@@ -84,7 +84,7 @@
     
                 <label for="username">Nombre de usuario</label>
                 <input type="text" id="username" required>
-
+                
                 <label for="contrasena">Contraseña</label>
                 <input type="password" id="contrasena" required>
 
@@ -130,61 +130,6 @@
         </div>
     </div>
     
-
-<script>
-     // Abrir modal
-     document.querySelectorAll('.create-button, .edit-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                document.getElementById('createUserModal').style.display = 'flex';
-            });
-        });
-
-    // Cerrar modal y limpiar campos
-    function closeModal() {
-        document.getElementById('createUserModal').style.display = 'none';
-        limpiarCampos();
-    }
-
-    // Función para limpiar los campos del modal
-    function limpiarCampos() {
-        document.getElementById('username').value = '';
-        document.getElementById('contrasena').value = '';
-        document.getElementById('confirmarContrasena').value = '';
-        document.getElementById('tipo').selectedIndex = 0;
-        document.getElementById('estado').selectedIndex = 0;
-    }
-
-    // Validación de contraseñas y guardar usuario
-    function guardarUsuario() {
-        const contrasena = document.getElementById('contrasena').value;
-        const confirmarContrasena = document.getElementById('confirmarContrasena').value;
-        const tipo = document.getElementById('tipo').value;
-        const nombre = document.getElementById('username').value.trim();
-        const estado = document.getElementById('estado').value;
-
-        // Validar los campos
-        let mensajeError = '';
-
-        if (contrasena !== confirmarContrasena) {
-            alert("Las contraseñas no coinciden. Por favor, intenta de nuevo.");
-            return;
-        }
-
-        if (!nombre) {
-            mensajeError += 'El campo Usuario es obligatorio.\n';
-        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombre)) {
-            mensajeError += 'El usuario solo debe contener letras.\n';
-        }
-        // Si hay errores, mostrar el mensaje de error
-        if (mensajeError) {
-            alert(mensajeError);
-        } else {
-            // Si todos los campos son válidos, guardar el Usuario
-            alert("Usuario guardado con éxito.");
-            closeModal();
-        }
-    }
-</script>
 <script type="module" src="../scripts/CosasComunes.js"></script>
 <script src="../scripts/usuario.js" type="module"></script>
 </body>

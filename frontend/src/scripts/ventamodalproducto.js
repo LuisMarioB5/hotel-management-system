@@ -137,7 +137,7 @@ document.querySelector('#modalProductTable tbody').addEventListener('dblclick', 
         document.getElementById('idproduct').value = id;
         document.getElementById('category').value = category;
         document.getElementById('stock').value = stock;
-        console.log(`Al agregar - ID:  ${id} Categoría: ${category}, Stock: ${stock}`);
+        
         // Show alert with product name
         Swal.fire({
             icon: 'success',

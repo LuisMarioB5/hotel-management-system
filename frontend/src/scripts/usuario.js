@@ -223,7 +223,7 @@ async function handleDelete(userId) {
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#3085d6',
-        celButtonColor: '#d33',
+        cancelButtonColor: '#d33',
         allowOutsideClick: true,  // No permitir que se cierre al hacer clic fuera
         backdrop: true,
         heightAuto: false,
