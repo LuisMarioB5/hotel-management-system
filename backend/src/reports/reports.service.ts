@@ -9,24 +9,14 @@ export class ReportsService {
     private readonly pdfService: PDFService,
   ) {}
 
-  async generateBookingReport(format: 'pdf' | 'excel', bookingId: number): Promise<string> {
+  async generateConsumptionsReport(format: 'pdf' | 'excel', bookingId: number): Promise<Buffer> {
     const booking = await this.bookingsService.findById(bookingId);
 
     if (format === 'pdf') {
-      return await this.pdfService.generateBookingReport(booking);
+      return await this.pdfService.generateConsumptionsReportPDF(booking);
     } 
     // else {
-    //   return this.excelService.generateBookingReportExcel(booking);
+    //   return this.excelService.generateConsumptionsReportExcel(booking);
     // }
   }
-
-//   async generateConsumptionReport(format: 'pdf' | 'excel', bookingId: number) {
-//     const consumptions = await this.consumptionsService.findAllByBookingId(bookingId);
-
-//     if (format === 'pdf') {
-//       return this.pdfService.generateConsumptionReportPDF(consumptions);
-//     } else {
-//       return this.excelService.generateConsumptionReportExcel(consumptions);
-//     }
-//   }
 }
