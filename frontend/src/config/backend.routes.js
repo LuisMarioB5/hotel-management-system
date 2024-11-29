@@ -7,6 +7,7 @@ const bookings = 'bookings';
 const products = 'products';
 const consumptions = 'consumptions';
 const billing = 'billing/invoices';
+const reports = 'reports';
 
 export const BACKEND_ROUTES = {
   auth: {
@@ -79,5 +80,9 @@ export const BACKEND_ROUTES = {
     getEnumsValues: `${BASE_URL}/${billing}/enums/values`,
     updatePaymentStatus: (id) => `${BASE_URL}/${billing}/${id}/payment-status`,
     disable: (id) => `${BASE_URL}/${billing}/${id}`,
+  },
+  reports: {
+    generateConsumptions: (id) => `${BASE_URL}/${reports}/consumptions/${id}/pdf`,
+    generateProductsOffered:(isActive, category) => `${BASE_URL}/${reports}/productsOffered/pdf?isActive=${isActive}&category=${category}`,
   },
 };
