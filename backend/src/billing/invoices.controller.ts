@@ -5,6 +5,7 @@ import { CreateInvoiceDTO } from './dtos/create.invoice.dto';
 import { UpdatePaymentStatusDTO } from './dtos/update.payment.status.dto';
 import { InvoiceItemType } from './invoice.item.entity';
 import { Response } from 'express';
+import { PDFReport } from 'src/reports/pdf/pdf.report';
 
 @Controller('billing/invoices')
 export class InvoicesController {
@@ -15,7 +16,8 @@ export class InvoicesController {
     @Get(':id/pdf')
     async generateInvoicePDF(@Param('id') id: number, @Res() res: Response) {
         try {
-            const pdfBuffer = await this.service.generateInvoicePDF(id);
+            const pdfReport = new PDFReport();
+            const pdfBuffer = await pdfReport.generateInvoice(await this.service.findById(id));
 
             // Configuración de headers para la descarga
             res.set({
