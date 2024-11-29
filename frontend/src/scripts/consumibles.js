@@ -2,7 +2,7 @@ import { getProductById,updateProduct, desactiveProduct } from '../integrations/
 import {  getAllBookings, getBookingById,checkOutBooking,desactiveBooking } from '../integrations/booking.integration.js';
 import { createConsumption,getConsumptionByBookingId  } from '../integrations/consumption.integration.js';
 import { updateRoom } from '../integrations/room.integration.js';
-import { createInvoice } from '../integrations/billing.integration.js';
+import { createInvoice,generateInvoicePDF } from '../integrations/billing.integration.js';
 
 //----------------------------------------------------------------------------//
              ////ESTA PARTE ES PARA LA PAGINA DE G_SALIDA///
@@ -495,7 +495,7 @@ export async function initializeRoomCheckOutPage() {
         setInputValue('correo', reservation.customer.email);
         setInputValue('fechaEntrada', new Date(reservation.checkInDate).toISOString().split('T')[0]);
         setInputValue('bookingDetails', reservation.details);
-        setInputValue('roomCost', 'RD$' + reservation.stayCost * reservation.totalStayDays);
+        setInputValue('roomCost', 'RD$' + reservation.stayCost);
         setInputValue('cashAdvance','RD$' + reservation.cashAdvance);
         setInputValue('remainingAmount','RD$' +  reservation.totalCost);
 
@@ -608,7 +608,6 @@ function updateTotal(totalPending = 0) {
     });
 }
 
-
 async function finishCheckOut(reservationId) {
     try {
         reservationId = parseInt(reservationId, 10);
@@ -634,60 +633,77 @@ async function finishCheckOut(reservationId) {
                 return;
             }
 
-            // Flujo de facturación
             const penaltyDescription = document.getElementById('infoPenality').value.trim();
             const penaltyCost = parseFloat(document.getElementById('penalty').value) || 0;
-            const consumptions = await getConsumptionByBookingId(reservationId);
 
-            const consumptionItems = consumptions
-                .filter(consumption => consumption.availability === 'PENDIENTE')
-                .map(consumption => ({
-                    description: consumption.product.name,
-                    quantity: consumption.quantity,
-                    unitPrice: consumption.unitPrice,
-                    type: 'CONSUMO',
-                }));
+            const invoiceData = {
+                bookingId: reservationId,
+                customerId: reservation.customer.id,
+                invoiceType: "CONTADO",
+                paymentStatus: "PAGADA",
+                items: []
+            };
 
             if (penaltyCost > 0 && penaltyDescription) {
-                consumptionItems.push({
+                invoiceData.items.push({
                     description: penaltyDescription,
                     quantity: 1,
                     unitPrice: penaltyCost,
-                    type: 'PENALIDAD',
+                    subtotal: penaltyCost, // El backend debería calcularlo, pero se envía aquí para pruebas
+                    date: null, // No enviar fecha
+                    type: "PENALIDAD"
                 });
             }
 
-            await createInvoice({
-                bookingId: reservationId,
-                customerId: reservation.customer.id,
-                invoiceType: 'CREDITO',
-                paymentStatus: 'PAGADO',
-                items: consumptionItems,
+            console.log("Enviando factura de check-out:", invoiceData);
+
+            // Llamar al endpoint para crear la factura
+            const response = await fetch('http://localhost:3000/billing/invoices', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(invoiceData),
             });
 
-            // Continuar con el flujo original
-            await checkOutBooking(reservationId);
-            await desactiveBooking(reservationId);
-            await updateRoom({
-                id: reservation.room.id,
-                status: 'LIMPIEZA',
-                isAvailable: false,
-            });
+            if (response.ok) {
+                const result = await response.json();
+                const invoiceId = result.id;  // Obtener el ID de la factura
+                console.log("Respuesta del backend:", result);
 
-            const printResult = await Swal.fire({
-                title: 'Hospedaje finalizado',
-                text: '¿Desea imprimir la factura?',
-                icon: 'success',
-                showCancelButton: true,
-                confirmButtonText: 'Imprimir',
-                cancelButtonText: 'No',
-            });
+                await Swal.fire("Éxito", "Factura creada correctamente", "success");
 
-            if (printResult.isConfirmed) {
-                console.log('Impresión de factura solicitada');
+                // Continuar con el flujo original
+                await checkOutBooking(reservationId);
+                await desactiveBooking(reservationId);
+                await updateRoom({
+                    id: reservation.room.id,
+                    status: 'LIMPIEZA',
+                    isAvailable: false,
+                });
+
+                // Preguntar si desea imprimir la factura después de completar todas las acciones
+                const printResult = await Swal.fire({
+                    title: 'Hospedaje finalizado',
+                    text: '¿Desea imprimir la factura?',
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonText: 'Imprimir',
+                    cancelButtonText: 'No',
+                });
+
+                if (printResult.isConfirmed) {
+                    // Llamar a generateInvoicePDF con el ID de la factura
+                    await generateInvoicePDF(invoiceId);
+                    console.log('Impresión de factura solicitada');
+                }
+
+                window.location.href = '../pages/G_salida.html';
+            } else {
+                const errorText = await response.text();
+                console.error("Error en la respuesta del backend:", errorText);
+                await Swal.fire("Error", "Hubo un problema al enviar la factura. Verifica los logs.", "error");
             }
-
-            window.location.href = '../pages/G_salida.html';
         }
     } catch (error) {
         console.error('Error during check-out:', error);
