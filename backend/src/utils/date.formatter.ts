@@ -12,4 +12,8 @@ export class DateFormatter {
     static getSimpleDate(date: Date) {
         return format(date, "dd/MM/yyyy");
     }
+
+    static getStrDate(date: Date) {
+        return format(date, 'dd_MM_yyyy')
+    }
 }

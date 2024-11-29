@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ReportsService } from './reports.service';
+import { DateFormatter } from 'src/utils/date.formatter';
 
 @Controller('reports')
 export class ReportsController {
@@ -32,11 +33,12 @@ export class ReportsController {
   async generateProductsOfferedReport(@Param('id') id: number, @Query('isActive') isActive: string, @Query('category') category: string, @Res() res: Response) {
     try {
       const pdfBuffer = await this.service.generateProductsOfferedReport('pdf', isActive, category);
-  
+      const date = new Date()
+      
       // Configuración de headers para la descarga
       res.set({
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="factura-de-venta-${id}.pdf"`,
+        'Content-Disposition': `attachment; filename="reporte-de-productos-ofrecidos-${DateFormatter.getStrDate(date)}.pdf"`,
         'Content-Length': pdfBuffer.length,
       });
   
