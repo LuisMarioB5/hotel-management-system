@@ -2,7 +2,7 @@ import { getProductById,updateProduct, desactiveProduct } from '../integrations/
 import {  getAllBookings, getBookingById,checkOutBooking,desactiveBooking } from '../integrations/booking.integration.js';
 import { createConsumption,getConsumptionByBookingId  } from '../integrations/consumption.integration.js';
 import { updateRoom } from '../integrations/room.integration.js';
-
+import { createInvoice } from '../integrations/billing.integration.js';
 
 //----------------------------------------------------------------------------//
              ////ESTA PARTE ES PARA LA PAGINA DE G_SALIDA///
@@ -424,7 +424,12 @@ function setupProductManagement() {
                 cancelButtonText: 'Cerrar',
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                allowOutsideClick: false
+                allowOutsideClick: false,
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
+
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Implementar funcionalidad de impresión aquí
@@ -521,13 +526,32 @@ async function renderConsumptions(reservationId) {
         tbody.innerHTML = ''; // Clear the table
         let totalPending = 0;
 
-        consumptions.forEach((consumption) => {
+        // Agrupar consumos por producto y estado
+        const groupedConsumptions = consumptions.reduce((acc, consumption) => {
             const { product, quantity, unitPrice, availability } = consumption;
 
-            // Validar unitPrice y quantity
-            const validUnitPrice = parseFloat(unitPrice) || 0;
-            const validQuantity = parseInt(quantity, 10) || 0;
-            const subtotal = validUnitPrice * validQuantity;
+            // Generar una clave única para cada combinación de producto y estado
+            const key = `${product.id}-${availability}`;
+
+            if (!acc[key]) {
+                acc[key] = {
+                    name: product.name,
+                    quantity: 0,
+                    unitPrice: parseFloat(unitPrice) || 0,
+                    availability,
+                    subtotal: 0,
+                };
+            }
+
+            acc[key].quantity += parseInt(quantity, 10) || 0;
+            acc[key].subtotal += acc[key].unitPrice * (parseInt(quantity, 10) || 0);
+
+            return acc;
+        }, {});
+
+        // Renderizar filas agrupadas
+        Object.values(groupedConsumptions).forEach((groupedConsumption) => {
+            const { name, quantity, unitPrice, availability, subtotal } = groupedConsumption;
 
             if (availability === 'PENDIENTE') {
                 totalPending += subtotal;
@@ -537,15 +561,15 @@ async function renderConsumptions(reservationId) {
             let estadoEstilo = '';
             if (availability === 'PENDIENTE') {
                 estadoEstilo = 'color: white; background-color: orange; padding: 3px 8px; border-radius: 8px;';
-            } else if (availability === 'SEPARADO') {
-                estadoEstilo = 'color: white; background-color: green; padding: 3px 8px; border-radius: 8px;' ;
+            } else if (availability === 'PAGADO') {
+                estadoEstilo = 'color: white; background-color: green; padding: 3px 8px; border-radius: 8px;';
             }
-            
+
             const row = `
                 <tr>
-                    <td>${product.name || 'Producto desconocido'}</td>
-                    <td>${validQuantity}</td>
-                    <td>RD$${validUnitPrice.toFixed(2)}</td>
+                    <td>${name || 'Producto desconocido'}</td>
+                    <td>${quantity}</td>
+                    <td>RD$${unitPrice.toFixed(2)}</td>
                     <td><label style="${estadoEstilo}">${availability}</label></td>
                     <td>RD$${subtotal.toFixed(2)}</td>
                 </tr>
@@ -561,10 +585,11 @@ async function renderConsumptions(reservationId) {
 }
 
 
+
 function updateTotal(totalPending = 0) {
     // Obtener valores dinámicos de los campos
     const remainingAmount = parseFloat(document.getElementById('remainingAmount').value.replace('RD$', '')) || 0;
-    const penaltyAmount = parseFloat(document.getElementById('adelanto').value) || 0;
+    const penaltyAmount = parseFloat(document.getElementById('penalty').value) || 0;
 
     // Sumar los subtotales de los consumos pendientes
     totalPending = [...document.querySelectorAll('.service-table tbody tr')]
@@ -578,7 +603,7 @@ function updateTotal(totalPending = 0) {
         totalAmountElement.textContent = `RD$${totalToPay.toFixed(2)}`;
     }
 
-    document.getElementById('adelanto').addEventListener('input', () => {
+    document.getElementById('penalty').addEventListener('input', () => {
         updateTotal();
     });
 }
@@ -586,6 +611,11 @@ function updateTotal(totalPending = 0) {
 
 async function finishCheckOut(reservationId) {
     try {
+        reservationId = parseInt(reservationId, 10);
+        if (isNaN(reservationId)) {
+            throw new TypeError("El ID de la reserva debe ser un número válido.");
+        }
+
         const result = await Swal.fire({
             title: '¿Finalizar hospedaje?',
             text: '¿Está seguro de que desea finalizar este hospedaje?',
@@ -604,9 +634,40 @@ async function finishCheckOut(reservationId) {
                 return;
             }
 
+            // Flujo de facturación
+            const penaltyDescription = document.getElementById('infoPenality').value.trim();
+            const penaltyCost = parseFloat(document.getElementById('penalty').value) || 0;
+            const consumptions = await getConsumptionByBookingId(reservationId);
+
+            const consumptionItems = consumptions
+                .filter(consumption => consumption.availability === 'PENDIENTE')
+                .map(consumption => ({
+                    description: consumption.product.name,
+                    quantity: consumption.quantity,
+                    unitPrice: consumption.unitPrice,
+                    type: 'CONSUMO',
+                }));
+
+            if (penaltyCost > 0 && penaltyDescription) {
+                consumptionItems.push({
+                    description: penaltyDescription,
+                    quantity: 1,
+                    unitPrice: penaltyCost,
+                    type: 'PENALIDAD',
+                });
+            }
+
+            await createInvoice({
+                bookingId: reservationId,
+                customerId: reservation.customer.id,
+                invoiceType: 'CREDITO',
+                paymentStatus: 'PAGADO',
+                items: consumptionItems,
+            });
+
+            // Continuar con el flujo original
             await checkOutBooking(reservationId);
             await desactiveBooking(reservationId);
-
             await updateRoom({
                 id: reservation.room.id,
                 status: 'LIMPIEZA',
@@ -624,7 +685,6 @@ async function finishCheckOut(reservationId) {
 
             if (printResult.isConfirmed) {
                 console.log('Impresión de factura solicitada');
-                // Implementar funcionalidad de impresión
             }
 
             window.location.href = '../pages/G_salida.html';
