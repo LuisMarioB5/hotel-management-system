@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDTO } from './dtos/create.product.dto';
 import { UpdateProductDTO } from './dtos/update.product.dto';
 import { getEnumValues } from 'src/utils/showEnum.values';
+import { parseIsActive } from 'src/utils/utils';
 
 @Injectable()
 export class ProductsService {
@@ -60,6 +61,22 @@ export class ProductsService {
 
     getEnumValues() {
       return getEnumValues({ ProductCategory });
+    }
+
+    getFilteredProductsByIsActiveAndCategory(isActive: string, category: string) {
+        const query = this.repository.createQueryBuilder('product');
+
+        // Filtrar por isActive si no es 'Todos'
+        if(isActive !== 'Todos'){
+            query.andWhere('product.isActive = :isActive', { isActive: parseIsActive(isActive) })
+        }
+        
+        // Filtrar por category si no es 'Todos'
+        if(category !== 'Todos'){
+            query.andWhere('product.category = :category', { category: category.toUpperCase() })
+        }
+
+        return query.getMany();
     }
 
     private throwProductNotFoundException(varName: string, varValue: string) {

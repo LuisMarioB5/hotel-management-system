@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { BookingsService } from 'src/bookings/bookings.service';
 import { PDFService } from './pdf/pdf.service';
+import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class ReportsService {
   constructor(
     private readonly bookingsService: BookingsService,
+    private readonly productsService: ProductsService,
     private readonly pdfService: PDFService,
   ) {}
 
@@ -17,6 +19,17 @@ export class ReportsService {
     } 
     // else {
     //   return this.excelService.generateConsumptionsReportExcel(booking);
+    // }
+  }
+
+  async generateProductsOfferedReport(format: 'pdf' | 'excel', isActive: string, category: string): Promise<Buffer> {
+    const filteredProduct = await this.productsService.getFilteredProductsByIsActiveAndCategory(isActive, category);
+
+    if (format === 'pdf') {
+      return await this.pdfService.generateProductsOfferedReportPDF(filteredProduct);
+    } 
+    // else {
+    //   return this.excelService.generateConsumptionsReportExcel(products);
     // }
   }
 }

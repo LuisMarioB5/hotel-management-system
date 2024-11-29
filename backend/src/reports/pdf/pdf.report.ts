@@ -2,6 +2,7 @@ import PDFDocument from 'pdfkit';
 import { BookingEntity } from 'src/bookings/booking.entity';
 import { ConsumptionEntity } from 'src/consumptions/consumption.entity';
 import { CustomerEntity } from 'src/customers/customer.entity';
+import { ProductEntity } from 'src/products/product.entity';
 import { DateFormatter } from 'src/utils/date.formatter';
 
 export class PDFReport {
@@ -19,7 +20,7 @@ export class PDFReport {
     this.doc.on('data', buffers.push.bind(buffers));
 
     // Encabezado
-    this.addHeader('Reporte de Consumo del Huésped', `${checkinDate} | ${checkoutDate}`);
+    this.addHeader({ title: 'Reporte de Consumo del Huésped', period: `${checkinDate} | ${checkoutDate}` });
 
     // Información del huésped
     this.addGuestInfo(booking.customer);
@@ -38,12 +39,28 @@ export class PDFReport {
     });
   }
 
-  private addHeader(title: string, period: string): void {
+  generateProductsOfferedReport(products: ProductEntity[]): Promise<Buffer> {
+    
+    const buffers = [];
+    this.doc.on('data', buffers.push.bind(buffers));
+
+    // Encabezado
+    this.addHeader({ title: 'Reporte de Consumo del Huésped' });
+
+    // Finalizar el reporte
+    this.finishReport();
+
+    return new Promise((resolve, reject) => {
+      this.doc.on('end', () => resolve(Buffer.concat(buffers)));
+    });
+  }
+
+  private addHeader({ title = null , period = null } = {}): void {
     this.doc
       .fontSize(14)
       .font('Helvetica-Bold')
       .text('Hotel Hodelpa', { align: 'center' })
-      .text(`${title}`, { align: 'center' })
+      if(title) this.doc.text(`${title}`, { align: 'center' })
       .fontSize(12)
       .font('Helvetica')
       if(period) this.doc.text(`Período del Reporte: ${period}`, { align: 'center' })
@@ -57,7 +74,7 @@ export class PDFReport {
       .font('Helvetica-Bold')
       .text('Información del Huésped')
       .font('Helvetica')
-      .text(`Nombre: ${customer.name + customer.lastName}`)
+      .text(`Nombre: ${customer.name} ${customer.lastName}`)
       .text(`Documento: (${customer.documentType}) ${customer.documentNumber}`)
       .text(`Teléfono: ${customer.phoneNumber}`)
       .text(`Email: ${customer.email}`)
