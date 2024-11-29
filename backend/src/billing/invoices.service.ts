@@ -140,9 +140,9 @@ export class InvoicesService {
 
         const stayItem = booking ? this.createInvoiceItem({
             description: 'Costo de estandía',
-            quantity: booking.totalStayDays,
-            unitPrice: booking.room.price,
-            subtotal: booking.totalStayDays * booking.room.price,
+            quantity: Number(booking.totalStayDays),
+            unitPrice: Number(booking.room.price),
+            subtotal: this.calculateSubtotal(Number(booking.totalStayDays), Number(booking.room.price)),
             date: booking.actualCheckOutDate || booking.checkOutDate,
             type: InvoiceItemType.ESTANCIA,
         }) : null;
@@ -153,9 +153,9 @@ export class InvoicesService {
             this.consumptionService.update(consumption.id, { availability: ConsumptionAvailability.PAGADO });
             return this.createInvoiceItem({
                 description: `Consumo de ${consumption.product.name}`,
-                quantity: consumption.quantity,
-                unitPrice: consumption.unitPrice,
-                subtotal: consumption.subtotal || this.calculateSubtotal(consumption.quantity, consumption.unitPrice) || 0,
+                quantity: Number(consumption.quantity),
+                unitPrice: Number(consumption.unitPrice),
+                subtotal: Number(consumption.subtotal) || this.calculateSubtotal(Number(consumption.quantity), Number(consumption.unitPrice)) || 0,
                 date: consumption.createdAt,
                 type: InvoiceItemType.CONSUMO,
             })
@@ -164,9 +164,9 @@ export class InvoicesService {
         const additionalItems = items?.map((item) => 
             this.createInvoiceItem({
                 description: item.description,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                subtotal: item.subtotal || this.calculateSubtotal(item.quantity, item.unitPrice) || 0,
+                quantity: Number(item.quantity),
+                unitPrice: Number(item.unitPrice),
+                subtotal: Number(item.subtotal) || this.calculateSubtotal(Number(item.quantity), Number(item.unitPrice)) || 0,
                 date: item.date || new Date(),
                 type: item.type || InvoiceItemType.PENALIDAD,
             }),
@@ -180,7 +180,7 @@ export class InvoicesService {
             items: [stayItem, ...consumptionItem, ...additionalItems].filter(item => item !== null),
         });
 
-        newInvoice.total = newInvoice.items.reduce((total, item) => total + item.subtotal, 0);
+        newInvoice.total = newInvoice.items.reduce((total, item) => Number(total) + Number(item.subtotal), 0);
 
         return await this.invoiceRepository.save(newInvoice);
     }
