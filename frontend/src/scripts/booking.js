@@ -334,7 +334,7 @@ function getBookingData() {
         status: 'PENDIENTE',
         cashAdvance: adelanto,
         totalCost: precio,
-        stayCost: roomPrice,
+        stayCost: roomPrice * totalStayDays,
         totalStayDays: totalStayDays
     };
 }
