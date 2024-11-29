@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BookingsService } from 'src/bookings/bookings.service';
 import { PDFService } from './pdf/pdf.service';
 import { ProductsService } from 'src/products/products.service';
@@ -23,8 +23,10 @@ export class ReportsService {
   }
 
   async generateProductsOfferedReport(format: 'pdf' | 'excel', isActive: string, category: string): Promise<Buffer> {
-    const filteredProduct = await this.productsService.getFilteredProductsByIsActiveAndCategory(isActive, category);
-
+    let filteredProduct = await this.productsService.getFilteredProductsByIsActiveAndCategory(isActive, category);
+    if(filteredProduct.length === 0) {
+      throw new NotFoundException('No existen productos con los filtro seleccionados.');
+    }
     if (format === 'pdf') {
       return await this.pdfService.generateProductsOfferedReportPDF(filteredProduct);
     } 
