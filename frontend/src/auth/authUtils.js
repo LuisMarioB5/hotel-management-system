@@ -36,15 +36,19 @@ export function validateJwt() {
     }
 
     // 3. Verificar si el token ha expirado
+    // Verificar si el token ha expirado
     const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
     if (user.exp < currentTime) {
         Swal.fire({
-            icon: 'warning',
-            title: 'Sesión expirada',
-            text: 'Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.',
-        }).then(() => {
-            localStorage.removeItem('jwt');
-            window.location.href = 'login.html';
+            icon: 'error',
+            title: 'No autorizado',
+            text: 'No tienes permiso para acceder a esta página.',
+        }).then(result => {
+            if (result.isConfirmed) {
+                // Limpiar el almacenamiento local y redirigir después de confirmar la alerta
+                localStorage.removeItem('jwt');
+                window.location.href = 'login.html';
+            }
         });
         return false;
     }
