@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: integrations/customer.integration.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: integrations/customer.integration.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { BACKEND_ROUTES } from '../config/backend.routes.js';
+import { validateParamIsNotNull } from '../scripts/utils.js';
+
+/**
+ * Obtiene todos los clientes.
+ * @async
+ * @function getAllCustomers
+ * @returns {Promise&lt;Object[]>} Una lista de clientes en formato JSON.
+ */
+export async function getAllCustomers() {
+    try {
+        const response = await fetch(BACKEND_ROUTES.customers.getAll, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Obtiene un cliente por su ID.
+ * @async
+ * @function getCustomerById
+ * @param {number} id - El ID del cliente.
+ * @returns {Promise&lt;Object>} Los datos del cliente en formato JSON.
+ */
+export async function getCustomerById(id) {
+    validateParamIsNotNull('id', id);
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.customers.getById(id), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Obtiene un cliente por su número de documento.
+ * @async
+ * @function getCustomerByDocumentNumber
+ * @param {string} documentNumber - El número de documento del cliente.
+ * @returns {Promise&lt;Object>} Los datos del cliente en formato JSON.
+ */
+export async function getCustomerByDocumentNumber(documentNumber) {
+    validateParamIsNotNull('documentNumber', documentNumber);
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.customers.getByDocumentNumber(documentNumber), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Crea un nuevo cliente.
+ * @async
+ * @function createCustomer
+ * @param {Object} params - Datos del cliente.
+ * @param {string} params.name - Nombre del cliente (requerido).
+ * @param {string} params.lastName - Apellido del cliente (requerido).
+ * @param {string} params.documentType - Tipo de documento (requerido).
+ * @param {string} params.documentNumber - Número de documento (requerido).
+ * @param {string} params.email - Correo electrónico del cliente (requerido).
+ * @param {string} [params.gender] - Género del cliente.
+ * @param {string} [params.phoneNumber] - Teléfono del cliente.
+ * @param {string} [params.address] - Dirección del cliente.
+ * @param {boolean} [params.isFrequentGuest] - Si es huésped frecuente.
+ * @param {string} [params.notes] - Notas adicionales.
+ * @param {boolean} [params.isActive] - Estado activo/inactivo del cliente.
+ * @returns {Promise&lt;Object>} Los datos del cliente recién creado en formato JSON.
+ */
+export async function createCustomer({ name = null, lastName = null, documentType = null, documentNumber = null, email = null, gender = null, phoneNumber = null, address = null, isFrequentGuest = null, notes = null, isActive = null } = {}) {
+    validateParamIsNotNull('name', name);
+    validateParamIsNotNull('lastName', lastName);
+    validateParamIsNotNull('documentType', documentType);
+    validateParamIsNotNull('documentNumber', documentNumber);
+    validateParamIsNotNull('email', email);
+
+    const body = { name, lastName, documentType, documentNumber, email };
+    if (gender !== null) body.gender = gender;
+    if (phoneNumber !== null) body.phoneNumber = phoneNumber;
+    if (address !== null) body.address = address;
+    if (isFrequentGuest !== null) body.isFrequentGuest = isFrequentGuest;
+    if (notes !== null) body.notes = notes;
+    if (isActive !== null) body.isActive = isActive;
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.customers.create, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Actualiza los datos de un cliente.
+ * @async
+ * @function updateCustomer
+ * @param {Object} params - Datos del cliente a actualizar.
+ * @param {number} params.id - ID del cliente (requerido).
+ * @param {string} [params.name] - Nuevo nombre del cliente.
+ * @param {string} [params.lastName] - Nuevo apellido del cliente.
+ * @param {string} [params.documentType] - Nuevo tipo de documento.
+ * @param {string} [params.documentNumber] - Nuevo número de documento.
+ * @param {string} [params.email] - Nuevo correo electrónico.
+ * @param {string} [params.gender] - Nuevo género.
+ * @param {string} [params.phoneNumber] - Nuevo número de teléfono.
+ * @param {string} [params.address] - Nueva dirección.
+ * @param {boolean} [params.isFrequentGuest] - Indica si es huésped frecuente.
+ * @param {string} [params.notes] - Nuevas notas adicionales.
+ * @param {boolean} [params.isActive] - Nuevo estado activo/inactivo.
+ * @returns {Promise&lt;Object>} Los datos del cliente actualizados en formato JSON.
+ */
+export async function updateCustomer({ id = null, name = null, lastName = null, documentType = null, documentNumber = null, email = null, gender = null, phoneNumber = null, address = null, isFrequentGuest = null, notes = null, isActive = null } = {}) {
+    validateParamIsNotNull('id', id);
+
+    const body = {};
+    if (name !== null) body.name = name;
+    if (lastName !== null) body.lastName = lastName;
+    if (documentType !== null) body.documentType = documentType;
+    if (documentNumber !== null) body.documentNumber = documentNumber;
+    if (email !== null) body.email = email;
+    if (gender !== null) body.gender = gender;
+    if (phoneNumber !== null) body.phoneNumber = phoneNumber;
+    if (address !== null) body.address = address;
+    if (isFrequentGuest !== null) body.isFrequentGuest = isFrequentGuest;
+    if (notes !== null) body.notes = notes;
+    if (isActive !== null) body.isActive = isActive;
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.customers.update(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Elimina un cliente por su ID.
+ * @async
+ * @function deleteCustomer
+ * @param {number} id - El ID del cliente.
+ * @returns {Promise&lt;Object>} Los datos de la operación de eliminación en formato JSON.
+ */
+export async function deleteCustomer(id) {
+    validateParamIsNotNull('id', id);
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.customers.delete(id), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Muestra todos los enums (variables constantes) que se emplean en el cliente.
+ * @async
+ * @function getCustomerEnumsValues
+ * @returns {Promise&lt;Object>} Lista de los enums en formato JSON.
+ */
+export async function getCustomerEnumsValues() {
+    try {
+        const response = await fetch(BACKEND_ROUTES.customers.getEnumsValues, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#cancelBooking">cancelBooking</a></li><li><a href="global.html#changeRoomStatusToAvailable">changeRoomStatusToAvailable</a></li><li><a href="global.html#checkInBooking">checkInBooking</a></li><li><a href="global.html#checkOutBooking">checkOutBooking</a></li><li><a href="global.html#confirmBooking">confirmBooking</a></li><li><a href="global.html#createBooking">createBooking</a></li><li><a href="global.html#createConsumption">createConsumption</a></li><li><a href="global.html#createCustomer">createCustomer</a></li><li><a href="global.html#createInvoice">createInvoice</a></li><li><a href="global.html#createProduct">createProduct</a></li><li><a href="global.html#createRoom">createRoom</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteConsumption">deleteConsumption</a></li><li><a href="global.html#deleteCustomer">deleteCustomer</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#deleteUser">deleteUser</a></li><li><a href="global.html#desactiveBooking">desactiveBooking</a></li><li><a href="global.html#desactiveProduct">desactiveProduct</a></li><li><a href="global.html#disableInvoice">disableInvoice</a></li><li><a href="global.html#generateBookingsByRoomReportPDF">generateBookingsByRoomReportPDF</a></li><li><a href="global.html#generateConsumptionsReportPDF">generateConsumptionsReportPDF</a></li><li><a href="global.html#generateInvoicePDF">generateInvoicePDF</a></li><li><a href="global.html#generateProductsOfferedReportPDF">generateProductsOfferedReportPDF</a></li><li><a href="global.html#generateTopConsumptionsReportPDF">generateTopConsumptionsReportPDF</a></li><li><a href="global.html#getAllBookings">getAllBookings</a></li><li><a href="global.html#getAllConsumptions">getAllConsumptions</a></li><li><a href="global.html#getAllCustomers">getAllCustomers</a></li><li><a href="global.html#getAllInvoices">getAllInvoices</a></li><li><a href="global.html#getAllProducts">getAllProducts</a></li><li><a href="global.html#getAllRooms">getAllRooms</a></li><li><a href="global.html#getAllUsers">getAllUsers</a></li><li><a href="global.html#getBookingById">getBookingById</a></li><li><a href="global.html#getBookingEnumsValues">getBookingEnumsValues</a></li><li><a href="global.html#getConsumptionByBookingId">getConsumptionByBookingId</a></li><li><a href="global.html#getConsumptionById">getConsumptionById</a></li><li><a href="global.html#getCustomerByDocumentNumber">getCustomerByDocumentNumber</a></li><li><a href="global.html#getCustomerById">getCustomerById</a></li><li><a href="global.html#getCustomerEnumsValues">getCustomerEnumsValues</a></li><li><a href="global.html#getInvoiceById">getInvoiceById</a></li><li><a href="global.html#getInvoiceEnums">getInvoiceEnums</a></li><li><a href="global.html#getProductById">getProductById</a></li><li><a href="global.html#getProductByName">getProductByName</a></li><li><a href="global.html#getProductEnumsValues">getProductEnumsValues</a></li><li><a href="global.html#getRoomById">getRoomById</a></li><li><a href="global.html#getRoomByRoomNumber">getRoomByRoomNumber</a></li><li><a href="global.html#getRoomEnumsValues">getRoomEnumsValues</a></li><li><a href="global.html#getRoomsAvailable">getRoomsAvailable</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#getUserEnumsValues">getUserEnumsValues</a></li><li><a href="global.html#loadReservationIDs">loadReservationIDs</a></li><li><a href="global.html#loadRoomNumbers">loadRoomNumbers</a></li><li><a href="global.html#loginIntegration">loginIntegration</a></li><li><a href="global.html#parseJwt">parseJwt</a></li><li><a href="global.html#setupExportButtons">setupExportButtons</a></li><li><a href="global.html#setupSearchButton">setupSearchButton</a></li><li><a href="global.html#showReservationSelectionAlert">showReservationSelectionAlert</a></li><li><a href="global.html#updateBooking">updateBooking</a></li><li><a href="global.html#updateConsumption">updateConsumption</a></li><li><a href="global.html#updateCustomer">updateCustomer</a></li><li><a href="global.html#updateInvoicePaymentStatus">updateInvoicePaymentStatus</a></li><li><a href="global.html#updateProduct">updateProduct</a></li><li><a href="global.html#updateRoom">updateRoom</a></li><li><a href="global.html#updateRoomNotAvailable">updateRoomNotAvailable</a></li><li><a href="global.html#updateUser">updateUser</a></li><li><a href="global.html#validateJwt">validateJwt</a></li><li><a href="global.html#validateParamIsNotNull">validateParamIsNotNull</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Nov 30 2024 19:25:21 GMT-0400 (Bolivia Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

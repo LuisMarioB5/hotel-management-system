@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: auth/authUtils.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: auth/authUtils.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Valida el JWT almacenado en localStorage.
+ * - Comprueba si el token existe.
+ * - Valida el formato del token utilizando parseJwt.
+ * - Verifica si el token ha expirado.
+ * 
+ * @returns {Object} `user` Objecto clave-valor si el token es válido, `false` si no lo es.
+ */
+export function validateJwt() {
+    const token = localStorage.getItem('jwt');
+
+    // 1. Validar si el token existe
+    if (!token) {
+        Swal.fire({
+            icon: 'error',
+            title: 'No autorizado',
+            text: 'Debes iniciar sesión para acceder a esta página.',
+        }).then(() => {
+            window.location.href = 'login.html';
+        });
+        return false;
+    }
+
+    // 2. Decodificar el token
+    const user = parseJwt(token);
+    if (!user) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error en el token',
+            text: 'El token es inválido o está malformado.',
+        }).then(() => {
+            localStorage.removeItem('jwt');
+            window.location.href = 'login.html';
+        });
+        return false;
+    }
+
+    // 3. Verificar si el token ha expirado
+    // Verificar si el token ha expirado
+    const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+    if (user.exp &lt; currentTime) {
+        Swal.fire({
+            icon: 'error',
+            title: 'No autorizado',
+            text: 'No tienes permiso para acceder a esta página.',
+        }).then(result => {
+            if (result.isConfirmed) {
+                // Limpiar el almacenamiento local y redirigir después de confirmar la alerta
+                localStorage.removeItem('jwt');
+                window.location.href = 'login.html';
+            }
+        });
+        return false;
+    }
+
+    // Token válido
+    return user;
+}
+
+/**
+ * Decodifica un token JWT.
+ * @param {string} token - El token JWT.
+ * @returns {Object|null} El payload decodificado o `null` si el token no es válido.
+ */
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error('Error decodificando el token:', error);
+        return null;
+    }
+}
+
+export function setLogoutButton(user) {
+    const btn = document.getElementById('logoutButton');
+    if(btn) {
+        btn.innerHTML = `${user.username} &lt;i class="fas fa-user">&lt;/i>`;
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#cancelBooking">cancelBooking</a></li><li><a href="global.html#changeRoomStatusToAvailable">changeRoomStatusToAvailable</a></li><li><a href="global.html#checkInBooking">checkInBooking</a></li><li><a href="global.html#checkOutBooking">checkOutBooking</a></li><li><a href="global.html#confirmBooking">confirmBooking</a></li><li><a href="global.html#createBooking">createBooking</a></li><li><a href="global.html#createConsumption">createConsumption</a></li><li><a href="global.html#createCustomer">createCustomer</a></li><li><a href="global.html#createInvoice">createInvoice</a></li><li><a href="global.html#createProduct">createProduct</a></li><li><a href="global.html#createRoom">createRoom</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteConsumption">deleteConsumption</a></li><li><a href="global.html#deleteCustomer">deleteCustomer</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#deleteUser">deleteUser</a></li><li><a href="global.html#desactiveBooking">desactiveBooking</a></li><li><a href="global.html#desactiveProduct">desactiveProduct</a></li><li><a href="global.html#disableInvoice">disableInvoice</a></li><li><a href="global.html#generateBookingsByRoomReportPDF">generateBookingsByRoomReportPDF</a></li><li><a href="global.html#generateConsumptionsReportPDF">generateConsumptionsReportPDF</a></li><li><a href="global.html#generateInvoicePDF">generateInvoicePDF</a></li><li><a href="global.html#generateProductsOfferedReportPDF">generateProductsOfferedReportPDF</a></li><li><a href="global.html#generateTopConsumptionsReportPDF">generateTopConsumptionsReportPDF</a></li><li><a href="global.html#getAllBookings">getAllBookings</a></li><li><a href="global.html#getAllConsumptions">getAllConsumptions</a></li><li><a href="global.html#getAllCustomers">getAllCustomers</a></li><li><a href="global.html#getAllInvoices">getAllInvoices</a></li><li><a href="global.html#getAllProducts">getAllProducts</a></li><li><a href="global.html#getAllRooms">getAllRooms</a></li><li><a href="global.html#getAllUsers">getAllUsers</a></li><li><a href="global.html#getBookingById">getBookingById</a></li><li><a href="global.html#getBookingEnumsValues">getBookingEnumsValues</a></li><li><a href="global.html#getConsumptionByBookingId">getConsumptionByBookingId</a></li><li><a href="global.html#getConsumptionById">getConsumptionById</a></li><li><a href="global.html#getCustomerByDocumentNumber">getCustomerByDocumentNumber</a></li><li><a href="global.html#getCustomerById">getCustomerById</a></li><li><a href="global.html#getCustomerEnumsValues">getCustomerEnumsValues</a></li><li><a href="global.html#getInvoiceById">getInvoiceById</a></li><li><a href="global.html#getInvoiceEnums">getInvoiceEnums</a></li><li><a href="global.html#getProductById">getProductById</a></li><li><a href="global.html#getProductByName">getProductByName</a></li><li><a href="global.html#getProductEnumsValues">getProductEnumsValues</a></li><li><a href="global.html#getRoomById">getRoomById</a></li><li><a href="global.html#getRoomByRoomNumber">getRoomByRoomNumber</a></li><li><a href="global.html#getRoomEnumsValues">getRoomEnumsValues</a></li><li><a href="global.html#getRoomsAvailable">getRoomsAvailable</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#getUserEnumsValues">getUserEnumsValues</a></li><li><a href="global.html#loadReservationIDs">loadReservationIDs</a></li><li><a href="global.html#loadRoomNumbers">loadRoomNumbers</a></li><li><a href="global.html#loginIntegration">loginIntegration</a></li><li><a href="global.html#parseJwt">parseJwt</a></li><li><a href="global.html#setupExportButtons">setupExportButtons</a></li><li><a href="global.html#setupSearchButton">setupSearchButton</a></li><li><a href="global.html#showReservationSelectionAlert">showReservationSelectionAlert</a></li><li><a href="global.html#updateBooking">updateBooking</a></li><li><a href="global.html#updateConsumption">updateConsumption</a></li><li><a href="global.html#updateCustomer">updateCustomer</a></li><li><a href="global.html#updateInvoicePaymentStatus">updateInvoicePaymentStatus</a></li><li><a href="global.html#updateProduct">updateProduct</a></li><li><a href="global.html#updateRoom">updateRoom</a></li><li><a href="global.html#updateRoomNotAvailable">updateRoomNotAvailable</a></li><li><a href="global.html#updateUser">updateUser</a></li><li><a href="global.html#validateJwt">validateJwt</a></li><li><a href="global.html#validateParamIsNotNull">validateParamIsNotNull</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Nov 30 2024 19:25:21 GMT-0400 (Bolivia Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: integrations/room.integration.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: integrations/room.integration.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { BACKEND_ROUTES } from '../config/backend.routes.js';
+import { validateParamIsNotNull } from '../scripts/utils.js';
+
+/**
+ * Obtiene todas las habitaciones.
+ * @async
+ * @function getAllRooms
+ * @returns {Promise&lt;Object[]>} Una lista con las habitaciones en formato JSON.
+ */
+export async function getAllRooms() {
+    try {
+        const response = await fetch(BACKEND_ROUTES.rooms.getAll, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Obtiene una habitación por su ID.
+ * @async
+ * @function getRoomById
+ * @param {number} id - El ID de la habitación.
+ * @returns {Promise&lt;Object>} Los datos de la habitación en formato JSON.
+ */
+export async function getRoomById(id) {
+    validateParamIsNotNull('id', id);
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.rooms.getById(id), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Obtiene una habitación por su número.
+ * @async
+ * @function getRoomByRoomNumber
+ * @param {string} roomNumber - El número de la habitación.
+ * @returns {Promise&lt;Object>} Los datos de la habitación en formato JSON.
+ */
+export async function getRoomByRoomNumber(roomNumber) {
+    validateParamIsNotNull('roomNumber', roomNumber);
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.rooms.getByRoomNumber(roomNumber), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Obtiene todas las habitaciones disponibles para reservar.
+ * @async
+ * @function getRoomsAvailable
+ * @returns {Promise&lt;Object[]>} Una lista con las habitaciones en formato JSON.
+ */
+export async function getRoomsAvailable() {
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.rooms.getRoomsAvailable, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Crea una nueva habitación.
+ * @async
+ * @function createRoom
+ * @param {Object} params - Datos de la habitación.
+ * @param {number} params.number - Número de habitación (requerido).
+ * @param {string} params.floor - Piso de la habitación (requerido).
+ * @param {string} params.type - Tipo o categoría de la habitación (requerido).
+ * @param {number} params.price - Precio por noche de la habitación (requerido).
+ * @param {string} [params.details] - Detalles o comentarios de la habitación.
+ * @param {string} [params.status] - Estado actual de la habitación.
+ * @param {boolean} [params.isAvailable] - Disponibilidad de la habitación.
+ * @returns {Promise&lt;Object>} Los datos de la habitación recién creado en formato JSON.
+ */
+export async function createRoom({ number = null, details = null, floor = null, type = null, status = null, price = null, isAvailable = null} = {}) {
+    validateParamIsNotNull('number', number);
+    validateParamIsNotNull('floor', floor);
+    validateParamIsNotNull('type', type);
+    validateParamIsNotNull('price', price);
+
+    const body = { 
+        number,
+        floor: floor.toUpperCase(),
+        type: type.toUpperCase(),
+        price,
+     };
+    
+     if(details !== null) body.details = details;
+     if(status !== null) body.status = status.toUpperCase();
+     if(isAvailable !== null) body.isAvailable = isAvailable;
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.rooms.create, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.error("Error en la respuesta del backend", await response.text());
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Actualiza los datos de una habitación.
+ * @async
+ * @function updateRoom
+ * @param {Object} params - Datos de la habitación.
+ * @param {number} params.id -ID de la habitación (requerido).
+ * @param {number} [params.number] - Número de habitación.
+ * @param {string} [params.floor] - Piso de la habitación.
+ * @param {string} [params.type] - Tipo o categoría de la habitación.
+ * @param {number} [params.price] - Precio por noche de la habitación.
+ * @param {string} [params.details] - Detalles o comentarios de la habitación.
+ * @param {string} [params.status] - Estado actual de la habitación.
+ * @param {boolean} [params.isAvailable] - Disponibilidad de la habitación.
+ * @returns {Promise&lt;Object>} Los datos de la habitación actualizados en formato JSON.
+ */
+export async function updateRoom({ id = null, number = null, details = null, floor = null, type = null, status = null, price = null, isAvailable = null} = {}) {
+    validateParamIsNotNull('id', id);
+
+    const body = {};
+     if(number !== null) body.number = number;
+     if(floor !== null) body.floor = floor.toUpperCase();
+     if(type !== null) body.type = type.toUpperCase();
+     if(price !== null) body.price = price;
+     if(details !== null) body.details = details;
+     if(status !== null) body.status = status.toUpperCase();
+     if(isAvailable !== null) body.isAvailable = isAvailable;
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.rooms.update(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Cambia el estado de la habitación a DISPONIBLE.
+ * @async
+ * @function changeRoomStatusToAvailable
+ * @param {number} id -ID de la habitación.
+ * @returns {Promise&lt;Object>} Los datos de la habitación actualizados en formato JSON.
+ */
+export async function changeRoomStatusToAvailable(id) {
+    validateParamIsNotNull('id', id);
+
+    try {
+        const response = await fetch(BACKEND_ROUTES.rooms.changeStatusToAvailable(id), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+
+/**
+ * Desactiva la disponibilidad de una habitación por su ID.
+ * @async
+ * @function updateRoomNotAvailable
+ * @param {number} id - El ID de la habitación.
+ */
+export async function updateRoomNotAvailable(id) {
+    validateParamIsNotNull('id', id);
+    
+    return await updateRoom({ id, isAvailable: false });
+}
+
+/**
+ * Muestra todos los enums (variables constantes) que se emplean en la habitación.
+ * @async
+ * @function getRoomEnumsValues
+ * @returns {Promise&lt;Object>} Lista de los enums en formato JSON.
+ */
+export async function getRoomEnumsValues() {
+    try {
+        const response = await fetch(BACKEND_ROUTES.rooms.getEnumsValues, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error de red', error);
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#cancelBooking">cancelBooking</a></li><li><a href="global.html#changeRoomStatusToAvailable">changeRoomStatusToAvailable</a></li><li><a href="global.html#checkInBooking">checkInBooking</a></li><li><a href="global.html#checkOutBooking">checkOutBooking</a></li><li><a href="global.html#confirmBooking">confirmBooking</a></li><li><a href="global.html#createBooking">createBooking</a></li><li><a href="global.html#createConsumption">createConsumption</a></li><li><a href="global.html#createCustomer">createCustomer</a></li><li><a href="global.html#createInvoice">createInvoice</a></li><li><a href="global.html#createProduct">createProduct</a></li><li><a href="global.html#createRoom">createRoom</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteConsumption">deleteConsumption</a></li><li><a href="global.html#deleteCustomer">deleteCustomer</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#deleteUser">deleteUser</a></li><li><a href="global.html#desactiveBooking">desactiveBooking</a></li><li><a href="global.html#desactiveProduct">desactiveProduct</a></li><li><a href="global.html#disableInvoice">disableInvoice</a></li><li><a href="global.html#generateBookingsByRoomReportPDF">generateBookingsByRoomReportPDF</a></li><li><a href="global.html#generateConsumptionsReportPDF">generateConsumptionsReportPDF</a></li><li><a href="global.html#generateInvoicePDF">generateInvoicePDF</a></li><li><a href="global.html#generateProductsOfferedReportPDF">generateProductsOfferedReportPDF</a></li><li><a href="global.html#generateTopConsumptionsReportPDF">generateTopConsumptionsReportPDF</a></li><li><a href="global.html#getAllBookings">getAllBookings</a></li><li><a href="global.html#getAllConsumptions">getAllConsumptions</a></li><li><a href="global.html#getAllCustomers">getAllCustomers</a></li><li><a href="global.html#getAllInvoices">getAllInvoices</a></li><li><a href="global.html#getAllProducts">getAllProducts</a></li><li><a href="global.html#getAllRooms">getAllRooms</a></li><li><a href="global.html#getAllUsers">getAllUsers</a></li><li><a href="global.html#getBookingById">getBookingById</a></li><li><a href="global.html#getBookingEnumsValues">getBookingEnumsValues</a></li><li><a href="global.html#getConsumptionByBookingId">getConsumptionByBookingId</a></li><li><a href="global.html#getConsumptionById">getConsumptionById</a></li><li><a href="global.html#getCustomerByDocumentNumber">getCustomerByDocumentNumber</a></li><li><a href="global.html#getCustomerById">getCustomerById</a></li><li><a href="global.html#getCustomerEnumsValues">getCustomerEnumsValues</a></li><li><a href="global.html#getInvoiceById">getInvoiceById</a></li><li><a href="global.html#getInvoiceEnums">getInvoiceEnums</a></li><li><a href="global.html#getProductById">getProductById</a></li><li><a href="global.html#getProductByName">getProductByName</a></li><li><a href="global.html#getProductEnumsValues">getProductEnumsValues</a></li><li><a href="global.html#getRoomById">getRoomById</a></li><li><a href="global.html#getRoomByRoomNumber">getRoomByRoomNumber</a></li><li><a href="global.html#getRoomEnumsValues">getRoomEnumsValues</a></li><li><a href="global.html#getRoomsAvailable">getRoomsAvailable</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#getUserEnumsValues">getUserEnumsValues</a></li><li><a href="global.html#loadReservationIDs">loadReservationIDs</a></li><li><a href="global.html#loadRoomNumbers">loadRoomNumbers</a></li><li><a href="global.html#loginIntegration">loginIntegration</a></li><li><a href="global.html#parseJwt">parseJwt</a></li><li><a href="global.html#setupExportButtons">setupExportButtons</a></li><li><a href="global.html#setupSearchButton">setupSearchButton</a></li><li><a href="global.html#showReservationSelectionAlert">showReservationSelectionAlert</a></li><li><a href="global.html#updateBooking">updateBooking</a></li><li><a href="global.html#updateConsumption">updateConsumption</a></li><li><a href="global.html#updateCustomer">updateCustomer</a></li><li><a href="global.html#updateInvoicePaymentStatus">updateInvoicePaymentStatus</a></li><li><a href="global.html#updateProduct">updateProduct</a></li><li><a href="global.html#updateRoom">updateRoom</a></li><li><a href="global.html#updateRoomNotAvailable">updateRoomNotAvailable</a></li><li><a href="global.html#updateUser">updateUser</a></li><li><a href="global.html#validateJwt">validateJwt</a></li><li><a href="global.html#validateParamIsNotNull">validateParamIsNotNull</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Nov 30 2024 19:25:21 GMT-0400 (Bolivia Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
