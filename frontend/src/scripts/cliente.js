@@ -292,44 +292,60 @@ window.guardarCliente = handleSaveClient;
 async function updateCustomersCounts() {
     try {
         const customers = await getAllCustomers();  // Obtener todos los clientes
-        const totalCustomers = customers.length;    // Contar el total de clientes
+        const activeCustomers = customers.filter(customer => customer.isActive);  // Filtrar clientes activos
+        const totalActiveCustomers = activeCustomers.length;    // Contar el total de clientes activos
 
-        // Actualizar el DOM en dashboard.html
-        document.getElementById('total-cli').textContent = totalCustomers;
+        // Verificar si el elemento existe antes de actualizar el DOM
+        const totalCliElement = document.getElementById('total-cli');
+        if (totalCliElement) {
+            totalCliElement.textContent = totalActiveCustomers;
+        } else {
+            //console.error("El elemento con el ID 'total-cli' no se encontró en el DOM.");
+        }
     } catch (error) {
-        console.error('Error al actualizar el conteo de clientes:', error);
+        //console.error('Error al actualizar el conteo de clientes:', error);
     }
 }
+
+
 async function loadLatestCustomers() {
     try {
         // Obtener todos los clientes
         const customers = await getAllCustomers();
 
+        // Filtrar solo los clientes activos
+        const activeCustomers = customers.filter(customer => customer.isActive);
+
         // Ordenar los clientes por ID de forma descendente y obtener los últimos 3
-        const latestCustomers = customers.sort((a, b) => b.id - a.id).slice(0, 3);
+        const latestCustomers = activeCustomers.sort((a, b) => b.id - a.id).slice(0, 3);
 
-        // Insertar los últimos 3 clientes en el HTML
+        // Verificar si el contenedor existe antes de actualizar el DOM
         const latestCustomersContainer = document.querySelector('.latest-section .latest-content.cliente');
-        latestCustomersContainer.innerHTML = ''; // Limpiar contenido anterior
+        if (latestCustomersContainer) {
+            latestCustomersContainer.innerHTML = ''; // Limpiar contenido anterior
 
-        latestCustomers.forEach(client => {
-            const clientElement = document.createElement('div');
-            clientElement.classList.add('item');
-            clientElement.innerHTML = `
-                <div class="item-avatar">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="item-info">
-                    <div class="item-title">${client.name} ${client.lastName}</div>
-                    <div class="item-subtitle"><span>${client.documentType}:</span> ${client.documentNumber}</div>
-                </div>
-            `;
-            latestCustomersContainer.appendChild(clientElement);
-        });
+            latestCustomers.forEach(client => {
+                const clientElement = document.createElement('div');
+                clientElement.classList.add('item');
+                clientElement.innerHTML = `
+                    <div class="item-avatar">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">${client.name} ${client.lastName}</div>
+                        <div class="item-subtitle"><span>${client.documentType}:</span> ${client.documentNumber}</div>
+                    </div>
+                `;
+                latestCustomersContainer.appendChild(clientElement);
+            });
+        } else {
+           console.error("El contenedor de los últimos clientes no se encontró en el DOM.");
+        }
     } catch (error) {
         console.error('Error al cargar los últimos clientes:', error);
     }
 }
+
 
 // Llamar a las funciones al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
@@ -338,6 +354,3 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-//----------------------------------------------------------------------------//
-             ////ESTA PARTE ES PARA LA PAGINA DEL RegistroReservas ///
-//----------------------------------------------------------------------------//

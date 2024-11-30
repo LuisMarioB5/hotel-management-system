@@ -136,25 +136,70 @@ export async function calendarioReserva() {
     }
 
     async function markReservedDays(year, month) {
-        const roomId = parseInt(new URLSearchParams(window.location.search).get('roomId'), 10);
-        const bookings = await getAllBookings();
-        const roomBookings = bookings.filter(booking => booking.room.id === roomId);
-
-        for (const booking of roomBookings) {
-            const checkInDate = new Date(booking.checkInDate);
-            const checkOutDate = new Date(booking.checkOutDate);
-            const customer = await getCustomerById(booking.customer.id);
-
-            const days = document.querySelectorAll('.calendar-day:not(.empty)');
-            days.forEach(day => {
-                const dayDate = new Date(year, month, parseInt(day.textContent, 10));
-                if (dayDate >= checkInDate && dayDate <= checkOutDate) {
-                    day.classList.add(booking.status === 'CONFIRMADA' ? 'reserved' : 'pending');
-                    day.innerHTML += `<div class="booking-info">${booking.status}: ${customer.name} ${customer.lastName}</div>`;
+        try {
+            const params = new URLSearchParams(window.location.search);
+            let roomId = parseInt(params.get('roomId'), 10);
+    
+            if (!roomId) {
+                const roomIdInput = document.getElementById('roomId');
+                if (roomIdInput) {
+                    roomId = parseInt(roomIdInput.value, 10);
                 }
+            }
+    
+            if (!roomId) {
+                console.error('Room ID no encontrado');
+                return;
+            }
+    
+            const bookings = await getAllBookings();
+            const roomBookings = bookings.filter(booking => {
+                const checkInDate = new Date(booking.checkInDate);
+                const checkOutDate = new Date(booking.checkOutDate);
+    
+                return (
+                    booking.room.id === roomId &&
+                    ((checkInDate.getFullYear() === year && checkInDate.getMonth() === month) ||
+                        (checkOutDate.getFullYear() === year && checkOutDate.getMonth() === month))
+                );
             });
+    
+            const days = document.querySelectorAll('.calendar-day:not(.empty)');
+            roomBookings.forEach(booking => {
+                const checkInDate = new Date(booking.checkInDate);
+                const checkOutDate = new Date(booking.checkOutDate);
+                const statusClass = booking.status === 'CONFIRMADA' ? 'reserved' : 'pending';
+    
+                const startDay = checkInDate.getDate();
+                const endDay = checkOutDate.getDate();
+    
+                let firstDay = true;
+    
+                days.forEach(day => {
+                    const dayNumber = parseInt(day.textContent, 10);
+                    const dayDate = new Date(year, month, dayNumber);
+    
+                    if (dayDate >= checkInDate && dayDate <= checkOutDate) {
+                        day.classList.add(firstDay ? 'range-start' : 'range-middle');
+                        day.classList.add(dayNumber === endDay ? 'range-end' : statusClass);
+    
+                        if (firstDay) {
+                            day.innerHTML += `
+                                <div class="reservation-label">
+                                    ${booking.customer.name} ${booking.customer.lastName}<br>
+                                    ${booking.status}
+                                </div>
+                            `;
+                            firstDay = false;
+                        }
+                    }
+                });
+            });
+        } catch (error) {
+            console.error('Error al marcar días reservados:', error);
         }
     }
+    
 }
 // Agregar CSS al documento
 const estilo = document.createElement('style');
