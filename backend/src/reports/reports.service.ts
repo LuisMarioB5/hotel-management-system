@@ -3,12 +3,14 @@ import { BookingsService } from 'src/bookings/bookings.service';
 import { PDFService } from './pdf/pdf.service';
 import { ProductsService } from 'src/products/products.service';
 import { DateFormatter } from 'src/utils/date.formatter';
+import { ConsumptionsService } from 'src/consumptions/consumptions.service';
 
 @Injectable()
 export class ReportsService {
   constructor(
     private readonly bookingsService: BookingsService,
     private readonly productsService: ProductsService,
+    private readonly consumptionsService: ConsumptionsService,
     private readonly pdfService: PDFService,
   ) {}
 
@@ -47,6 +49,20 @@ export class ReportsService {
 
     if (format === 'pdf') {
       return await this.pdfService.generateBookingsByRoomReportPDF(filteredBookings, checkinDate, checkoutDate);
+    } 
+    // else {
+    //   return this.excelService.generateConsumptionsReportExcel(products);
+    // }
+  }
+
+  async generateTopConsumptionReport(format: 'pdf' | 'excel', limit: number, category: string): Promise<Buffer> {
+    let filteredConsumptions = await this.consumptionsService.getTopConsumptions(limit, category);
+    if(filteredConsumptions.length === 0) {
+      throw new NotFoundException('No existen consumos actualmente.');
+    }
+    
+    if (format === 'pdf') {
+      return await this.pdfService.generateTopConsumptionReportPDF(filteredConsumptions, limit, category);
     } 
     // else {
     //   return this.excelService.generateConsumptionsReportExcel(products);

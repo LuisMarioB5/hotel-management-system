@@ -74,4 +74,28 @@ export class ReportsController {
       });
     }
   }
+  
+  @Get('topConsumptions/pdf')
+  async generateTopConsumptionReport(@Query('limit') limit: number, @Query('category') category: string, @Res() res: Response) {
+    try {
+      if(!limit) throw new Error('Se debe introducir la consulta \'limit\' para el top "limit" de consumos más vendidos.');
+      const pdfBuffer = await this.service.generateTopConsumptionReport('pdf', limit, category);
+      const date = new Date()
+      
+      // Configuración de headers para la descarga
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="reporte-de-top-consumos-${DateFormatter.getStrDate(date)}.pdf"`,
+        'Content-Length': pdfBuffer.length,
+      });
+  
+      // Enviar el archivo PDF al cliente
+      res.status(HttpStatus.OK).send(pdfBuffer);
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'Error al generar reporte de top consumos del hotel',
+        error: error.message,
+      });
+    }
+  }
 }
