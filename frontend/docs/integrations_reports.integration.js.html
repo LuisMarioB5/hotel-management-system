@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: integrations/billing.integration.js</title>
+    <title>JSDoc: Source: integrations/reports.integration.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: integrations/billing.integration.js</h1>
+    <h1 class="page-title">Source: integrations/reports.integration.js</h1>
 
     
 
@@ -27,70 +27,21 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import { BACKEND_ROUTES } from '../config/backend.routes.js';
-import { validateParamIsNotNull } from '../scripts/utils.js';
+import { validateParamIsNotNull } from '../scripts/utils.js'
 
 /**
- * Obtiene todas las facturas.
+ * Genera y descarga un reporte en formato PDF de los consumos de una reserva por el ID de la reserva.
  * @async
- * @function getAllInvoices
- * @returns {Promise&lt;Object[]>} Una lista con las facturas en formato JSON.
- */
-export async function getAllInvoices() {
-    try {
-        const response = await fetch(BACKEND_ROUTES.billing.getAll, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-/**
- * Obtiene una factura por su ID.
- * @async
- * @function getInvoiceById
- * @param {number} id - El ID de la factura.
- * @returns {Promise&lt;Object>} Los datos de la factura en formato JSON.
- */
-export async function getInvoiceById(id) {
-    validateParamIsNotNull('id', id);
-
-    try {
-        const response = await fetch(BACKEND_ROUTES.billing.getById(id), {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-/**
- * Genera y descarga el PDF de una factura por su ID.
- * @async
- * @function generateInvoicePDF
- * @param {number} id - El ID de la factura (requerido).
+ * @function generateConsumptionsReportPDF
+ * @param {number} id - El ID de la reserva (requerido).
  * @returns {Promise&lt;Blob>} El archivo pdf en formato Blob listo para descargar.
  * @throws {error} Si ocurre algún error al generar o descargar el PDF.
  */
-export async function generateInvoicePDF(id) {
+export async function generateConsumptionsReportPDF(id) {
     validateParamIsNotNull('id', id);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.billing.generatePDF(id), {
+        const response = await fetch(BACKEND_ROUTES.reports.generateConsumptions(id), {
             method: 'GET',
             headers: {
                 'Accept': 'application/pdf'
@@ -110,7 +61,7 @@ export async function generateInvoicePDF(id) {
         // Crear un enlace para descargar el archivo
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `factura_${id}.pdf`;
+        link.download = `reporte_de_consumos_${id}.pdf`;
         link.click();
 
         // Limpiar el objeto URL creado
@@ -118,167 +69,150 @@ export async function generateInvoicePDF(id) {
 
         return blob;
     } catch (error) {
-        console.error("Error al intentar descargar el PDF:", error);
+        console.error("generateConsumptionsReportPDF | Error al intentar descargar el PDF:", error);
         throw error;
     }
 }
 
 /**
- * Obtiene los enums (variables constantes) de la factura
+ * @deprecated
+ * Genera y descarga un reporte en formato PDF de los productos que ofrece el hotel.
  * @async
- * @function getInvoiceEnums
- * @returns {Promise&lt;Object[]>} Lista de los enums en formato JSON.
+ * @function generateProductsOfferedReportPDF
+ * @param {boolean} isActive - El estado de los productos ['true', 'false', 'Activo', 'Inactivo', 'Todos'] (requerido).
+ * @param {string} category - Categoria por la que filtrar ['PRODUCTO', 'SERVICIO', 'Todos'] (requerido).
+ * @returns {Promise&lt;Blob>} El archivo pdf en formato Blob listo para descargar.
+ * @throws {error} Si ocurre algún error al generar o descargar el PDF.
  */
-export async function getInvoiceEnums() {
+export async function generateProductsOfferedReportPDF(isActive, category) {
+    validateParamIsNotNull('isActive', isActive);
+    validateParamIsNotNull('category', category);
 
     try {
-        const response = await fetch(BACKEND_ROUTES.billing.getEnumsValues(), {
+        const response = await fetch(BACKEND_ROUTES.reports.generateProductsOffered(isActive, category), {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Accept': 'application/pdf'
             },
         });
 
-        if (response.ok) {
-            return await response.json();
+        // Verificar el estado de la respuesta
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Error al generar el PDF:", errorText);
+            throw new Error("No se pudo generar el PDF.");
         }
+
+        // Obtener el archivo como Blob
+        const blob = await response.blob();
+
+        // Crear un enlace para descargar el archivo
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `reporte_de_productos_ofrecidos.pdf`;
+        link.click();
+
+        // Limpiar el objeto URL creado
+        URL.revokeObjectURL(link.href);
+
+        return blob;
     } catch (error) {
-        console.error('Error de red', error);
+        console.error("generateProductsOfferedReportPDF | Error al intentar descargar el PDF:", error);
+        throw error;
     }
 }
 
 /**
- * Crea una nueva factura.
  * @async
- * @function createInvoice
- * @param {Object} params - Datos de la factura.
- * @param {number} params.bookingId - ID de la reserva asociada (requerido).
- * @param {number} [params.customerId] - ID del cliente asociado (opcional).
- * @param {string} [params.invoiceType] - Tipo de factura ('CONTADO' o 'CREDITO') (opcional).
- * @param {string} [params.paymentStatus] - Estado del pago ('PENDIENTE' o 'PAGADO') (opcional).
- * @param {Array&lt;Object>} [params.items] - Lista de ítems de la factura (opcional).
- * @param {string} params.items[].description - Descripción del ítem (requerido).
- * @param {number} params.items[].quantity - Cantidad del ítem (requerido).
- * @param {number} params.items[].unitPrice - Precio unitario del ítem (requerido).
- * @param {number} [params.items[].subtotal] - Subtotal del ítem (cantidad * precio unitario) (opcional).
- * @param {string} [params.items[].date] - Fecha del ítem (opcional).
- * @param {string} [params.items[].type] - Tipo del ítem ('ESTANCIA', 'CONSUMO', 'PENALIDAD') (opcional).
- * @returns {Promise&lt;Object>} Los datos de la factura recién creada en formato JSON.
+ * @function generateBookingsByRoomReportPDF
+ * @description Genera y descarga un reporte en formato PDF de las reservas que tiene una habitación en un periodo de tiempo.
+ * Las fechas fueron probadas para ser enviadas en formato: MM/dd/yyyy
+ * @param {number} roomId - ID de la habitación (requerido).
+ * @param {string} checkInDate - Fecha inicial del periodo de busqueda (requerido).
+ * @param {string} [checkOutDate] - Fecha final del periodo de busqueda, en caso de no ingresar se utiliza la fecha actual en zona horaria UTC.
+ * @returns {Promise&lt;Blob>} El archivo pdf en formato Blob listo para descargar.
+ * @throws {error} Si ocurre algún error al generar o descargar el PDF.
  */
-export async function createInvoice({
-    bookingId = null,
-    customerId = null,
-    invoiceType = null,
-    paymentStatus = null,
-    items = []
-} = {}) {
-    // Validar parámetros obligatorios
-    validateParamIsNotNull('bookingId', bookingId);
-    if (typeof bookingId !== 'number') {
-        throw new TypeError('bookingId debe ser un número.');
-    }
-
-    // Construir lista de ítems validada
-    const validatedItems = items.length > 0
-        ? items.map((item, index) => {
-            validateParamIsNotNull(`items[${index}].description`, item.description);
-            validateParamIsNotNull(`items[${index}].quantity`, item.quantity);
-            validateParamIsNotNull(`items[${index}].unitPrice`, item.unitPrice);
-
-            return {
-                description: item.description,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                subtotal: item.subtotal ?? item.quantity * item.unitPrice,
-                date: item.date ?? new Date().toISOString(), // Fecha actual si no se proporciona
-                type: item.type ?? 'PENALIDAD', // Valor por defecto
-            };
-        })
-        : undefined;
-
-    // Construir el cuerpo de la solicitud
-    const body = {
-        bookingId,
-        ...(customerId &amp;&amp; { customerId }),
-        ...(invoiceType &amp;&amp; { invoiceType }),
-        ...(paymentStatus &amp;&amp; { paymentStatus }),
-        ...(validatedItems &amp;&amp; { items: validatedItems }),
-    };
-
+export async function generateBookingsByRoomReportPDF(roomId, checkInDate, checkOutDate) {
+    validateParamIsNotNull('roomId', roomId);
+    validateParamIsNotNull('checkInDate', checkInDate);
     try {
-        const response = await fetch(BACKEND_ROUTES.billing.create, {
-            method: 'POST',
+        const response = await fetch(BACKEND_ROUTES.reports.generateBookingsByRoom(roomId, checkInDate, checkOutDate), {
+            method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
+                'Accept': 'application/pdf'
             },
-            body: JSON.stringify(body),
         });
 
-        if (response.ok) {
-            return await response.json();
-        } else {
-            console.error("Error en la respuesta del backend:", await response.text());
+        // Verificar el estado de la respuesta
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Error al generar el PDF:", errorText);
+            throw new Error("No se pudo generar el PDF.");
         }
+
+        // Obtener el archivo como Blob
+        const blob = await response.blob();
+
+        // Crear un enlace para descargar el archivo
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `reporte_de_rerservas_por_habitacion.pdf`;
+        link.click();
+
+        // Limpiar el objeto URL creado
+        URL.revokeObjectURL(link.href);
+
+        return blob;
     } catch (error) {
-        console.error('Error de red:', error);
+        console.error("generateBookingsByRoomReportPDF | Error al intentar descargar el PDF:", error);
+        throw error;
     }
 }
 
 /**
- * Actualiza el estado del pago de la factura.
  * @async
- * @function updateInvoicePaymentStatus
- * @param {number} id - ID de la factura (requerido).
- * @param {string} status - Estado del pago (PENDIENTE o PAGADA) a colocarle a la factura.
- * @returns {Promise&lt;Object>} Los datos de la factura actualizados en formato JSON.
+ * @function generateTopConsumptionsReportPDF
+ * @description Genera y descarga un reporte en formato PDF del top (limit) consumos, con filtro por categoria.
+ * Las fechas fueron probadas para ser enviadas en formato: MM/dd/yyyy
+ * @param {number} limit - Limite para realizar el top de consumos (requerido).
+  * @param {string} [category] - Categoria por la que filtrar ['PRODUCTO', 'SERVICIO', 'Todos'] (no requerido, tomaría Todos por defecto).
+ * @returns {Promise&lt;Blob>} El archivo pdf en formato Blob listo para descargar.
+ * @throws {error} Si ocurre algún error al generar o descargar el PDF.
  */
-export async function updateInvoicePaymentStatus(id, status) {
-    validateParamIsNotNull('id', id);
-    validateParamIsNotNull('status', status);
-
-    const body = {
-        paymentStatus: status,
-    };
-
+export async function generateTopConsumptionsReportPDF(limit, category) {
+    validateParamIsNotNull('limit', limit);
     try {
-        const response = await fetch(BACKEND_ROUTES.billing.update(id), {
-            method: 'PATCH',
+        const response = await fetch(BACKEND_ROUTES.reports.generateTopConsumptions(limit, category), {
+            method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body),
-        });
-
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
-    }
-}
-
-/**
- * Desactiva una factura por su ID.
- * @async
- * @function disableInvoice
- * @param {number} id - El ID de la factura.
- */
-export async function disableInvoice(id) {
-    validateParamIsNotNull('id', id);
-
-    try {
-        const response = await fetch(BACKEND_ROUTES.billing.disable(id), {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
+                'Accept': 'application/pdf'
             },
         });
 
-        if (response.ok) {
-            return await response.json();
+        // Verificar el estado de la respuesta
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Error al generar el PDF:", errorText);
+            throw new Error("No se pudo generar el PDF.");
         }
+
+        // Obtener el archivo como Blob
+        const blob = await response.blob();
+
+        // Crear un enlace para descargar el archivo
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `reporte_del_top_consumos.pdf`;
+        link.click();
+
+        // Limpiar el objeto URL creado
+        URL.revokeObjectURL(link.href);
+
+        return blob;
     } catch (error) {
-        console.error('Error de red', error);
+        console.error("generateTopConsumptionsReportPDF | Error al intentar descargar el PDF:", error);
+        throw error;
     }
 }
 </code></pre>
