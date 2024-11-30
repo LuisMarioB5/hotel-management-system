@@ -16,6 +16,7 @@ export class PDFReport {
 
     this.doc.on('data', buffers.push.bind(buffers));
 
+    this.doc.moveDown();
     this.addHeader({ title: 'Factura de Consumo y Estadía'})
 
     this.addInvoiceInfo(invoice);
@@ -24,7 +25,7 @@ export class PDFReport {
 
     this.addBookingInfo(invoice.booking);
 
-    this.addInvoiceItems(invoice.items);
+    this.addInvoiceItemsTable(invoice.items);
 
     this.finishDocument();
 
@@ -38,14 +39,14 @@ export class PDFReport {
       throw new Error('La reserva ingresada no contiene ningun consumo para realizar el reporte.');
     }
     
-    const checkinDate = DateFormatter.getSimpleDate(booking.actualCheckInDate || booking.checkInDate);
-    const checkoutDate = DateFormatter.getSimpleDate(booking.actualCheckOutDate || (booking.checkOutDate || new Date()));
+    const checkinDate = booking.actualCheckInDate || booking.checkInDate;
+    const checkoutDate = booking.actualCheckOutDate || (booking.checkOutDate || new Date());
 
     const buffers = [];
     this.doc.on('data', buffers.push.bind(buffers));
 
     // Encabezado
-    this.addHeader({ title: 'Reporte de Consumo del Huésped', period: `${checkinDate} | ${checkoutDate}` });
+    this.addHeader({ title: 'Reporte de Consumo del Huésped', period: this.parsePeriod(checkinDate, checkoutDate) });
 
     // Información del huésped
     this.addCustomerInfo(booking.customer);
@@ -53,8 +54,8 @@ export class PDFReport {
     // Detalle de la reserva
     this.addBookingInfo(booking);
 
-    // Detalle de consumos
-    this.addConsumptions(booking.consumptions);
+    // Tabla de consumos
+    this.addConsumptionsTable(booking.consumptions);
 
     // Finalizar el reporte
     this.finishDocument();
@@ -73,6 +74,24 @@ export class PDFReport {
 
     // Finalizar el reporte
     this.finishDocument();
+
+    return new Promise((resolve, reject) => {
+      this.doc.on('end', () => resolve(Buffer.concat(buffers)));
+    });
+  }
+
+  generateBookingsByRoomReport(bookings: BookingEntity[], checkInDate: Date, checkOutDate: Date): Promise<Buffer> {
+    const buffers = [];
+    this.doc.on('data', buffers.push.bind(buffers));
+
+    // Encabezado
+    this.addHeader({ title: 'Reporte de Reservas por Habitación', period: this.parsePeriod(checkInDate, checkOutDate) });
+
+    // Table de reservas
+    this.addBookingTable(bookings);
+
+    // Finalizar el reporte
+    this.finishDocument({ message: '**Fin del reporte**' });
 
     return new Promise((resolve, reject) => {
       this.doc.on('end', () => resolve(Buffer.concat(buffers)));
@@ -135,7 +154,7 @@ export class PDFReport {
       .moveDown();
   }
 
-  private addInvoiceItems(items: InvoiceItemEntity[]): void {
+  private addInvoiceItemsTable(items: InvoiceItemEntity[]): void {
     if (items.length <= 0) {
       throw new NotFoundException('La factura actual no tiene items para mostrar');
     }
@@ -231,7 +250,7 @@ export class PDFReport {
     this.doc.moveDown();
   }
 
-  private addConsumptions(consumptions: ConsumptionEntity[]): void {
+  private addConsumptionsTable(consumptions: ConsumptionEntity[]): void {
     if (consumptions.length <= 0) {
       return null;
     }
@@ -303,11 +322,100 @@ export class PDFReport {
     this.doc.moveDown();
   }
 
-  private finishDocument() {
+  private addBookingTable(bookings: BookingEntity[]): void {
+    this.doc
+      .fontSize(10)
+      .font('Helvetica')
+      .moveDown();
+  
+    const tableHeaders = ['ID', 'CheckIn', 'CheckOut', 'Días', 'Estado', 'Cliente', 'Total Estadía', 'Total Consumos', 'Subtotal'];
+    const columnWidths = [20, 60, 60, 40, 80, 80, 70, 75, 65]; // Anchos de las columnas
+    
+    // Establecer la posición inicial para las filas de la tabla
+    const startX = this.doc.x;
+    let currentY = this.doc.y;
+  
+    // Imprimir encabezado de la tabla centrado
+    let currentX = startX;
+    tableHeaders.forEach((header, idx) => {
+      this.doc.text(header, currentX, currentY, { width: columnWidths[idx], align: 'center' });
+      currentX += columnWidths[idx];
+    });
+  
+    currentY += 15; // Espacio debajo del encabezado de la tabla
+  
+    // Dibujar otra línea debajo del encabezado
+    this.doc.moveTo(startX, currentY).lineTo(this.doc.page.width - startX, currentY).stroke();
+    currentY += 10; // Espaciado debajo de la línea
+  
+    let total = 0;
+  
+    // Imprimir cada fila de consumos
+    bookings.forEach((booking) => {
+      const stayCost = Number(booking.totalStayDays) * Number(booking.room?.price);
+      const consumptionCost = booking.consumptions?.reduce((total, booking) => Number(total) + Number(booking.subtotal), 0);
+      const subtotal = Number(stayCost) + Number(consumptionCost);
+      total += subtotal;
+      currentX = startX;
+      
+      this.doc.text(`${booking.id}`, currentX, currentY, { width: columnWidths[0], align: 'center' });
+      currentX += columnWidths[0];
+      
+      this.doc.text(DateFormatter.getSimpleDate(booking.checkInDate), currentX, currentY, { width: columnWidths[1], align: 'center' });
+      currentX += columnWidths[1];
+      
+      this.doc.text(DateFormatter.getSimpleDate(booking.checkOutDate), currentX, currentY, { width: columnWidths[2], align: 'center' });
+      currentX += columnWidths[2];
+      
+      this.doc.text(booking.totalStayDays.toString(), currentX, currentY, { width: columnWidths[3], align: 'center' });
+      currentX += columnWidths[3];
+      
+      this.doc.fontSize(9).text(`${booking.status}`, currentX, currentY, { width: columnWidths[4], align: 'center' });
+      currentX += columnWidths[4];
+      
+      this.doc.fontSize(10).text(`${booking.customer.name} ${booking.customer.lastName}`, currentX, currentY, { width: columnWidths[5], align: 'center' });
+      currentX += columnWidths[5];
+      
+      this.doc.text(`$${Number(stayCost).toFixed(2)}`, currentX, currentY, { width: columnWidths[6], align: 'center' });
+      currentX += columnWidths[6];
+      
+      this.doc.text(`$${Number(consumptionCost).toFixed(2)}`, currentX, currentY, { width: columnWidths[7], align: 'center' });
+      currentX += columnWidths[7];
+      
+      this.doc.text(`$${Number(subtotal).toFixed(2)}`, currentX, currentY, { width: columnWidths[8], align: 'center' });
+      currentY += 20; // Espacio después de cada fila
+    });
+  
+    // Dibujar una línea al final de la tabla para cerrarla
+    this.doc.moveTo(startX, currentY).lineTo(this.doc.page.width - startX, currentY).stroke();
+  
+    // Espacio para el total de consumo
+    currentY += 10;
+  
+    // Imprimir el total de consumo como una fila más en la tabla
+    currentX = startX;
+    const emptyWidth = (columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + columnWidths[4] + columnWidths[5] + columnWidths[6]);
+    this.doc.text('', currentX, currentY, { width: emptyWidth, align: 'center' });
+    currentX += emptyWidth;
+    this.doc.text('Total:', currentX, currentY, { width: columnWidths[7], align: 'center' });
+    currentX += columnWidths[7];
+    this.doc.text(`$${Number(total).toFixed(2)}`, currentX, currentY, { width: columnWidths[8], align: 'center' });
+  
+    this.doc.moveDown();
+  }
+
+  private finishDocument({ message = null } = {}) {
     this.doc.moveDown
     this.doc
-    .text('**Gracias por hospedarse con nosotros. ¡Vuelva pronto!**', 50, this.doc.y, { align: 'center' });
+    .text(message || '**Gracias por hospedarse con nosotros. ¡Vuelva pronto!**', 50, this.doc.y, { align: 'center' });
 
     this.doc.end();
+  }
+
+  private parsePeriod(firstDate: Date, secondDate: Date): string {
+    const firstdate = DateFormatter.getSimpleDate(firstDate);
+    const seconddate = DateFormatter.getSimpleDate(secondDate);
+
+    return `${firstdate} | ${seconddate}`;
   }
 }

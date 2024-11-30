@@ -5,14 +5,18 @@ import { EnvConfig } from 'src/config/env.config';
 import { ProductEntity } from 'src/products/product.entity';
 
 @Injectable()
-export class PDFService {    
+export class PDFService {
+    private readonly pdfReport = new PDFReport();
+
     async generateConsumptionsReportPDF(booking: BookingEntity): Promise<Buffer> {
-        const pdfReport = new PDFReport();
-        return await pdfReport.generateConsumptionReport(booking);
+        return await this.pdfReport.generateConsumptionReport(booking);
     }
     
     async generateProductsOfferedReportPDF(products: ProductEntity[]): Promise<Buffer> {
-        const pdfReport = new PDFReport();
-        return await pdfReport.generateProductsOfferedReport(products);
+        return await this.pdfReport.generateProductsOfferedReport(products);
+    }
+    
+    async generateBookingsByRoomReportPDF(bookings: BookingEntity[], checkInDate: Date, checkOutDate: Date): Promise<Buffer> {
+        return await this.pdfReport.generateBookingsByRoomReport(bookings, checkInDate, checkOutDate);
     }
 }

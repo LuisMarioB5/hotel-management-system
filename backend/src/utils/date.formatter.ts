@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
 export class DateFormatter {
     static getSimpleDatetime(date: Date) {
@@ -15,5 +15,10 @@ export class DateFormatter {
 
     static getStrDate(date: Date) {
         return format(date, 'dd_MM_yyyy')
+    }
+
+    static parseStrDate(str: string, pattern: string): Date {
+        if(!str || !pattern) return null;
+        return parse(str, pattern, new Date());
     }
 }

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { BookingsService } from 'src/bookings/bookings.service';
 import { PDFService } from './pdf/pdf.service';
 import { ProductsService } from 'src/products/products.service';
+import { DateFormatter } from 'src/utils/date.formatter';
 
 @Injectable()
 export class ReportsService {
@@ -29,6 +30,23 @@ export class ReportsService {
     }
     if (format === 'pdf') {
       return await this.pdfService.generateProductsOfferedReportPDF(filteredProduct);
+    } 
+    // else {
+    //   return this.excelService.generateConsumptionsReportExcel(products);
+    // }
+  }
+
+  async generateBookingsByRoomReport(format: 'pdf' | 'excel', roomId: number, checkInDate: string, checkOutDate: string): Promise<Buffer> {
+    const checkinDate = DateFormatter.parseStrDate(checkInDate, 'MM/dd/yyyy');
+    const checkoutDate = checkOutDate ? DateFormatter.parseStrDate(checkOutDate, 'MM/dd/yyyy') : new Date();
+    
+    let filteredBookings = await this.bookingsService.getReservationsByRoomAndDateRange(roomId, checkinDate, checkoutDate);
+    if(filteredBookings.length === 0) {
+      throw new NotFoundException('No existen reservas para la habitación en el periodo de tiempo selecciondo.');
+    }
+
+    if (format === 'pdf') {
+      return await this.pdfService.generateBookingsByRoomReportPDF(filteredBookings, checkinDate, checkoutDate);
     } 
     // else {
     //   return this.excelService.generateConsumptionsReportExcel(products);

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { CustomerEntity } from '../customers/customer.entity';
 import { RoomEntity } from '../rooms/room.entity';
 import { ConsumptionEntity } from 'src/consumptions/consumption.entity';
@@ -18,9 +18,11 @@ export class BookingEntity {
     id: number;
 
     @ManyToOne(() => CustomerEntity, (customer) => customer.bookings, { nullable: false })
+    @JoinColumn({ name: 'customer_id'})
     customer: CustomerEntity;
 
     @ManyToOne(() => RoomEntity, (room) => room.bookings, { nullable: false })
+    @JoinColumn({ name: 'room_id'})
     room: RoomEntity;
 
     @OneToMany(() => ConsumptionEntity, consumption => consumption.booking, { cascade: true })

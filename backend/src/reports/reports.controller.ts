@@ -30,7 +30,7 @@ export class ReportsController {
   }
   
   @Get('productsOffered/pdf')
-  async generateProductsOfferedReport(@Param('id') id: number, @Query('isActive') isActive: string, @Query('category') category: string, @Res() res: Response) {
+  async generateProductsOfferedReport(@Query('isActive') isActive: string, @Query('category') category: string, @Res() res: Response) {
     try {
       const pdfBuffer = await this.service.generateProductsOfferedReport('pdf', isActive, category);
       const date = new Date()
@@ -47,6 +47,29 @@ export class ReportsController {
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: 'Error al generar reporte de servicios ofrecidos',
+        error: error.message,
+      });
+    }
+  }
+  
+  @Get('bookingsByRoom/:roomId/pdf')
+  async generateBookingsByRoomReport(@Param('roomId') roomId: number, @Query('checkInDate') checkInDate: string, @Query('checkOutDate') checkOutDate: string, @Res() res: Response) {
+    try {
+      const pdfBuffer = await this.service.generateBookingsByRoomReport('pdf', roomId, checkInDate, checkOutDate);
+      const date = new Date()
+      
+      // Configuración de headers para la descarga
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="reporte-de-rerservas-por-habitacion-${DateFormatter.getStrDate(date)}.pdf"`,
+        'Content-Length': pdfBuffer.length,
+      });
+  
+      // Enviar el archivo PDF al cliente
+      res.status(HttpStatus.OK).send(pdfBuffer);
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'Error al generar reporte de reservas por habitaciones en un periodo de tiempo',
         error: error.message,
       });
     }
