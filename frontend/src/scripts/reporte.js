@@ -1,7 +1,7 @@
 import { BACKEND_ROUTES } from '../config/backend.routes.js';
 import { validateParamIsNotNull } from '../scripts/utils.js';
 import { getAllBookings } from '../integrations/booking.integration.js';
-import { generateConsumptionsReportPDF, generateProductsOfferedReportPDF } from '../integrations/reports.integration.js';
+import { generateConsumptionsReportPDF, generateBookingsByRoomReportPDF } from '../integrations/reports.integration.js';
 import { getAllRooms } from '../integrations/room.integration.js';
 
 const { jsPDF } = window.jspdf;
@@ -323,34 +323,6 @@ export function setupExportButtons() {
 /**
  * CSS para estilizar el botón de búsqueda.
  */
-const styles = `
-.search-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 0px;
-    
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 12px;
-    box-sizing: border-box;
-}
-.search-button i {
-    font-size: 1.2rem;
-    color: #007bff;
-}
-.search-button:hover i {
-    color: #0056b3;
-}
-    
-`;
-
-// Inyectar el CSS en el documento
-const styleSheet = document.createElement('style');
-styleSheet.type = 'text/css';
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
 // Función para cargar todas las habitaciones en el <select> de habitaciones
 export async function loadRoomNumbers() {
     const select = document.getElementById('room-number');
@@ -458,6 +430,61 @@ window.selectRoom = function (id, number) {
     Swal.close(); // Cerrar la alerta
 }
 
+// Función para formatear las fechas en MM/dd/yyyy
+function formatDateToMMDDYYYY(date) {
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [month, day, year].join('/');
+}
+
+// Función para generar el reporte usando el ID de la habitación seleccionada
+window.generateRoomReport = function () {
+    const roomId = document.getElementById('room-id-hidden').value;
+
+    if (!roomId) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Selección requerida',
+            text: 'Por favor, selecciona una habitación antes de generar el reporte.',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+        return;
+    }
+
+    const startDate = document.getElementById('fechaEntrada').value;
+    const endDate = document.getElementById('fechaSalida').value;
+
+    if (!startDate || !endDate) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Fechas requeridas',
+            text: 'Por favor, selecciona una fecha de inicio y una fecha de fin antes de generar el reporte.',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+        return;
+    }
+
+    // Formatear las fechas en MM/dd/yyyy
+    const formattedStartDate = formatDateToMMDDYYYY(startDate);
+    const formattedEndDate = formatDateToMMDDYYYY(endDate);
+
+    // Llamar a la función para generar el PDF del reporte
+    generateBookingsByRoomReportPDF(roomId, formattedStartDate, formattedEndDate);
+    console.log(`Generando reporte para la habitación con ID ${roomId} desde ${formattedStartDate} hasta ${formattedEndDate}`);
+}
+
 // CSS dinámico para estilizar las habitaciones en la alerta
 const roomAlertStyles = `
 /* Estilo para la cuadrícula de habitaciones */
@@ -533,9 +560,31 @@ window.generateRoomReport = function () {
         return;
     }
 
-    // Lógica para generar el reporte con roomId
-    console.log(`Generando reporte para la habitación con ID ${roomId}`);
+    const startDate = document.getElementById('fechaEntrada').value;
+    const endDate = document.getElementById('fechaSalida').value;
+
+    if (!startDate || !endDate) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Fechas requeridas',
+            text: 'Por favor, selecciona una fecha de inicio y una fecha de fin antes de generar el reporte.',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+        return;
+    }
+
+    // Formatear las fechas en MM/dd/yyyy
+    const formattedStartDate = formatDateToMMDDYYYY(startDate);
+    const formattedEndDate = formatDateToMMDDYYYY(endDate);
+
+    // Llamar a la función para generar el PDF del reporte
+    generateBookingsByRoomReportPDF(roomId, formattedStartDate, formattedEndDate);
+    console.log(`Generando reporte para la habitación con ID ${roomId} desde ${formattedStartDate} hasta ${formattedEndDate}`);
 }
 
 // Cargar los números de las habitaciones al cargar la página
 loadRoomNumbers();
+
