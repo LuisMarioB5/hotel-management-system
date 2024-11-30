@@ -1,4 +1,4 @@
-import { In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
+import { Between, In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingEntity, BookingStatus } from './booking.entity';
@@ -8,6 +8,7 @@ import { CustomersService } from 'src/customers/customers.service';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { RoomEntity, RoomStatus } from 'src/rooms/room.entity';
 import { getEnumValues } from 'src/utils/showEnum.values';
+import { start } from 'repl';
 
 @Injectable()
 export class BookingsService {
@@ -176,7 +177,7 @@ export class BookingsService {
         return availableRooms;
       }
 
-      private async isRoomAvailable(roomId: number, checkInDate: Date, checkOutDate: Date, bookingId?: number): Promise<boolean> {
+    private async isRoomAvailable(roomId: number, checkInDate: Date, checkOutDate: Date, bookingId?: number): Promise<boolean> {
         const overlappingBookings = await this.repository.find({
             where: {
                 room: { id: roomId },
@@ -224,5 +225,22 @@ export class BookingsService {
         const booking = await this.findById(id);
         booking.isActive = false;
         return this.repository.save(booking);
+    }
+
+    async getReservationsByRoomAndDateRange(
+        roomId: number,
+        startDate: Date,
+        endDate: Date,
+    ): Promise<BookingEntity[]> {
+        const startdate = startDate;
+        const enddate = endDate;
+
+        return this.repository.find({
+            where: {
+                room: {id: roomId},
+                checkInDate: Between(startdate, enddate)
+            },
+            relations: ['room', 'customer', 'consumptions'],
+        });
     }
 }
