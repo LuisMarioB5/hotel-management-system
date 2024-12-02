@@ -43,9 +43,10 @@ export async function calendarioReserva() {
                             <span>Pendiente</span>
                         </div>
                         <div class="legend-item">
-                            <span class="legend-color available"></span>
-                            <span>Disponible</span>
+                            <span class="legend-color checkout"></span>
+                            <span>Check-Out</span>
                         </div>
+                     
                     </div>
                 </div>
             </div>
@@ -137,6 +138,7 @@ export async function calendarioReserva() {
 
     async function markReservedDays(year, month) {
         try {
+            // Obtener el roomId desde la URL o el DOM
             const params = new URLSearchParams(window.location.search);
             let roomId = parseInt(params.get('roomId'), 10);
     
@@ -152,45 +154,63 @@ export async function calendarioReserva() {
                 return;
             }
     
+            // Obtener todas las reservas
             const bookings = await getAllBookings();
+    
+            // Filtrar reservas válidas para la habitación actual y los estados deseados
             const roomBookings = bookings.filter(booking => {
                 const checkInDate = new Date(booking.checkInDate);
                 const checkOutDate = new Date(booking.checkOutDate);
     
                 return (
                     booking.room.id === roomId &&
+                    ['PENDIENTE', 'CONFIRMADA', 'CHECKED_IN', 'CHECKED_OUT'].includes(booking.status) &&
                     ((checkInDate.getFullYear() === year && checkInDate.getMonth() === month) ||
                         (checkOutDate.getFullYear() === year && checkOutDate.getMonth() === month))
                 );
             });
     
+            // Seleccionar los días del calendario
             const days = document.querySelectorAll('.calendar-day:not(.empty)');
+    
+            // Procesar cada reserva
             roomBookings.forEach(booking => {
                 const checkInDate = new Date(booking.checkInDate);
                 const checkOutDate = new Date(booking.checkOutDate);
-                const statusClass = booking.status === 'CONFIRMADA' ? 'reserved' : 'pending';
     
+                // Asignar clases de estado específicas
+                const statusClass = booking.status === 'CONFIRMADA'
+                    ? 'confirmed'
+                    : booking.status === 'CHECKED_IN'
+                    ? 'checked-in'
+                    : booking.status === 'CHECKED_OUT'
+                    ? 'checked-out'
+                    : 'pending';
+    
+                // Encontrar los días de inicio y fin en el calendario
                 const startDay = checkInDate.getDate();
                 const endDay = checkOutDate.getDate();
-    
-                let firstDay = true;
     
                 days.forEach(day => {
                     const dayNumber = parseInt(day.textContent, 10);
                     const dayDate = new Date(year, month, dayNumber);
     
                     if (dayDate >= checkInDate && dayDate <= checkOutDate) {
-                        day.classList.add(firstDay ? 'range-start' : 'range-middle');
-                        day.classList.add(dayNumber === endDay ? 'range-end' : statusClass);
-    
-                        if (firstDay) {
+                        if (dayNumber === startDay) {
+                            // Asignar 'range-start' y texto al primer día
+                            day.classList.add('range-start', statusClass);
                             day.innerHTML += `
                                 <div class="reservation-label">
                                     ${booking.customer.name} ${booking.customer.lastName}<br>
                                     ${booking.status}
                                 </div>
                             `;
-                            firstDay = false;
+                        } else if (dayNumber === endDay) {
+                            // Asignar 'range-end' al último día
+                            day.classList.add('range-end', statusClass);
+                        } else {
+                            // Asignar 'range-middle' a los días intermedios
+                            day.classList.add('range-middle', statusClass);
                         }
                     }
                 });
@@ -199,6 +219,10 @@ export async function calendarioReserva() {
             console.error('Error al marcar días reservados:', error);
         }
     }
+    
+    
+    
+    
     
 }
 // Agregar CSS al documento
@@ -328,15 +352,26 @@ estilo.textContent = `
         position: relative;
     }
 
-    .calendar-day.reserved {
-        background-color: #ffd700;
-        color: #333;
-    }
+   .calendar-day.confirmed {
+    background-color: #4caf50; /* Verde para confirmadas */
+    color: #fff;
+}
 
-    .calendar-day.pending {
-        background-color: #800080;
-        color: #fff;
-    }
+.calendar-day.checked-in {
+    background-color: #2196f3; /* Azul para check-in */
+    color: #fff;
+}
+
+.calendar-day.pending {
+    background-color: #ff9800; /* Naranja para pendientes */
+    color: #fff;
+}
+
+.calendar-day.checked-out {
+    background-color: #9e9e9e; /* Gris para check-out */
+    color: #fff;
+}
+
 
     .calendar-day.today {
         border-color: #4a7aff;
@@ -376,6 +411,10 @@ estilo.textContent = `
     .legend-color.reserved {
         background-color: #ffd700;
     }
+    
+    .legend-color.checkout {
+        background-color: gray;
+    }
 
     .legend-color.pending {
         background-color: #800080;
@@ -407,7 +446,7 @@ estilo.textContent = `
             font-size: 0.75rem;
         }
     }
-
+    
     @media (max-width: 480px) {
         .date-container {
             flex-wrap: wrap;
@@ -426,6 +465,7 @@ estilo.textContent = `
             font-size: 0.7rem;
         }
     }
+        
 `;
 document.head.append(estilo);
 
