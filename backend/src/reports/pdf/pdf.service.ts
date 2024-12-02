@@ -3,6 +3,7 @@ import { PDFReport } from './pdf.report';
 import { BookingEntity } from 'src/bookings/booking.entity';
 import { EnvConfig } from 'src/config/env.config';
 import { ProductEntity } from 'src/products/product.entity';
+import { ConsumptionEntity } from 'src/consumptions/consumption.entity';
 
 @Injectable()
 export class PDFService {
@@ -18,5 +19,9 @@ export class PDFService {
     
     async generateBookingsByRoomReportPDF(bookings: BookingEntity[], checkInDate: Date, checkOutDate: Date): Promise<Buffer> {
         return await this.pdfReport.generateBookingsByRoomReport(bookings, checkInDate, checkOutDate);
+    }
+    
+    async generateTopConsumptionReportPDF(consumptions: ConsumptionEntity[], limit: number, category: string): Promise<Buffer> {
+        return await this.pdfReport.generateTopConsumptionReport(consumptions, limit, category);
     }
 }

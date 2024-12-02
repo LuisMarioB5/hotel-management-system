@@ -85,5 +85,6 @@ export const BACKEND_ROUTES = {
     generateConsumptions: (id) => `${BASE_URL}/${reports}/consumptions/${id}/pdf`,
     generateProductsOffered:(isActive, category) => `${BASE_URL}/${reports}/productsOffered/pdf?isActive=${isActive}&category=${category}`,
     generateBookingsByRoom:(roomId, checkInDate, checkOutDate) => `${BASE_URL}/${reports}/bookingsByRoom/${roomId}/pdf?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`,
+    generateTopConsumptions:(limit, category) => `${BASE_URL}/${reports}/topConsumptions/pdf?limit=${limit}&category=${category}`,
   },
 };

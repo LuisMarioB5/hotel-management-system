@@ -11,7 +11,7 @@ import { ProductsModule } from 'src/products/products.module';
   imports:[
     BookingsModule,
     ConsumptionsModule,
-    ProductsModule
+    ProductsModule,
   ],
   providers: [ReportsService, PDFService, ExcelService],
   controllers: [ReportsController]
