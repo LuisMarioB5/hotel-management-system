@@ -471,4 +471,3 @@ document.head.append(estilo);
 
 // Inicializar el calendario al cargar la página
 document.addEventListener('DOMContentLoaded', calendarioReserva);
-
