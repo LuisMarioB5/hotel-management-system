@@ -1,7 +1,7 @@
 import { BACKEND_ROUTES } from '../config/backend.routes.js';
 import { validateParamIsNotNull } from '../scripts/utils.js';
 import { getAllBookings } from '../integrations/booking.integration.js';
-import { generateConsumptionsReportPDF, generateBookingsByRoomReportPDF } from '../integrations/reports.integration.js';
+import { generateConsumptionsReportPDF, generateBookingsByRoomReportPDF, generateTopConsumptionsReportPDF  } from '../integrations/reports.integration.js';
 import { getAllRooms } from '../integrations/room.integration.js';
 
 const { jsPDF } = window.jspdf;
@@ -315,6 +315,34 @@ export function setupExportButtons() {
         }
     });
 }
+const styles = `
+.search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 0px;
+    
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+.search-button i {
+    font-size: 1.2rem;
+    color: #28a745;
+}
+.search-button:hover i {
+    color: rgb(6, 82, 6);
+}
+    
+`;
+
+// Inyectar el CSS en el documento
+const styleSheet = document.createElement('style');
+styleSheet.type = 'text/css';
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
 
 //
 // Exportacion de habitacion reservadas
@@ -499,7 +527,7 @@ const roomAlertStyles = `
 /* Estilo para cada elemento de la habitación */
 .room-item {
     padding: 10px;
-    background-color: #007bff;
+    background-color: #28a745;
     color: white;
     font-weight: normal;
     font-size: 12px; /* Tamaño de fuente más pequeño */
@@ -510,7 +538,7 @@ const roomAlertStyles = `
 }
 
 .room-item:hover {
-    background-color: #0056b3;
+    background-color: rgb(6, 82, 6);
 }
 
 /* Botón para mostrar habitaciones */
@@ -527,10 +555,10 @@ const roomAlertStyles = `
 }
 #show-rooms-btn i {
     font-size: 1.2rem;
-    color: #007bff;
+    color: #28a745;
 }
 #show-rooms-btn:hover i {
-    color: #0056b3;
+    color: rgb(6, 82, 6);
 }
 `;
 
@@ -588,3 +616,90 @@ window.generateRoomReport = function () {
 // Cargar los números de las habitaciones al cargar la página
 loadRoomNumbers();
 
+
+/**
+ * Genera un reporte de los productos/servicios más utilizados según los parámetros seleccionados.
+ * Se toman los valores de `#topProSer` (límite) y `#topcategory` (categoría).
+ */
+export async function generateTopConsumptionsReport() {
+    try {
+        // Obtener valores de los campos del formulario
+        const limit = parseInt(document.getElementById('topProSer').value, 10);
+        const category = document.getElementById('topcategory').value;
+
+        // Validar los valores
+        if (isNaN(limit) || limit <= 0) {
+            await Swal.fire({
+                icon: 'warning',
+                title: 'Límite inválido',
+                text: 'Por favor, selecciona un límite válido.',
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
+            });
+            return;
+        }
+
+        if (!category) {
+            await Swal.fire({
+                icon: 'warning',
+                title: 'Categoría requerida',
+                text: 'Por favor, selecciona una categoría antes de generar el reporte.',
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
+            });
+            return;
+        }
+
+        // Mostrar mensaje de carga mientras se genera el reporte
+        Swal.fire({
+            title: 'Generando reporte...',
+            text: 'Por favor, espera mientras preparamos tu archivo.',
+            icon: 'info',
+            allowOutsideClick: false,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+            didOpen: () => Swal.showLoading(),
+        });
+
+        // Llamar a la integración para generar el PDF
+        await generateTopConsumptionsReportPDF(limit, category);
+
+        // Mostrar mensaje de éxito
+        Swal.fire({
+            icon: 'success',
+            title: 'Reporte generado',
+            text: 'El reporte se ha descargado correctamente.',
+            timer: 2000,
+            showConfirmButton: false,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+    } catch (error) {
+        console.error('Error al generar el reporte:', error);
+
+        // Mostrar mensaje de error
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al generar el reporte',
+            text: 'Ocurrió un problema al intentar generar el reporte. Por favor, inténtalo de nuevo.',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+    }
+}
+
+// Configurar el botón para generar el reporte
+document.getElementById('topservicios').addEventListener('click', async (event) => {
+    event.preventDefault(); // Prevenir la acción predeterminada del botón
+    await generateTopConsumptionsReport();
+});

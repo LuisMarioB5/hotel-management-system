@@ -1016,9 +1016,18 @@ export async function initializeCheckInPage() {
 
                     if (result.isConfirmed) {
                         await cancelBooking(booking.id);
-                        Swal.fire('Cancelada', 'La reserva ha sido cancelada.', 'success').then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cancelada',
+                            text: 'La reserva ha sido cancelada.',
+                            heightAuto: false,
+                            customClass: {
+                                container: 'swal-container',
+                            },
+                        }).then(() => {
                             location.reload();
                         });
+                        
                     }
                 });
             }

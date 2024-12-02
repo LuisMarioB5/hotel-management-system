@@ -160,7 +160,7 @@
     font-size: 14px;
 }
 
-#room-number, #status, #category, #reservation-select, 
+#room-number, #status, #category, #reservation-select, #topcategory, #topProSer,
 .date-picker {
     padding: 8px;
     border: 1px solid #ccc;
