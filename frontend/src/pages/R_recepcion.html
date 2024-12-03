@@ -31,7 +31,7 @@
                         <div class="form-row">
                             <input type="hidden" id="room-id-hidden" value="">
                             <div class="form-group">
-                                <label for="room-number"><i class="fas fa-hashtag" style="color: #007bff;"></i> Número Habitación:</label>
+                                <label for="room-number"><i class="fas fa-hashtag" style="color: green;"></i> Número Habitación:</label>
                                 <select id="room-number">
                                     <option value="all">Todos</option>
                                     <option value="1">1</option>
@@ -42,7 +42,7 @@
                                 <i class="fas fa-search"></i>
                             </button>
                             <div class="form-group">
-                                <label for="start-date"><i class="fas fa-calendar-plus" style="color: #007bff;"></i> Fecha Inicio:</label>
+                                <label for="start-date"><i class="fas fa-calendar-plus" style="color: green;"></i> Fecha Inicio:</label>
                                 <input type="date" id="fechaEntrada" class="date-picker" placeholder="dd/mm/yyyy">
                             </div>
                             <div class="form-group">
@@ -69,7 +69,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="category"><i class="fas fa-box" style="color: #007bff;"></i> Categoría:</label>
+                                <label for="category"><i class="fas fa-box" style="color: green;"></i> Categoría:</label>
                                 <select id="category">
                                     <option value="all">Todos</option>
                                     <option value="PRODUCTO">Producto</option>
@@ -109,9 +109,25 @@
                     </div>
 
                     <div class="rooms-container">
-                        <h3 style="color: #007bff;">Reporte de Productos/Servicios mas Utilizados.</h3>
+                        <h3 style="color: #007bff;">Reporte de Productos/Servicios mas utilizados.</h3>
                         
                         <div class="form-row">
+                            <div class="form-group">
+                                <label for="topProSer"><i class="fas fa-hashtag" style="color: green;"></i> Top:</label>
+                                <select id="topProSer">
+                                    <option value=5>5</option>
+                                    <option value=10>10</option>
+                                    <option value=10>15</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="topcategory"><i class="fas fa-box" style="color: green;"></i> Categoria:</label>
+                                <select id="topcategory">
+                                    <option value="Todos">Todos</option>
+                                    <option value="PRODUCTO">Producto</option>
+                                    <option value="SERVICIO">Servicio</option>
+                                </select>
+                            </div>
                             <div class="form-group">
                                 <button class="downloadproduct-btn" id="topservicios">
                                     <i class="fas fa-cloud-download-alt"></i> Descargar
@@ -119,7 +135,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
     </div>

@@ -2,6 +2,8 @@ import { validateJwt } from "../authUtils.js";
 
 export function checkAuthorizationLoginPage() {
     const user = validateJwt();
+    console.log(user)
+    console.log(user.role)
     
     if(user.role === 'ADMINISTRADOR' || user.role === 'GERENTE'){
         return ['success', 'dashboard.html'];
