@@ -136,6 +136,7 @@ async function checkExistingReservations(roomId, checkInDate, checkOutDate) {
  * @param {number} [params.totalStayDays] - Cantidad de días que se opedara el cliente.
  * @param {number} [params.stayCost] - Costo del hospedaje, calculado por el precio de la habitacion por las noches.
  * @param {number} [params.totalCost] - Costo Total del hospedaje más cualquier consumo.
+ * @param {number} [params.priceAdjustment] - Monto a sumar (aumento o tarifa) o a restar (descuento) del costo total.
  * @param {string} [params.status] - Estado atual de la reserva, empleando el enum BookingStatus.
  * @param {boolean} [params.isActive] - Muestra si la reserva esta activa o no.
  * @returns {Promise<Object>} Los datos de la reserva recién creada en formato JSON.
@@ -149,6 +150,7 @@ export async function createBooking({
     cashAdvance = 0,
     totalStayDays = 0,
     stayCost = 0,
+    priceAdjustment = 0,
     totalCost = 0,
     status = 'PENDIENTE',
     isActive = true,
@@ -212,6 +214,7 @@ export async function createBooking({
             status,
             cashAdvance,
             totalCost,
+            priceAdjustment,
             stayCost,
             totalStayDays
         };
@@ -253,6 +256,7 @@ export async function createBooking({
  * @param {number} [params.totalStayDays] - Cantidad de días que se opedara el cliente.
  * @param {number} [params.stayCost] - Costo del hospedaje, calculado por el precio de la habitacion por las noches.
  * @param {number} [params.totalCost] - Costo Total del hospedaje más cualquier consumo.
+ * @param {number} [params.priceAdjustment] - Monto a sumar (aumento o tarifa) o a restar (descuento) del costo total.
  * @param {string} [params.status] - Estado atual de la reserva, empleando el enum BookingStatus.
  * @param {boolean} [params.isActive] - Muestra si la reserva esta activa o no.
  * @returns {Promise<Object>} Los datos de la reserva recién creada en formato JSON.
@@ -269,6 +273,7 @@ export async function updateBooking({
     totalStayDays = null,
     stayCost = null,
     totalCost = null,
+    priceAdjustment = null,
     status = null,
     isActive = null,
 } = {}) {
@@ -285,6 +290,7 @@ export async function updateBooking({
     if(totalStayDays !== null) body.totalStayDays = totalStayDays;
     if(stayCost !== null) body.stayCost = stayCost;
     if(totalCost !== null) body.totalCost = totalCost;
+    if(priceAdjustment !== null) body.priceAdjustment = priceAdjustment;
     if(status !== null) body.status = status;
     if(isActive !== null) body.isActive = isActive;
 
