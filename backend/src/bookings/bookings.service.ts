@@ -22,22 +22,23 @@ export class BookingsService {
     async create(b: CreateBookingDTO): Promise<BookingEntity> {
         await this.isRoomAvailableWithException(b.roomId, b.checkInDate, b.checkOutDate);
         
-        const oldBooking: Partial<BookingEntity> = {
+        const newBooking: Partial<BookingEntity> = {
             customer: await this.customersService.findById(b.customerId),
             room: await this.roomsService.findById(b.roomId),
             checkInDate: b.checkInDate,
         };
 
-        if(b.checkOutDate !== null) oldBooking.checkOutDate = b.checkOutDate;
-        if(b.details !== null) oldBooking.details = b.details;
-        if(b.cashAdvance !== null) oldBooking.cashAdvance = b.cashAdvance;
-        if(b.stayCost !== null) oldBooking.stayCost = b.stayCost;
-        if(b.totalStayDays !== null) oldBooking.totalStayDays = b.totalStayDays;
-        if(b.totalCost !== null) oldBooking.totalCost = b.totalCost;
-        if(b.status !== null) oldBooking.status = b.status;
-        if(b.isActive !== null) oldBooking.isActive = b.isActive;
+        if(b.checkOutDate !== null) newBooking.checkOutDate = b.checkOutDate;
+        if(b.details !== null) newBooking.details = b.details;
+        if(b.cashAdvance !== null) newBooking.cashAdvance = b.cashAdvance;
+        if(b.stayCost !== null) newBooking.stayCost = b.stayCost;
+        if(b.totalStayDays !== null) newBooking.totalStayDays = b.totalStayDays;
+        if(b.totalCost !== null) newBooking.totalCost = b.totalCost;
+        if(b.priceAdjustment !== null) newBooking.priceAdjustment = b.priceAdjustment;
+        if(b.status !== null) newBooking.status = b.status;
+        if(b.isActive !== null) newBooking.isActive = b.isActive;
 
-        const booking = this.repository.create(oldBooking);
+        const booking = this.repository.create(newBooking);
         
         const saved = await this.repository.save(booking);
         return saved;
@@ -71,6 +72,7 @@ export class BookingsService {
         if(b.stayCost !== null) oldBooking.stayCost = b.stayCost;
         if(b.totalStayDays !== null) oldBooking.totalStayDays = b.totalStayDays;
         if(b.totalCost !== null) oldBooking.totalCost = b.totalCost;
+        if(b.priceAdjustment !== null) oldBooking.priceAdjustment = b.priceAdjustment;
         if(b.status !== null) oldBooking.status = b.status;
         if(b.isActive !== null) oldBooking.isActive = b.isActive;
 

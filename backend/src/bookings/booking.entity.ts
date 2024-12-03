@@ -53,6 +53,9 @@ export class BookingEntity {
     
     @Column({type: 'int', default: 1})
     totalStayDays: number;
+    
+    @Column({ type: 'decimal', precision: 10, scale: 2, default: 0})
+    priceAdjustment: number;
 
     @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
     totalCost: number;

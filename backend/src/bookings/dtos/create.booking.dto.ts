@@ -42,6 +42,10 @@ export class CreateBookingDTO {
   @IsPositive()
   totalCost?: number;
 
+  @IsNumber()
+  @IsOptional()
+  priceAdjustment?: number;
+
   @IsEnum(BookingStatus, {
     message: "El estado de la reseva debe ser válido (PENDIENTE, CONFIRMADA, CHECKED_IN, CHECKED_OUT, CANCELADA)."
   })

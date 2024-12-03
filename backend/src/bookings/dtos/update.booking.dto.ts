@@ -40,6 +40,10 @@ export class UpdateBookingDTO {
   @IsOptional()
   @IsPositive()
   totalStayDays?: number;
+  
+  @IsNumber()
+  @IsOptional()
+  priceAdjustment?: number;
 
   @IsNumber()
   @IsOptional()
