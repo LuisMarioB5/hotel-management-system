@@ -441,7 +441,11 @@ function setupProductManagement() {
                 icon: 'warning',
                 title: 'Guardado parcial',
                 text: `Se guardaron ${successCount} productos/servicios. Hubo ${errorCount} errores.`,
-                showConfirmButton: true
+                showConfirmButton: true,
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
             });
         }
     

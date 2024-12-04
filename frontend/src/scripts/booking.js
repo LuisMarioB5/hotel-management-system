@@ -304,7 +304,7 @@ function getBookingData() {
     const adelanto = parseFloat(document.getElementById('adelanto').value) || 0;
     const precio = parseFloat(document.getElementById('precio').value) || 0;
     const roomPrice = parseFloat(document.getElementById('roomPrice').value) || 0;
-    
+    const priceAdjustment = parseFloat(document.getElementById('priceAdjustment').value) || 0;
     const checkInDate = document.getElementById('fechaEntrada').value;
     const checkOutDate = document.getElementById('fechaSalida').value;
     const roomId = parseInt(document.getElementById('roomId').value, 10);
@@ -318,6 +318,7 @@ function getBookingData() {
         adelanto,
         precio,
         roomPrice,
+        priceAdjustment,
         totalStayDays
     });
 
@@ -335,6 +336,7 @@ function getBookingData() {
         cashAdvance: adelanto,
         totalCost: precio,
         stayCost: roomPrice * totalStayDays,
+        priceAdjustment,
         totalStayDays: totalStayDays
     };
 }
@@ -1012,6 +1014,9 @@ export async function initializeCheckInPage() {
                         allowOutsideClick: false,
                         backdrop: true,
                         heightAuto: false,
+                        customClass: {
+                            container: 'swal-container',
+                        },
                     });
 
                     if (result.isConfirmed) {
@@ -1053,6 +1058,9 @@ export async function initializeCheckInPage() {
                             confirmButtonColor: '#3085d6',
                             allowOutsideClick: false,
                             heightAuto: false,
+                            customClass: {
+                                container: 'swal-container',
+                            },
                         });
                         return;
                     }
@@ -1069,14 +1077,28 @@ export async function initializeCheckInPage() {
                         allowOutsideClick: false,
                         backdrop: true,
                         heightAuto: false,
+                        customClass: {
+                            container: 'swal-container',
+                        },
                     });
 
                     if (result.isConfirmed) {
                         await checkInBooking(booking.id, booking.cashAdvance);
-                        Swal.fire('Confirmada', 'La reserva ha sido confirmada.', 'success').then(() => {
-                            location.reload();
+                    
+                        await Swal.fire({
+                            icon: 'success', // Cambia a un ícono de check
+                            title: 'Confirmada',
+                            text: 'La reserva ha sido confirmada exitosamente.',
+                            backdrop: true,
+                            heightAuto: false,
+                            customClass: {
+                                container: 'swal-container',
+                            },
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#3085d6',
                         });
-                        window.location.href = `../pages/G_reservaciones.html`;
+                    
+                        window.location.href = '../pages/G_reservaciones.html';
                     }
                 });
             }
