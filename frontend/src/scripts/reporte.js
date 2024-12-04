@@ -18,19 +18,7 @@ window.downloadProductsReportPDF = async function (status, category) {
     isGeneratingReport = true; // Marcar el inicio del proceso
 
     try {
-        // Mostrar alerta de carga mientras se genera el reporte
-        Swal.fire({
-            title: 'Generando reporte...',
-            text: 'Por favor, espera mientras preparamos tu archivo.',
-            icon: 'info',
-            allowOutsideClick: false,
-            heightAuto: false, // Prevenir barra blanca
-            customClass: {
-                container: 'swal-container',
-            },
-            didOpen: () => Swal.showLoading(),
-        });
-
+       
         const response = await fetch(BACKEND_ROUTES.products.getAll, {
             method: 'GET',
             headers: {
@@ -463,23 +451,16 @@ window.selectRoom = function (id, number) {
 
 // Función para formatear las fechas en MM/dd/yyyy
 function formatDateToMMDDYYYY(date) {
-    const d = new Date(date);
-    let month = '' + (d.getMonth() + 1);
-    let day = '' + d.getDate();
-    const year = d.getFullYear();
-
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-
-    return [month, day, year].join('/');
+    const [year, month, day] = date.split('-'); // Dividir la fecha en componentes
+    return `${month}/${day}/${year}`; // Reorganizar en formato MM/dd/yyyy
 }
 
 // Función para generar el reporte usando el ID de la habitación seleccionada
-window.generateRoomReport = function () {
+window.generateRoomReport = async function () {
     const roomId = document.getElementById('room-id-hidden').value;
 
     if (!roomId) {
-        Swal.fire({
+        await Swal.fire({
             icon: 'warning',
             title: 'Selección requerida',
             text: 'Por favor, selecciona una habitación antes de generar el reporte.',
@@ -495,7 +476,7 @@ window.generateRoomReport = function () {
     const endDate = document.getElementById('fechaSalida').value;
 
     if (!startDate || !endDate) {
-        Swal.fire({
+        await Swal.fire({
             icon: 'warning',
             title: 'Fechas requeridas',
             text: 'Por favor, selecciona una fecha de inicio y una fecha de fin antes de generar el reporte.',
@@ -507,15 +488,45 @@ window.generateRoomReport = function () {
         return;
     }
 
-    // Formatear las fechas en MM/dd/yyyy
+    // Formatear las fechas directamente
     const formattedStartDate = formatDateToMMDDYYYY(startDate);
     const formattedEndDate = formatDateToMMDDYYYY(endDate);
 
-    // Llamar a la función para generar el PDF del reporte
-    generateBookingsByRoomReportPDF(roomId, formattedStartDate, formattedEndDate);
-    console.log(`Generando reporte para la habitación con ID ${roomId} desde ${formattedStartDate} hasta ${formattedEndDate}`);
-}
+    try {
+        // Llamar a la función para generar el PDF del reporte
+        await generateBookingsByRoomReportPDF(roomId, formattedStartDate, formattedEndDate);
 
+        // Mostrar mensaje de éxito
+        await Swal.fire({
+            icon: 'success',
+            title: 'Reporte generado',
+            text: 'El reporte se descargó correctamente.',
+            timer: 2000,
+            showConfirmButton: false,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+
+        console.log(
+            `Generando reporte para la habitación con ID ${roomId} desde ${formattedStartDate} hasta ${formattedEndDate}`
+        );
+    } catch (error) {
+        console.error('Error al generar el reporte:', error);
+
+        // Mostrar mensaje de error
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error al generar el reporte',
+            text: 'Ocurrió un problema al intentar generar el reporte. Por favor, inténtalo nuevamente.',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+    }
+};
 // CSS dinámico para estilizar las habitaciones en la alerta
 const roomAlertStyles = `
 /* Estilo para la cuadrícula de habitaciones */
