@@ -27,7 +27,7 @@ export class PDFReport {
 
     this.addBookingInfo(invoice.booking);
 
-    this.addInvoiceItemsTable(invoice.items);
+    this.addInvoiceItemsTable(invoice);
 
     this.finishDocument({ message: '**Gracias por hospedarse con nosotros. ¡Vuelva pronto!**' });
 
@@ -201,12 +201,13 @@ export class PDFReport {
       .moveDown();
   }
 
-  private addInvoiceItemsTable(items: InvoiceItemEntity[]): void {
-    if (items.length <= 0) {
+  private addInvoiceItemsTable(invoice: InvoiceEntity): void {
+    const invoiceItems =  invoice.items;
+    if (invoiceItems.length <= 0) {
       throw new NotFoundException('La factura actual no tiene items para mostrar');
     }
   
-    items = this.groupItemsByFields(items, ['description', 'unitPrice']);
+    const items = this.groupItemsByFields(invoiceItems.slice(), ['description', 'unitPrice']);
 
     this.doc
       .fontSize(12)
@@ -264,14 +265,34 @@ export class PDFReport {
     currentY += 10;
   
     // Imprimir el total de consumo como una fila más en la tabla
-    currentX = startX;
-    this.doc.text('', currentX, currentY, { width: columnWidths[0], align: 'center' });
-    currentX += columnWidths[0];
-    this.doc.text('', currentX, currentY, { width: columnWidths[1], align: 'center' });
-    currentX += columnWidths[1];
-    this.doc.text('Total:', currentX, currentY, { width: columnWidths[2], align: 'center' });
-    currentX += columnWidths[2];
-    this.doc.text(`$${Number(totalItems).toFixed(2)}`, currentX, currentY, { width: columnWidths[3], align: 'center' });
+    let priceAdjustment: number = invoice.booking.priceAdjustment;
+    let priceAdjustmentTitle = 'Estándar';
+    if(priceAdjustment < 0) {
+      priceAdjustmentTitle = 'Descuento(15%)';
+      priceAdjustment = Number(invoice.items[0].subtotal) * .15;
+    } else if(priceAdjustment > 0) {
+      priceAdjustmentTitle = 'Tarifa(20%)';
+      priceAdjustment = Number(invoice.items[0].subtotal) * .2;
+    }
+    const cashAdvance = invoice.booking.cashAdvance 
+    const titles = ['Subtotal', 'Adelanto', `${priceAdjustmentTitle}`, 'Total'];
+    const titlesValues = [totalItems, cashAdvance, priceAdjustment, `${Number(totalItems) + Number(priceAdjustment) - Number(cashAdvance)}`];
+    const emptyWidth = columnWidths[0] + columnWidths[1];
+    for (let i = 0; i < titles.length; i++) {
+      const title = titles[i];
+      const value = titlesValues[i];
+      if(value == 0 && title === 'Adelanto') continue;
+      
+      currentX = startX;
+      this.doc.text('', currentX, currentY, { width: emptyWidth, align: 'center' });
+      currentX += emptyWidth;
+
+      this.doc.text(`${title}:`, currentX, currentY, { width: columnWidths[2], align: 'right' });
+      currentX += columnWidths[2];
+
+      this.doc.text(`$${Math.abs(Number(value)).toFixed(2)}`, currentX, currentY, { width: columnWidths[3], align: 'center' });
+      currentY += 20;
+    }
   
     this.doc.moveDown();
   }
@@ -337,12 +358,9 @@ export class PDFReport {
   
     // Imprimir el total de consumo como una fila más en la tabla
     currentX = startX;
-    this.doc.text('', currentX, currentY, { width: columnWidths[0], align: 'center' });
-    currentX += columnWidths[0];
-    this.doc.text('', currentX, currentY, { width: columnWidths[1], align: 'center' });
-    currentX += columnWidths[1];
-    this.doc.text('', currentX, currentY, { width: columnWidths[2], align: 'center' });
-    currentX += columnWidths[2];
+    const emptyWidth = columnWidths[0] + columnWidths[1] + columnWidths[2];
+    this.doc.text('', currentX, currentY, { width: emptyWidth, align: 'center' });
+    currentX += emptyWidth;
     this.doc.text('Total:', currentX, currentY, { width: columnWidths[3], align: 'center' });
     currentX += columnWidths[3];
     this.doc.text(`$${Number(totalConsumption).toFixed(2)}`, currentX, currentY, { width: columnWidths[4], align: 'center' });
