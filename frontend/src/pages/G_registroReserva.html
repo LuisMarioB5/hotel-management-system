@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <script type="module" src="../scripts/booking.js"></script>
     
 </head>
@@ -27,6 +28,7 @@
                     <div class="info-grid">
                         <input type="hidden" id="roomId" name="roomId">
                         <input type="hidden" id="roomPrice" name="roomPrice">
+                        <input type="hidden" id="priceAdjustment" name="priceAdjustment">
                         <div class="info-group">
                             <label><i class="fas fa-hashtag"></i> Número:</label>
                             <input type="text" id="roomNumber" readonly>
@@ -233,16 +235,24 @@
             let tarifa = tarifaSelect.value;
             let precioBase = precioOriginal * diasReserva; // Precio original multiplicado por los días
             let precioFinal = precioBase;
-    
+            
             let textoTarifa = "Tarifa: Tarifa normal "; // Valor por defecto
+            let ajustePrecio = 0;
+            
             if (tarifa === "ANTICIPADA") {
+                ajustePrecio = -(precioBase * 0.15);
                 precioFinal *= 0.85; // Descuento del 15%
                 textoTarifa = "Tarifa: 15% de descuento por reserva anticipada ";
             } else if (tarifa === "ALTA") {
+                ajustePrecio = precioBase * 0.20;
                 precioFinal *= 1.20; // Incremento del 20%
                 textoTarifa = "Tarifa: 20% de aumento por tarifa alta ";
             }
-    
+            
+             // Actualizar precio ajustado y mostrar en la consola
+            const priceAdjustmentInput = document.getElementById("priceAdjustment");
+            priceAdjustmentInput.value = ajustePrecio.toFixed(2);
+
             // Validar y actualizar precio con adelanto
             actualizarPrecioConAdelanto(precioFinal);
     
