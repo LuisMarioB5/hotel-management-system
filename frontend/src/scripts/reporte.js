@@ -218,12 +218,15 @@ async function showReservationSelectionAlert(bookings) {
                 padding: 10px 20px;
                 background-color: #28a745;
                 color: white;
+                margin-bottom: 10px;
                 font-weight: bold;
                 font-size: 12px; 
                 border: none;
                 border-radius: 4px;
                 cursor: pointer;
                 width: 100%;
+                height: 100%;
+                max-height: 50px;
                 max-width: 120px;
                 align-self: flex-end; " 
                  onclick="selectReservation(${booking.id})">
