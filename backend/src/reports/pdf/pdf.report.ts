@@ -1,7 +1,9 @@
 import { NotFoundException } from '@nestjs/common';
 import PDFDocument from 'pdfkit';
+import { start } from 'repl';
 import { InvoiceEntity } from 'src/billing/invoice.entity';
-import { BookingEntity } from 'src/bookings/booking.entity';
+import { BookingEntity, BookingStatus } from 'src/bookings/booking.entity';
+import { BookingsController } from 'src/bookings/bookings.controller';
 import { ConsumptionEntity } from 'src/consumptions/consumption.entity';
 import { CustomerEntity } from 'src/customers/customer.entity';
 import { ProductEntity } from 'src/products/product.entity';
@@ -23,7 +25,7 @@ export class PDFReport {
     
     this.addCustomerInfo(doc, invoice.customer || invoice.booking.customer);
 
-    this.addBookingInfo(doc, invoice.booking);
+    this.addBookingInfo(doc, invoice.booking, { priceAdjustment: true, cashAdvance: true });
 
     this.addInvoiceItemsTable(doc, invoice);
 
@@ -189,7 +191,7 @@ export class PDFReport {
       doc.moveDown();
   }
 
-  private addBookingInfo(doc: PDFKit.PDFDocument, booking: BookingEntity): void {
+  private addBookingInfo(doc: PDFKit.PDFDocument, booking: BookingEntity, {priceAdjustment = null, cashAdvance = null} = {}): void {
     const checkinDate = DateFormatter.getSimpleDate(booking.actualCheckInDate || booking.checkInDate);
     const checkoutDate = DateFormatter.getSimpleDate(booking.actualCheckOutDate || (booking.checkOutDate || new Date()));
 
@@ -202,8 +204,20 @@ export class PDFReport {
       .text(`Check-in: ${checkinDate}`)
       .text(`Check-out: ${checkoutDate}`)
       .text(`Habitación: (${booking.room.type}) ${booking.room.number}`)
-      .text(`Días de Estadía: ${booking.totalStayDays}`)
-      .moveDown();
+      .text(`Días de Estadía: ${booking.totalStayDays}`);
+    if(priceAdjustment && booking.priceAdjustment) {
+      let text: string = 'Estándar';
+      if(booking.priceAdjustment < 0) {
+        text = 'Descuento(15%)';
+      } else if(booking.priceAdjustment > 0) {
+        text = 'Aumento(20%)';
+      }
+      doc.text(`Tarifa: ${text}`);
+    }
+    if(cashAdvance && booking.cashAdvance) {
+      doc.text(`Adelanto de efectivo: $${booking.cashAdvance}`);
+    }
+    doc.moveDown();
   }
 
   private addInvoiceItemsTable(doc: PDFKit.PDFDocument, invoice: InvoiceEntity): void {
@@ -270,41 +284,16 @@ export class PDFReport {
     currentY += 10;
   
     // Imprimir el total de consumo como una fila más en la tabla
-    let priceAdjustment: number = invoice.booking.priceAdjustment;
-    let priceAdjustmentTitle: string = 'Estándar';
-    let isDiscount: boolean = false;
-    if(priceAdjustment < 0) {
-      priceAdjustmentTitle = 'Descuento(15%)';
-      priceAdjustment = Number(invoice.items[0].subtotal) * .15;
-      isDiscount = true;
-    } else if(priceAdjustment > 0) {
-      priceAdjustmentTitle = 'Tarifa(20%)';
-      priceAdjustment = Number(invoice.items[0].subtotal) * .2;
-    }
-    const cashAdvance = invoice.booking.cashAdvance 
-    const titles = ['Subtotal', 'Adelanto', `${priceAdjustmentTitle}`, 'Total'];
-    const titlesValues = [totalItems, cashAdvance, `${isDiscount ? '-' : ''}${priceAdjustment}`, `${Number(totalItems) + Number(priceAdjustment) - Number(cashAdvance)}`];
+    currentX = startX;
     const emptyWidth = columnWidths[0] + columnWidths[1];
-    for (let i = 0; i < titles.length; i++) {
-      const title = titles[i];
-      const value = Number(titlesValues[i]);
-      if(value == 0 && title === 'Adelanto') continue;
-      
-      let isNegative = false;
-      if(value < 0) {
-        isNegative = true;
-      }
+    doc.text('', currentX, currentY, { width: emptyWidth, align: 'center' });
+    currentX += emptyWidth;
 
-      currentX = startX;
-      doc.text('', currentX, currentY, { width: emptyWidth, align: 'center' });
-      currentX += emptyWidth;
+    doc.text(`Total faltante:`, currentX, currentY, { width: columnWidths[2], align: 'right' });
+    currentX += columnWidths[2];
 
-      doc.text(`${title}:`, currentX, currentY, { width: columnWidths[2], align: 'right' });
-      currentX += columnWidths[2];
-
-      doc.text(`${isNegative ? '-' : ''}$${Math.abs(value).toFixed(2)}`, currentX, currentY, { width: columnWidths[3], align: 'center' });
-      currentY += 20;
-    }
+    doc.text(`$${Math.abs(totalItems).toFixed(2)}`, currentX, currentY, { width: columnWidths[3], align: 'center' });
+    currentY += 20;
   
     doc.moveDown();
   }
@@ -498,8 +487,10 @@ export class PDFReport {
       const stayCost = Number(booking.totalStayDays) * Number(booking.room?.price);
       const consumptionCost = booking.consumptions?.reduce((total, booking) => Number(total) + Number(booking.subtotal), 0);
       const subtotal = Number(stayCost) + Number(consumptionCost);
-      total += subtotal;
       currentX = startX;
+      if(booking.status !== BookingStatus.CANCELADA) {
+        total += subtotal;
+      }
       
       doc.text(`${booking.id}`, currentX, currentY, { width: columnWidths[0], align: 'center' });
       currentX += columnWidths[0];
@@ -540,7 +531,7 @@ export class PDFReport {
     const emptyWidth = (columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + columnWidths[4] + columnWidths[5] + columnWidths[6]);
     doc.text('', currentX, currentY, { width: emptyWidth, align: 'center' });
     currentX += emptyWidth;
-    doc.text('Total:', currentX, currentY, { width: columnWidths[7], align: 'center' });
+    doc.text('Total faltante:', currentX, currentY, { width: columnWidths[7], align: 'center' });
     currentX += columnWidths[7];
     doc.text(`$${Number(total).toFixed(2)}`, currentX, currentY, { width: columnWidths[8], align: 'center' });
   
