@@ -170,6 +170,10 @@ async function handleSaveProduct() {
             icon: 'error',
             title: 'Campos vacíos',
             text: 'Por favor, complete todos los campos obligatorios.',
+            heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
         });
         return;
     }
@@ -179,6 +183,10 @@ async function handleSaveProduct() {
             icon: 'error',
             title: 'Precio inválido',
             text: 'Por favor, ingrese un precio válido (ejemplo: 10.99).',
+            heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
         });
         return;
     }
@@ -189,6 +197,10 @@ async function handleSaveProduct() {
             icon: 'error',
             title: 'Cantidad inválida',
             text: 'Por favor, ingrese un número entero para la cantidad.',
+            heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
         });
         return;
     }
@@ -199,6 +211,10 @@ async function handleSaveProduct() {
             icon: 'warning',
             title: 'Cantidad inválida para servicio',
             text: 'La cantidad para un servicio debe ser 1.',
+            heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
         });
         return;
     }
@@ -226,6 +242,10 @@ async function handleSaveProduct() {
             icon: 'success',
             title: 'Éxito',
             text: 'El producto se ha guardado correctamente.',
+            heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
         });
     } catch (error) {
         console.error('Error al guardar producto:', error);
@@ -233,6 +253,10 @@ async function handleSaveProduct() {
             icon: 'error',
             title: 'Error',
             text: 'Hubo un problema al guardar el producto.',
+            heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
         });
     }
 }
@@ -246,7 +270,11 @@ async function handleDeleteProduct(productId) {
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
     });
 
     if (result.isConfirmed) {
