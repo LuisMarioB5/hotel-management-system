@@ -108,12 +108,11 @@ export class PDFReport {
 
   generateBookingsByRoomReport(bookings: BookingEntity[], checkInDate: Date, checkOutDate: Date): Promise<Buffer> {
     const doc = new PDFDocument({ margin: this.reportMargin });
-
     const buffers = [];
     doc.on('data', buffers.push.bind(buffers));
 
     // Encabezado
-    this.addHeader(doc, { title: 'Reporte de Reservas por Habitación', period: this.parsePeriod(checkInDate, checkOutDate) });
+    this.addHeader(doc, { title: `Reporte de Reservas de la Habitación #${bookings[0].room.number}`, period: this.parsePeriod(checkInDate, checkOutDate) });
 
     // Table de reservas
     this.addBookingTable(doc, bookings);
@@ -247,7 +246,7 @@ export class PDFReport {
   
     // Imprimir cada fila de consumos
     items.forEach((item) => {
-      const subtotal = Number(item.subtotal) || (Number(item.quantity) * Number(item.unitPrice));
+      const subtotal =  Number(item.subtotal);
       totalItems += subtotal;
   
       currentX = startX;      

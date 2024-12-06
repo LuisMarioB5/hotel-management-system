@@ -44,7 +44,7 @@ export class ReportsService {
     
     let filteredBookings = await this.bookingsService.getReservationsByRoomAndDateRange(roomId, checkinDate, checkoutDate);
     if(filteredBookings.length === 0) {
-      throw new NotFoundException('No existen reservas para la habitación en el periodo de tiempo selecciondo.');
+      throw new NotFoundException('No existen reservas para la habitación en el periodo de tiempo seleccionado.');
     }
 
     if (format === 'pdf') {

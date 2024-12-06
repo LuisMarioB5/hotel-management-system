@@ -9,8 +9,6 @@ import { CreateInvoiceDTO } from './dtos/create.invoice.dto';
 import { getEnumValues } from 'src/utils/showEnum.values';
 import { ConsumptionAvailability } from 'src/consumptions/consumption.entity';
 import { ConsumptionsService } from 'src/consumptions/consumptions.service';
-import PDFDocument from 'pdfkit';
-import { DateFormatter } from 'src/utils/date.formatter';
 
 @Injectable()
 export class InvoicesService {
@@ -49,11 +47,12 @@ export class InvoicesService {
             throw new BadRequestException('El cliente ingresado no es el mismo que tiene la reserva ingresada.');
         }
 
+        const invoiceSubTotal = this.calculateSubtotal(Number(booking.totalStayDays), Number(booking.room.price));
         const stayItem = booking ? this.createInvoiceItem({
-            description: 'Costo de estadía',
+            description: 'Costo de estadía Restante',
             quantity: Number(booking.totalStayDays),
             unitPrice: Number(booking.room.price),
-            subtotal: this.calculateSubtotal(Number(booking.totalStayDays), Number(booking.room.price)),
+            subtotal: Number(booking.totalCost),
             date: booking.actualCheckOutDate || booking.checkOutDate,
             type: InvoiceItemType.ESTANCIA,
         }) : null;
