@@ -1,7 +1,7 @@
 // Descomentar si el proyecto paso por completo a REACT
 // import Swal from "sweetalert2";
 
-export function handleLoginNotification(state, username, url) {
+export function handleLoginNotification(state, username) {
     switch(state) {
         case 'success':
             return  Swal.fire({
@@ -10,10 +10,6 @@ export function handleLoginNotification(state, username, url) {
                         icon: 'success',
                         allowOutsideClick: false,
                         confirmButtonText: 'Aceptar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = `${url}`;
-                        }
                     });
         
         case 'userBlocked':
@@ -40,7 +36,6 @@ export function handleLoginNotification(state, username, url) {
                         confirmButtonText: 'Reintentar'
                     });
     }
-
 }
 
 /**

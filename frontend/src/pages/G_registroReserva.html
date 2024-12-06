@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recepcion | Reservar</title>
+    <title>Gestión - Reservar | Hotel Hodelpa</title>
+    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <script type="module" src="../scripts/booking.js"></script>
-    
 </head>
 <body>
     <div class="dashboard-page">
         <div class="dashboard-container">
-
             <div class="main-content">
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
@@ -89,7 +87,6 @@
                                 <option value="MASCULINO">Masculino</option>
                                 <option value="FEMENINO">Femenino</option>
                             </select>
-
                         </div>
                         <div class="form-group">
                             <label><i class="fas fa-envelope"></i> Correo:</label>
@@ -154,52 +151,52 @@
     
         document.addEventListener('DOMContentLoaded', function () {
             const fechaEntrada = document.getElementById('fechaEntrada');
-        const fechaSalida = document.getElementById('fechaSalida');
-        const tarifaSelect = document.getElementById('tarifa');
-        const observacionInput = document.getElementById('observacion');
-        const precioInput = document.getElementById('precio');
-
-        // Función para obtener fecha en formato YYYY-MM-DD
-        const obtenerFechaLocal = (fecha) => {
-            return fecha.toLocaleDateString('en-CA'); // 'en-CA' formatea como YYYY-MM-DD
-        };
-
-        // Leer parámetros de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const startDate = urlParams.get('startDate');
-        const endDate = urlParams.get('endDate');
-        const roomPrice = urlParams.get('price');
-
-        // Definir fechas iniciales
-        const hoy = new Date();
-        const hoyLocal = obtenerFechaLocal(hoy);
-
-        const manana = new Date();
-        manana.setDate(hoy.getDate() + 1);
-        const mananaLocal = obtenerFechaLocal(manana);
-
-        // Configurar fechas basadas en URL o establecer predeterminadas
-        if (startDate) {
-            fechaEntrada.value = startDate;
-            fechaEntrada.setAttribute('min', hoyLocal); // Siempre debe ser al menos el día actual
-        } else {
-            fechaEntrada.value = hoyLocal;
-            fechaEntrada.setAttribute('min', hoyLocal);
-        }
-
-        if (endDate) {
-            fechaSalida.value = endDate;
-            fechaSalida.setAttribute('min', obtenerFechaLocal(new Date(startDate || hoyLocal)));
-        } else {
-            fechaSalida.value = mananaLocal;
-            fechaSalida.setAttribute('min', mananaLocal);
-        }
-
-        // Inicializar precio desde la URL
-        if (roomPrice) {
-            precioOriginal = parseFloat(roomPrice);
-            precioInput.value = precioOriginal.toFixed(2);
-        }
+            const fechaSalida = document.getElementById('fechaSalida');
+            const tarifaSelect = document.getElementById('tarifa');
+            const observacionInput = document.getElementById('observacion');
+            const precioInput = document.getElementById('precio');
+    
+            // Función para obtener fecha en formato YYYY-MM-DD
+            const obtenerFechaLocal = (fecha) => {
+                return fecha.toLocaleDateString('en-CA'); // 'en-CA' formatea como YYYY-MM-DD
+            };
+    
+            // Leer parámetros de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const startDate = urlParams.get('startDate');
+            const endDate = urlParams.get('endDate');
+            const roomPrice = urlParams.get('price');
+    
+            // Definir fechas iniciales
+            const hoy = new Date();
+            const hoyLocal = obtenerFechaLocal(hoy);
+    
+            const manana = new Date();
+            manana.setDate(hoy.getDate() + 1);
+            const mananaLocal = obtenerFechaLocal(manana);
+    
+            // Configurar fechas basadas en URL o establecer predeterminadas
+            if (startDate) {
+                fechaEntrada.value = startDate;
+                fechaEntrada.setAttribute('min', hoyLocal); // Siempre debe ser al menos el día actual
+            } else {
+                fechaEntrada.value = hoyLocal;
+                fechaEntrada.setAttribute('min', hoyLocal);
+            }
+    
+            if (endDate) {
+                fechaSalida.value = endDate;
+                fechaSalida.setAttribute('min', obtenerFechaLocal(new Date(startDate || hoyLocal)));
+            } else {
+                fechaSalida.value = mananaLocal;
+                fechaSalida.setAttribute('min', mananaLocal);
+            }
+    
+            // Inicializar precio desde la URL
+            if (roomPrice) {
+                precioOriginal = parseFloat(roomPrice);
+                precioInput.value = precioOriginal.toFixed(2);
+            }
     
             // Inicializar observación con tarifa estándar y días de reserva
             tarifaSelect.value = "ESTANDAR";
@@ -423,11 +420,10 @@
         });
     </script>
 
-    <script src="../scripts/CosasComunes.js"></script>
+    <script type="module" src="../scripts/CosasComunes.js"></script>
     <script type="module"> 
         import { calendarioReserva } from '../scripts/calendar.js'; 
         document.addEventListener('DOMContentLoaded', calendarioReserva); 
     </script>
- 
 </body>
 </html>

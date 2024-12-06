@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Hodelpa | Dashboard</title>
+    <title>Dashboard | Hotel Hodelpa</title>
+    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../auth/pages/dashboardAndReports.auth.js"></script>
     <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
 </head>
 <body>
     <div class="dashboard-page">
             <div class="dashboard-container">
-                
                 <div class="main-content">
                     <div class="user-info">
                         <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
@@ -158,6 +157,7 @@
                 </div>
             </div>
     </div>
+
     <script type="module">
         import { loadLatestUsers } from '../scripts/usuario.js';
         
@@ -204,7 +204,6 @@
             }
         });
     </script>
-
 
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Hodelpa | Salida</title>
+    <title>Gestión - Salida | Hotel Hodelpa</title>
+    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -11,30 +12,29 @@
 </head>
 <body>
     <div class="dashboard-page">
-            <div class="dashboard-container">
-
-                <div class="main-content">
-                    <div class="user-info">
-                        <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
-                    </div>
-                    <h2>Salida</h2>
-                    <hr class="sidebar-divider my-0">
-
-                    <div class="rooms-container">
-                        <label>Seleccionar Piso</label>
-                        <select class="floor-selector">
-                            <option value="Todos">Todos</option>
-                            <option value="PRIMER">PRIMER</option>
-                            <option value="SEGUNDO">SEGUNDO</option>
-                            <option value="TERCER">TERCER</option>
-                            <option value="CUARTO">CUARTO</option>
-                            <option value="QUINTO">QUINTO</option>
-                        </select>
-                        <div class="rooms-grid">
-                        </div>
+        <div class="dashboard-container">
+            <div class="main-content">
+                <div class="user-info">
+                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                </div>
+                <h2>Salida</h2>
+                <hr class="sidebar-divider my-0">
+    
+                <div class="rooms-container">
+                    <label>Seleccionar Piso</label>
+                    <select class="floor-selector">
+                        <option value="Todos">Todos</option>
+                        <option value="PRIMER">PRIMER</option>
+                        <option value="SEGUNDO">SEGUNDO</option>
+                        <option value="TERCER">TERCER</option>
+                        <option value="CUARTO">CUARTO</option>
+                        <option value="QUINTO">QUINTO</option>
+                    </select>
+                    <div class="rooms-grid">
                     </div>
                 </div>
             </div>
+        </div>
     </div>
 
     <!-- Modal de Logout -->
@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <script src="../scripts/CosasComunes.js"></script>
+    <script type="module" src="../scripts/CosasComunes.js"></script>
    
     <script type="module">
         import { initializeCheckOutPage } from '../scripts/booking.js';

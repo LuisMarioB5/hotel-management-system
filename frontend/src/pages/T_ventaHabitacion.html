@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recepcion | Registrar Habitacion</title>
+    <title>Tienda - Venta a Habitación | Hotel Hodelpa</title>
+    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css"> <!--Aqui tambien estaran los estilos de esta pagina-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -14,7 +15,6 @@
 <body>
     <div class="dashboard-page">
         <div class="dashboard-container">
-           
             <div class="main-content">
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
@@ -94,9 +94,7 @@
                                         <th>Sub Total</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tablabody">
-                                   
-                                </tbody>
+                                <tbody id="tablabody"></tbody>
                             </table>
                         </div>
                     <div class="total-section">
@@ -117,7 +115,9 @@
             </div>
         </div>
     </div>
+
     <script type="module" src="../scripts/ventamodalproducto.js"></script>
+    
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -135,7 +135,6 @@
         </div>
     </div>
     
-
     <!--MODAL De lista de clientes-->
     <div class="climodal" id="createUserModal">
         <div class="climodal-content">
@@ -155,6 +154,7 @@
                     <input type="text" id="searchUser" placeholder="Buscar Producto">
                 </div>
             </div>
+
             <div class="table-container">
                 <table id="modalProductTable"  class="service-table">
                     <thead>
@@ -181,7 +181,6 @@
     </div>
 
     <script>
-
         // Abrir modal
        document.querySelector('.search-btn').addEventListener('click', function() {
            document.getElementById('createUserModal').style.display = 'flex';
@@ -199,7 +198,9 @@
             }
         });
     </script>
-    <script src="../scripts/CosasComunes.js"></script>
+
+    <script type="module" src="../scripts/CosasComunes.js"></script>
+
     <script type="module">
         import { initializeRoomResume } from '../scripts/consumibles.js';
         document.addEventListener('DOMContentLoaded', initializeRoomResume);

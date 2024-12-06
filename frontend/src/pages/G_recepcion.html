@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Hodelpa | Recepcion</title>
+    <title>Gestión - Recepción | Hotel Hodelpa</title>
+    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/recepcion.css"> <!--Se usara para el css del content-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -28,9 +29,7 @@
                         <option value="CUARTO">CUARTO</option>
                         <option value="QUINTO">QUINTO</option>
                     </select>
-                    <div class="rooms-grid">
-                        
-                    </div>
+                    <div class="rooms-grid"></div>
                 </div>
             </div>
         </div>
@@ -53,13 +52,11 @@
         </div>
     </div>
 
-    <script src="../scripts/CosasComunes.js"></script>
-
+    <script type="module" src="../scripts/CosasComunes.js"></script>
     
     <script type="module">
         import { initializeAllRooms } from '../scripts/habitacion.js';
         document.addEventListener('DOMContentLoaded', initializeAllRooms);
     </script>
-    
 </body>
 </html>

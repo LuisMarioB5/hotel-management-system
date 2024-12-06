@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recepcion | Check-in</title>
+    <title>Gestión - Hospedaje | Hotel Hodelpa</title>
+    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -13,14 +14,12 @@
 <body>
     <div class="dashboard-page">
         <div class="dashboard-container">
-            
             <div class="main-content">
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
                 <!-- Resumen de la Habitación -->
-                <div class="info-card" id="reservationDetailsContainer"> </div>
-                    
+                <div class="info-card" id="reservationDetailsContainer"> </div>       
             </div>
         </div>
     </div>
@@ -42,11 +41,10 @@
         </div>
     </div>
     
-    <script src="../scripts/CosasComunes.js"></script>
+    <script type="module" src="../scripts/CosasComunes.js"></script>
     <script type="module">
         import { initializeCheckInPage } from '../scripts/booking.js';
         document.addEventListener('DOMContentLoaded', initializeCheckInPage);
     </script>
-
 </body>
 </html>
