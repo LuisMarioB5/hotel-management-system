@@ -1,4 +1,4 @@
-import { validateJwt, setLogoutButton } from "./authUtils.js";
+import { validateJwt, setLogoutButton } from "./utils.auth.js";
 
 // Mapa de permisos por página
 const pagePermissions = {
@@ -16,8 +16,8 @@ const pagePermissions = {
     "M_limpieza.html": ["ADMINISTRADOR", "MANTENIMIENTO"],
     "R_recepcion.html": ["ADMINISTRADOR", "GERENTE"],
     "T_productos.html": ["ADMINISTRADOR"],
-    "T_vender.html": ["ADMINISTRADOR"],
-    "T_ventaHabitacion.html": ["ADMINISTRADOR"],
+    "T_vender.html": ["ADMINISTRADOR", "RECEPCIONISTA"],
+    "T_ventaHabitacion.html": ["ADMINISTRADOR", "RECEPCIONISTA"],
     "usuarios.html": ["ADMINISTRADOR"],
     "login.html": [], // Todos tienen acceso
 };
@@ -39,6 +39,7 @@ export const validateAccess = async () => {
     
     // Validar si el usuario tiene acceso
     if (!allowedRoles.includes(user.role)) {
+        document.querySelector('body').innerHTML = '';
         console.error(`Acceso denegado: El rol '${user.role}' no tiene permiso para acceder a '${currentPage}'`);
         Swal.fire({
             icon: "error",

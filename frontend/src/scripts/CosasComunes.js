@@ -1,4 +1,4 @@
-import { validateJwt } from "../auth/authUtils.js";
+import { validateJwt } from "../auth/utils.auth.js";
 import { validateAccess } from '../auth/guard.auth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         RECEPCIONISTA: {
             dashboard: true,
             gestion: ['recepcion', 'reservas', 'salida'],
-            tienda: [],
+            tienda: ['vender'],
             mantenimiento: [],
             reportes: false,
         },

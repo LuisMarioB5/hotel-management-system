@@ -1,5 +1,4 @@
-import { validateJwt } from "./authUtils.js";
-
+import { validateJwt } from "./utils.auth.js";
 
 export function checkAuthorizationLoginPage() {
     const user = validateJwt();
