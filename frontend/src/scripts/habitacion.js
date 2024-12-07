@@ -473,9 +473,6 @@ export function initializeAllRooms() {
             case 'ocupado':
                 window.location.href = '../pages/G_salida.html';
                 break;
-            case 'limpieza':
-                window.location.href = '../pages/M_limpieza.html';
-                break;
         }
     };
 

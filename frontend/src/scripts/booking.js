@@ -571,7 +571,7 @@ export function initializeRoomReservations() {
         reservations.forEach(reservation => {
             const { roomDetails, status, id } = reservation;
             const statusClass = (status || '').toLowerCase() === 'confirmada' ? 'reservado' : 'confirmar';
-            const statusText = (status || '').toLowerCase() === 'confirmada' ? 'RESERVADO' : 'CONFIRMAR RESERVA';
+            const statusText = (status || '').toLowerCase() === 'confirmada' ? 'INICIAR HOSPEDAJE' : 'CONFIRMAR RESERVA';
     
             const roomCard = `
                 <div class="room-card ${statusClass}">
