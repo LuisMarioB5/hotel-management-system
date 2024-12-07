@@ -8,9 +8,6 @@ export class EnvConfig {
 
     // Generación del JWT
     static readonly JWT_SECRET = process.env.JWT_SECRET;
-    static readonly JWT_TIME_TO_EXPIRE = '1h';
-
-    // Generación de reportes
-    static readonly DOWNLOAD_PATH = process.env.DOWNLOAD_PATH;
+    static readonly JWT_TIME_TO_EXPIRE = process.env.JWT_TIME_TO_EXPIRE || '1h';
 }
   
