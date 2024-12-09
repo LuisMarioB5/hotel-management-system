@@ -1,3 +1,26 @@
+.password-container {
+    position: relative;
+    display: inline-block;
+}
+
+.password-container input {
+    padding-right: 30px; /* Espacio para el icono */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 43%;
+    transform: translateY(-43%);
+    cursor: pointer;
+    font-size: 18px;
+    color: #888;
+}
+
+.toggle-password:hover {
+    color: #000;
+}
+
 body, html {
     margin: 0;
     padding: 0;
