@@ -515,6 +515,337 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLatestBookings(); // Para mostrar las últimas 3 reservas confirmadas
 });
 
+//Funcion que alcula las ventas totales sumando `stayCost` y `priceAdjustment` de todas las reservas en estado `CHECKED_OUT`.
+export async function calculateTotalSales() {
+    try {
+        // Obtener todas las reservas
+        const bookings = await getAllBookings();
+
+        // Filtrar las reservas en estado CHECKED_OUT
+        const checkedOutBookings = bookings.filter(
+            booking => booking.status === 'CHECKED_OUT'
+        );
+
+        // Calcular el total sumando `stayCost` y `priceAdjustment`
+        const totalSales = checkedOutBookings.reduce((total, booking) => {
+            const stayCost = parseFloat(booking.stayCost) || 0;
+            const priceAdjustment = parseFloat(booking.priceAdjustment) || 0;
+            return total + stayCost + priceAdjustment;
+        }, 0);
+
+        // Actualizar el contenido del DOM con el resultado
+        const totalSalesElement = document.querySelector('.metric-value');
+        if (totalSalesElement) {
+            totalSalesElement.textContent = `RD$${totalSales.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })}`;
+        }
+    } catch (error) {
+        console.error('Error al calcular las ventas totales:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    calculateTotalSales();
+});
+
+export async function renderSalesChart() {
+    try {
+        // Obtener todas las reservas
+        const bookings = await getAllBookings();
+
+        // Filtrar reservas en estado CHECKED_OUT
+        const checkedOutBookings = bookings.filter(
+            booking => booking.status === 'CHECKED_OUT'
+        );
+
+        // Agrupar ventas por mes (sin acumulación)
+        const salesByMonth = checkedOutBookings.reduce((acc, booking) => {
+            const checkOutDate = new Date(booking.actualCheckOutDate || booking.checkOutDate);
+            const yearMonth = `${checkOutDate.getFullYear()}-${String(checkOutDate.getMonth() + 1).padStart(2, '0')}`;
+
+            const stayCost = parseFloat(booking.stayCost) || 0;
+            const priceAdjustment = parseFloat(booking.priceAdjustment) || 0;
+
+            acc[yearMonth] = (acc[yearMonth] || 0) + stayCost + priceAdjustment;
+            return acc;
+        }, {});
+
+        // Generar etiquetas y datos para el gráfico
+        const sortedMonths = Object.keys(salesByMonth).sort(); // Etiquetas (meses ordenados)
+        const salesData = sortedMonths.map(month => salesByMonth[month]); // Datos (ventas por mes)
+
+        // Configurar el gráfico
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sortedMonths, // Etiquetas del eje X (meses)
+                datasets: [{
+                    label: 'Ventas Mensuales',
+                    data: salesData, // Datos del eje Y (ventas por mes)
+                    borderColor: '#ab2497',
+                    backgroundColor: 'rgba(171, 36, 151, 0.2)',
+                    tension: 0.4,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Meses',
+                            color: '#333',
+                            font: {
+                                size: 14,
+                                weight: 'bold',
+                            },
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Ventas (RD$)',
+                            color: '#333',
+                            font: {
+                                size: 14,
+                                weight: 'bold',
+                            },
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return 'RD$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true, // Mostrar la leyenda del gráfico
+                        labels: {
+                            font: {
+                                size: 12,
+                                weight: 'bold',
+                            },
+                        },
+                    }
+                }
+            }
+        });
+
+        console.log('Gráfico de ventas generado correctamente.');
+    } catch (error) {
+        console.error('Error al renderizar el gráfico de ventas:', error);
+    }
+}
+
+// Llamar a la función al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    renderSalesChart();
+});
+/**
+ * Muestra una alerta con todas las notificaciones y sus respectivos botones.
+ * @param {Array} notifications - Lista de notificaciones a mostrar.
+ */
+function showNotificationQueue(notifications) {
+    // Crear el contenido HTML para todas las notificaciones
+    const notificationsHTML = notifications.map(({ text, roomNumber, alertType }) => {
+        const borderColor = {
+            'CHECKED_IN': '#ff3d00',
+            'PENDIENTE': 'purple',
+            'CONFIRMADA': 'orange',
+        }[alertType] || 'gray';
+
+        const buttonColor = {
+            'CHECKED_IN': '#ff3d00',
+            'PENDIENTE': '#800080',
+            'CONFIRMADA': 'orange',
+        }[alertType] || '#808080';
+
+        const targetPage = alertType === 'CHECKED_IN' ? 'G_salida.html' : 'G_reservaciones.html';
+
+        return `
+            <div class="notification-item swal-popup-${alertType.toLowerCase()}" style="border-left: 5px solid ${borderColor};">
+                <div class="notification-content">
+                    <span class="notification-text">${text}</span>
+                    <button class="notification-button" style="background-color: ${buttonColor}; border-color: ${borderColor}" onclick="window.location.href='${targetPage}'">Ir</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Mostrar una sola alerta con todas las notificaciones
+    Swal.fire({
+        toast: true,
+        position: 'bottom-start',
+        title: '<strong>Notificaciones</strong>',
+        html: `<div class="notifications-container">${notificationsHTML}</div>`,
+        showConfirmButton: false,
+        showCloseButton: true,
+        closeButtonAriaLabel: 'Cerrar', // Label accesible para la X
+        customClass: {
+            popup: 'swal-popup-container',
+            title: 'swal-popup-title', // Clase personalizada para el título
+            closeButton: 'swal-close-button', // Clase personalizada para el botón de cerrar
+        },
+    });
+}
+
+/**
+ * Comprueba las reservas y genera notificaciones según las condiciones.
+ */
+export async function checkReservationsAndNotify() {
+    try {
+        const bookings = await getAllBookings();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalizar la hora a 00:00:00
+
+        const notifications = [];
+
+        for (const booking of bookings) {
+            const checkInDate = new Date(booking.checkInDate);
+            const checkOutDate = new Date(booking.checkOutDate);
+
+            // Obtener el número de habitación
+            const room = await getRoomById(booking.room.id);
+            const roomNumber = room.number;
+
+            // Si la reserva está CHECKED_IN y el checkOutDate es hoy
+            if (booking.status === 'CHECKED_IN' && checkOutDate.getTime() === today.getTime()) {
+                notifications.push({
+                    text: `Hoy termina el hospedaje de la habitación ${roomNumber}`,
+                    roomNumber,
+                    alertType: 'CHECKED_IN',
+                });
+            }
+
+            // Si la reserva está PENDIENTE y el checkInDate es hoy
+            if (booking.status === 'PENDIENTE' && checkInDate.getTime() === today.getTime()) {
+                notifications.push({
+                    text: `Hoy caduca la reserva de la habitación ${roomNumber}`,
+                    roomNumber,
+                    alertType: 'PENDIENTE',
+                });
+            }
+
+            // Si la reserva está CONFIRMADA y el checkInDate es hoy
+            if (booking.status === 'CONFIRMADA' && checkInDate.getTime() === today.getTime()) {
+                notifications.push({
+                    text: `La reserva confirmada para la habitación ${roomNumber} no se inició`,
+                    roomNumber,
+                    alertType: 'CONFIRMADA',
+                });
+            }
+        }
+
+        // Mostrar todas las notificaciones en una sola alerta
+        if (notifications.length > 0) {
+            showNotificationQueue(notifications);
+        }
+    } catch (error) {
+        console.error('Error al comprobar las reservas:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un problema al verificar las reservas. Por favor, inténtalo nuevamente.',
+        });
+    }
+}
+
+/**
+ * CSS dinámico para notificaciones con bordes personalizados y estilos pequeños.
+ */
+const notificationStyles = `
+/* Estilo general para notificaciones */
+.swal-popup-container {
+    width: 250px !important; 
+    font-size: 12px !important; /* Tamaño de fuente reducido */
+    padding: 0px !important;
+}
+
+.swal-popup-title {
+    font-size: 14px !important; /* Título más grande */
+    font-weight: bold;
+    text-align: center;
+}
+
+.notifications-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    margin-bottom: 10px;
+    padding: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1); /* Sombra del contorno */
+}
+
+.notification-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px; /* Espacio entre el texto y el botón */
+}
+
+.notification-text {
+    font-size: 12px;
+    cursor: default; /* Cambiar el cursor a default para el texto */
+}
+
+.notification-button {
+    background: none;
+    border: 1px solid;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.notification-button:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    color: #000;
+}
+
+/* Colores personalizados según el tipo de alerta */
+.swal-popup-checked_in {
+    border-color: red !important;
+}
+.swal-popup-pendiente {
+    border-color: purple !important;
+}
+.swal-popup-confirmada {
+    border-color: orange !important;
+}
+
+/* Estilo personalizado para el botón de cerrar */
+.swal-close-button {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+    font-size: 1.8rem !important; /* Más grande */
+    color: #d33; /* Color rojo para mayor visibilidad */
+    cursor: pointer;
+}
+`;
+
+// Inyectar el CSS en el documento
+const styleElement = document.createElement('style');
+styleElement.type = 'text/css';
+styleElement.textContent = notificationStyles;
+document.head.appendChild(styleElement);
+
+// Ejecutar la función al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    checkReservationsAndNotify();
+});
+
 //----------------------------------------------------------------------------//
              ////ESTA PARTE ES PARA LA PAGINA DE G_RESERVACIONES///
 //----------------------------------------------------------------------------//
