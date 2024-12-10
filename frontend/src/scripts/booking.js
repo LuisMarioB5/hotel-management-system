@@ -1,6 +1,7 @@
 import { createCustomer, getCustomerByDocumentNumber, updateCustomer } from '../integrations/customer.integration.js';
 import { createBooking, confirmBooking, cancelBooking, checkInBooking, getAllBookings, updateBooking, getBookingById,checkOutBooking, desactiveBooking } from '../integrations/booking.integration.js';
 import { updateRoom,getAllRooms,getRoomById } from '../integrations/room.integration.js';
+import { getAllInvoices } from '../integrations/billing.integration.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -515,23 +516,29 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLatestBookings(); // Para mostrar las últimas 3 reservas confirmadas
 });
 
-//Funcion que alcula las ventas totales sumando `stayCost` y `priceAdjustment` de todas las reservas en estado `CHECKED_OUT`.
+// Función que calcula las ventas totales sumando `cashAdvance` de reservas y `total` de facturas.
 export async function calculateTotalSales() {
     try {
         // Obtener todas las reservas
         const bookings = await getAllBookings();
 
-        // Filtrar las reservas en estado CHECKED_OUT
-        const checkedOutBookings = bookings.filter(
-            booking => booking.status === 'CHECKED_OUT'
-        );
-
-        // Calcular el total sumando `stayCost` y `priceAdjustment`
-        const totalSales = checkedOutBookings.reduce((total, booking) => {
-            const stayCost = parseFloat(booking.stayCost) || 0;
-            const priceAdjustment = parseFloat(booking.priceAdjustment) || 0;
-            return total + stayCost + priceAdjustment;
+        // Calcular el total de `cashAdvance` de las reservas
+        const totalCashAdvance = bookings.reduce((total, booking) => {
+            const cashAdvance = parseFloat(booking.cashAdvance) || 0;
+            return total + cashAdvance;
         }, 0);
+
+        // Obtener todas las facturas
+        const invoices = await getAllInvoices();
+
+        // Calcular el total de las facturas sumando el campo `total`
+        const totalInvoices = invoices.reduce((total, invoice) => {
+            const invoiceTotal = parseFloat(invoice.total) || 0;
+            return total + invoiceTotal;
+        }, 0);
+
+        // Calcular el total general
+        const totalSales = totalCashAdvance + totalInvoices;
 
         // Actualizar el contenido del DOM con el resultado
         const totalSalesElement = document.querySelector('.metric-value');
@@ -546,35 +553,50 @@ export async function calculateTotalSales() {
     }
 }
 
+// Ejecutar la función al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     calculateTotalSales();
 });
 
+
+// Genera gráfico de las ventas mensuales considerando `cashAdvance` y `total` de facturas
 export async function renderSalesChart() {
     try {
         // Obtener todas las reservas
         const bookings = await getAllBookings();
 
-        // Filtrar reservas en estado CHECKED_OUT
-        const checkedOutBookings = bookings.filter(
-            booking => booking.status === 'CHECKED_OUT'
-        );
+        // Obtener todas las facturas
+        const invoices = await getAllInvoices();
 
-        // Agrupar ventas por mes (sin acumulación)
-        const salesByMonth = checkedOutBookings.reduce((acc, booking) => {
+        // Agrupar `cashAdvance` de reservas por mes
+        const cashAdvanceByMonth = bookings.reduce((acc, booking) => {
             const checkOutDate = new Date(booking.actualCheckOutDate || booking.checkOutDate);
             const yearMonth = `${checkOutDate.getFullYear()}-${String(checkOutDate.getMonth() + 1).padStart(2, '0')}`;
 
-            const stayCost = parseFloat(booking.stayCost) || 0;
-            const priceAdjustment = parseFloat(booking.priceAdjustment) || 0;
-
-            acc[yearMonth] = (acc[yearMonth] || 0) + stayCost + priceAdjustment;
+            const cashAdvance = parseFloat(booking.cashAdvance) || 0;
+            acc[yearMonth] = (acc[yearMonth] || 0) + cashAdvance;
             return acc;
         }, {});
 
+        // Agrupar `total` de facturas por mes
+        const invoiceTotalByMonth = invoices.reduce((acc, invoice) => {
+            const invoiceDate = new Date(invoice.createdAt);
+            const yearMonth = `${invoiceDate.getFullYear()}-${String(invoiceDate.getMonth() + 1).padStart(2, '0')}`;
+
+            const invoiceTotal = parseFloat(invoice.total) || 0;
+            acc[yearMonth] = (acc[yearMonth] || 0) + invoiceTotal;
+            return acc;
+        }, {});
+
+        // Combinar `cashAdvance` y `invoiceTotal` en un solo objeto
+        const combinedSalesByMonth = { ...cashAdvanceByMonth };
+        for (const [month, total] of Object.entries(invoiceTotalByMonth)) {
+            combinedSalesByMonth[month] = (combinedSalesByMonth[month] || 0) + total;
+        }
+
         // Generar etiquetas y datos para el gráfico
-        const sortedMonths = Object.keys(salesByMonth).sort(); // Etiquetas (meses ordenados)
-        const salesData = sortedMonths.map(month => salesByMonth[month]); // Datos (ventas por mes)
+        const sortedMonths = Object.keys(combinedSalesByMonth).sort(); // Etiquetas (meses ordenados)
+        const salesData = sortedMonths.map(month => combinedSalesByMonth[month]); // Datos (ventas por mes)
 
         // Configurar el gráfico
         const ctx = document.getElementById('salesChart').getContext('2d');
@@ -648,6 +670,8 @@ export async function renderSalesChart() {
 document.addEventListener('DOMContentLoaded', () => {
     renderSalesChart();
 });
+
+
 /**
  * Muestra una alerta con todas las notificaciones y sus respectivos botones.
  * @param {Array} notifications - Lista de notificaciones a mostrar.
