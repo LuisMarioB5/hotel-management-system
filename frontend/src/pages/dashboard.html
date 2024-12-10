@@ -50,7 +50,7 @@
                     <div class="metrics-cards">
                         <div class="metric-card green">
                            <div class="metric-content">
-                                <p class="metric-value">RD$10.457.850</p> 
+                                <p class="metric-value">RD$0.00</p> 
                                 <h3>Ventas Totales</h3>
                             </div>
                             <i class="fas fa-dollar-sign metric-icon"></i>
@@ -92,7 +92,8 @@
                     <!--Grafico de ventas-->
                     <div class="sales-chart-container">
                         <h3><i class="fas fa-chart-line"></i> LINEA DE VENTAS</h3>
-                        <canvas id="salesChart"></canvas>
+                        <canvas id="salesChart" style="width: 100%; height: 400px;"></canvas>
+
                     </div>
                     <!--ULTIMOS CLIENTES EETC-->
                     <div class="latest-sections-container">
@@ -163,47 +164,15 @@
         
         // Llamar a la función cuando se carga la página
         document.addEventListener('DOMContentLoaded', loadLatestUsers);
-    </script>
+    </script>   
+
+
+
     <script type="module" src="../scripts/booking.js"></script>
     <script type="module" src="../scripts/habitacion.js"></script>
     <script type="module" src="../scripts/cliente.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Configuración del gráfico de ventas
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['2024-07', '2024-08', '2024-09', '2024-10', '2024-11'],
-                datasets: [{
-                    label: 'Ventas',
-                    data: [0, 125000, 200000, 150000, 500000],
-                    borderColor: '#ab2497',
-                    tension: 0,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return 'RD$' + value.toLocaleString();
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    </script>
+    
 
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
