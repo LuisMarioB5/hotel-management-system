@@ -19,6 +19,8 @@ const pagePermissions = {
     "T_vender.html": ["ADMINISTRADOR", "RECEPCIONISTA"],
     "T_ventaHabitacion.html": ["ADMINISTRADOR", "RECEPCIONISTA"],
     "usuarios.html": ["ADMINISTRADOR"],
+    "ofertas.html": ["ADMINISTRADOR", "GERENTE","RECEPCIONISTA"],
+    "cuestionario.html": ["ADMINISTRADOR", "GERENTE","RECEPCIONISTA"],
     "login.html": [], // Todos tienen acceso
 };
 

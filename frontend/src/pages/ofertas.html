@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofertas | Hotel Hodelpa</title>
+    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../styles/recepcion.css">
+    <link rel="stylesheet" href="../styles/usuarios.css">
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script type="module" src="../auth/pages/dashboardAndReports.auth.js"></script>
+    <script type="module" src="../auth/pages/reports.auth.js"></script>
+</head>
+<body>
+    <div class="dashboard-page">
+            <div class="dashboard-container">
+             
+
+                <div class="main-content">
+
+                <div class="user-info">
+                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                </div>
+                    <h2>Generador de Ofertas</h2>
+                    <hr>
+                                       
+                    <div class="rooms-container">
+                        <h3 style="color: #007bff;">Cuestionario ha realizar al cliente</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <button class="button_show_question" onclick="window.location.href='../pages/cuestionario.html'"><i class="fas fa-eye"></i> Pulse para ver cuestionario</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rooms-container">
+                        <h3 style="color: #007bff;">Generar ofertas a clientes</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="topProSer"><i class="fas fa-hashtag" style="color: green;"></i> Cantidad Clientes</label>
+                                <select id="topProSer">
+                                    <option value=5>5</option>
+                                    <option value=10>10</option>
+                                    <option value=10>15</option>
+                                    <option value=20>20</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="topcategory"><i class="fas fa-box" style="color: green;"></i> Frecuencia:</label>
+                                <select id="topcategory">
+                                    <option value="Todos">Todos</option>
+                                    <option value="HABITUAL">Habitual</option>
+                                    <option value="SERVICIO">Frecuente</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button class="downloadproduct-btn" id="topservicios">
+                                    <i class="fas fa-gears"></i> Generar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rooms-container">
+                        <h3 style="color: #007bff;">Administrador de ofertas</h3>
+                        
+                        <div class="form-group">
+                            <div class="contenido">
+                                                                   
+                                    <div class="user-table">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre</th>
+                                                    <th>Telefono</th>
+                                                    <th>Correo</th>
+                                                    <th>Habitacion</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <!-- Se llena solo  -->
+                                            </tbody>
+                                        </table>
+                                        <!-- Div de paginación y conteo de registros -->
+                                        <div class="pagination-info">
+                                            <label></label>
+                                            <div class="pagination-buttons">
+                                                <button class="pagination-btn">&lt;</button>
+                                                <button class="pagination-btn">&gt;</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                              
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+        
+
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>¿Estás seguro de que deseas salir?</h5>
+                <span class="close-button" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel" id="cancelLogout">Cancelar</button>
+                <a href="../pages/login.html" class="btn logout">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+    
+  <script src="../scripts/CosasComunes.js" type="module"></script>
+  
+</body>
+</html> 

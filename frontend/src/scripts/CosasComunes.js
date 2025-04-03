@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             tienda: ['vender'],
             mantenimiento: ['usuarios', 'clientes', 'habitacion', 'productos'],
             reportes: true,
+            ofertas: true,
+            cuestionario: true,
         },
         RECEPCIONISTA: {
             dashboard: true,
@@ -24,6 +26,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             tienda: ['vender'],
             mantenimiento: [],
             reportes: false,
+            ofertas: true,
+            cuestionario: true,
         },
         GERENTE: {
             dashboard: true,
@@ -31,6 +35,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             tienda: [],
             mantenimiento: [],
             reportes: true,
+            ofertas: true,
+            cuestionario: true,
         },
         MANTENIMIENTO: {
             dashboard: false,
@@ -79,6 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </li>` : ''}
                 ${allowedSections.reportes ? `<li><a href="../pages/R_recepcion.html"><i class="fas fa-chart-bar"></i> Reportes</a></li>` : ''}
+                ${allowedSections.ofertas ? `<li><a href="../pages/ofertas.html"><i class="fas fa-gift"></i> Ofertas</a></li>` : ''}
             </ul>
         </div>
     `;

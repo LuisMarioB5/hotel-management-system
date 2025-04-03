@@ -202,7 +202,11 @@ async function handleSaveClient() {
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Sí, guardar',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        heightAuto: false,
+        customClass: {
+            container: 'swal-container',
+        },
     });
 
     if (!result.isConfirmed) return;
@@ -215,7 +219,11 @@ async function handleSaveClient() {
         phoneNumber: telefono,
         gender: sexo,
         email: correo,
-        isActive: estado
+        isActive: estado,
+        heightAuto: false,
+        customClass: {
+            container: 'swal-container',
+        },
     };
 
     const clientId = this.getAttribute('data-id');
