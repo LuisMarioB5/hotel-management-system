@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToOne, JoinColumn, Index } from 'typeorm';
-import { CustomerEntity } from './customers/customer.entity'; // Importar CustomerEntity
-import { RoomEntity } from './rooms/room.entity'; // Importar RoomEntity
+import { CustomerEntity } from './customers/customer.entity';
+import { RoomEntity } from './rooms/room.entity';
 
 // Entidad para amenity_categories
 @Entity('amenity_categories')

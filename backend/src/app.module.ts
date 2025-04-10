@@ -13,20 +13,23 @@ import { ReportsModule } from './reports/reports.module';
 import { BillingModule } from './billing/billing.module';
 import { OffersModule } from './offers/offers.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-
-  import { DatabaseModule } from './database/database.module';
-  import { 
-    AmenityCategoryEntity, 
-    AmenityEntity, 
-    TechAmenityEntity, 
-    FoodAmenityEntity, 
-    LuxuryAmenityEntity, 
-    ServiceAmenityEntity, 
-    ViewAmenityEntity, 
-    RoomAmenityEntity, 
-    ClientAmenityEntity, 
-    OfferEntity 
-  } from './entities'; // Nuevas entidades
+import { BookingEntity } from './bookings/booking.entity';
+import { CustomerEntity } from './customers/customer.entity';
+import { RoomEntity } from './rooms/room.entity';
+import { ConsumptionEntity } from './consumptions/consumption.entity';
+import { InvoiceEntity } from './billing/invoice.entity';
+import { 
+  AmenityCategoryEntity, 
+  AmenityEntity, 
+  TechAmenityEntity, 
+  FoodAmenityEntity, 
+  LuxuryAmenityEntity, 
+  ServiceAmenityEntity, 
+  ViewAmenityEntity, 
+  RoomAmenityEntity, 
+  ClientAmenityEntity, 
+  OfferEntity 
+} from './entities';
 
 @Module({
   imports: [
@@ -38,6 +41,23 @@ import { MailerModule } from '@nestjs-modules/mailer';
       username: EnvConfig.DB_USER,
       password: EnvConfig.DB_PWD,
       database: EnvConfig.DB_NAME,
+      entities: [
+        BookingEntity,
+        CustomerEntity,
+        RoomEntity,
+        ConsumptionEntity,
+        InvoiceEntity,
+        AmenityCategoryEntity,
+        AmenityEntity,
+        TechAmenityEntity,
+        FoodAmenityEntity,
+        LuxuryAmenityEntity,
+        ServiceAmenityEntity,
+        ViewAmenityEntity,
+        RoomAmenityEntity,
+        ClientAmenityEntity,
+        OfferEntity,
+      ],
       autoLoadEntities: true,
       synchronize: true,
       timezone: 'Z',
@@ -52,25 +72,14 @@ import { MailerModule } from '@nestjs-modules/mailer';
     ReportsModule,
     BillingModule,
     OffersModule,
-    AmenityCategoryEntity,
-        AmenityEntity,
-        TechAmenityEntity,
-        FoodAmenityEntity,
-        LuxuryAmenityEntity,
-        ServiceAmenityEntity,
-        ViewAmenityEntity,
-        RoomAmenityEntity,
-        ClientAmenityEntity,
-        OfferEntity,
-        DatabaseModule,
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',
         port: 465,
-        secure: true, // true para 465, false para otros puertos
+        secure: true,
         auth: {
-          user: 'heatherpretty1@gmail.com', // Tu correo de Gmail
-          pass: 'qejw sfee asjc tavj', // Contraseña de aplicación de Gmail
+          user: 'heatherpretty1@gmail.com',
+          pass: 'qejw sfee asjc tavj',
         },
       },
       defaults: {
