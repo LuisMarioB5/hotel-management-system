@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body } from '@nestjs/common';
 import { OffersService } from './offers.service';
 
 @Controller('offers')
@@ -23,4 +23,17 @@ export class OffersController {
 
     return await this.offersService.generateOffers(numCustomersInt, isFrequentGuestInt);
   }
+
+  @Post('save-and-send')
+async saveAndSendOffers(@Body() body: any) {
+  console.log('Cuerpo completo recibido:', body); // Depuración
+  const offersData = Array.isArray(body) ? body : body.offersData || [];
+  const result = await this.offersService.saveAndSendOffers(offersData);
+
+  if (result.emailErrors) {
+    console.warn('Algunos correos no se pudieron enviar:', result.emailErrors);
+  }
+
+  return result.savedOffers;
+}
 }

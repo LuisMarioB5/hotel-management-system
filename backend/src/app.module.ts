@@ -12,6 +12,7 @@ import { ConsumptionsModule } from './consumptions/consumptions.module';
 import { ReportsModule } from './reports/reports.module';
 import { BillingModule } from './billing/billing.module';
 import { OffersModule } from './offers/offers.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -37,6 +38,20 @@ import { OffersModule } from './offers/offers.module';
     ReportsModule,
     BillingModule,
     OffersModule,
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: false, // true para 465, false para otros puertos
+        auth: {
+          user: 'heatherpretty1@gmail.com', // Tu correo de Gmail
+          pass: 'qejw sfee asjc tavj', // Contraseña de aplicación de Gmail
+        },
+      },
+      defaults: {
+        from: '"Hotel Hodelpa" <heatherpretty1@gmail.com>',
+      },
+    }),
   ],
 })
 export class AppModule {}

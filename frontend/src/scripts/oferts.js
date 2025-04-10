@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const generateButton = document.getElementById('topservicios');
+    const sendOffersButton = document.getElementById('enviarreportes');
     const offersTableBody = document.querySelector('.user-table tbody');
+    let generatedOffers = []; // Almacenar las ofertas generadas
   
     // Inyectar estilos CSS para el botón de acción y la columna "Estado"
     const style = document.createElement('style');
@@ -102,18 +104,35 @@ document.addEventListener('DOMContentLoaded', () => {
         // Generar la fecha actual y la fecha de validez (1 día después)
         const currentDate = new Date();
         const offerDate = currentDate.toLocaleDateString('es-ES');
+        const validFrom = currentDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
         const validToDate = new Date(currentDate);
         validToDate.setDate(currentDate.getDate() + 1);
         const validTo = validToDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
   
-        // Insertar los datos en la tabla HTML
-        offers.forEach(offer => {
+        // Preparar las ofertas para guardarlas y enviarlas
+        generatedOffers = offers.map(offer => {
           // Calcular un descuento aleatorio entre 10% y 20%
-          const discountPercentage = Math.floor(Math.random() * (20 - 10 + 1)) + 10; // Número aleatorio entre 10 y 20
+          const discountPercentage = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
           const originalPrice = offer.price || 0;
           const discountAmount = (originalPrice * discountPercentage) / 100;
           const offerPrice = originalPrice - discountAmount;
   
+          return {
+            customer_id: offer.customer_id,
+            room_id: offer.room_id,
+            discount: discountPercentage,
+            validFrom: validFrom,
+            validTo: validTo,
+            status: 'ACEPTADA',
+            details: offer.details,
+            price: offerPrice,
+            email: offer.email,
+            room_number: offer.room_number,
+          };
+        });
+  
+        // Insertar los datos en la tabla HTML
+        generatedOffers.forEach(offer => {
           const row = document.createElement('tr');
           row.innerHTML = `
             <td style="display: none;" class="customer-id">${offer.customer_id || ''}</td>
@@ -122,11 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <td style="display: none;" class="room-id">${offer.room_id || ''}</td>
             <td>${offer.room_number || 'Sin asignar'}</td>
             <td>${offer.details || 'Sin detalles'}</td>
-            <td style="display: none;" class="original-price">${originalPrice}</td>
-            <td>$${offerPrice.toFixed(2)} (${discountPercentage}% OFF)</td>
+            <td style="display: none;" class="original-price">${offer.price}</td>
+            <td>$${offer.price.toFixed(2)} (${offer.discount}% OFF)</td>
             <td>${offerDate}</td>
-            <td style="display: none;" class="valid-to">${validTo}</td>
-            <td class="status Pendiente"  style="display: none;">Pendiente</td>
+            <td style="display: none;" class="valid-to">${offer.validTo}</td>
+            <td class="status Aceptada">Aceptada</td>
             <td>
               <button class="action-btn remove-offer"><i class="fas fa-times"></i></button>
             </td>
@@ -136,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
         // Actualizar la información de paginación
         const paginationLabel = document.querySelector('.pagination-info label');
-        paginationLabel.textContent = `Mostrando ${offers.length} de ${offers.length} registros`;
+        paginationLabel.textContent = `Mostrando ${generatedOffers.length} de ${generatedOffers.length} registros`;
   
       } catch (error) {
         // Cerrar el SweetAlert de carga en caso de error
@@ -156,7 +175,94 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   
-    // Agregar evento para el botón de "Eliminar"
+    // Evento para el botón "Enviar ofertas"
+sendOffersButton.addEventListener('click', async () => {
+    if (!Array.isArray(generatedOffers) || generatedOffers.length === 0) {
+      Swal.fire({
+        title: 'No hay ofertas',
+        text: 'Por favor, genera ofertas antes de enviarlas.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+        heightAuto: false,
+        customClass: {
+          container: 'swal-container',
+        },
+      });
+      return;
+    }
+  
+    console.log('Ofertas enviadas al backend:', generatedOffers); // Depuración
+  
+    try {
+      // Mostrar SweetAlert con animación de carga
+      Swal.fire({
+        title: 'Enviando Ofertas',
+        html: '<i class="fas fa-cog fa-spin fa-2x"></i><br><br>Por favor, espere...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        heightAuto: false,
+        customClass: {
+          container: 'swal-container',
+        },
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+  
+      // Enviar las ofertas al backend para guardarlas y enviar correos
+      const response = await fetch('http://localhost:3000/offers/save-and-send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(generatedOffers),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al enviar las ofertas');
+      }
+  
+      // Cerrar el SweetAlert de carga
+      Swal.close();
+  
+      // Mostrar SweetAlert de éxito
+      Swal.fire({
+        title: 'Ofertas Enviadas',
+        text: 'Las ofertas han sido guardadas y enviadas a los clientes.',
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+        heightAuto: false,
+        customClass: {
+          container: 'swal-container',
+        },
+      });
+  
+      // Limpiar las ofertas generadas después de enviarlas
+      generatedOffers = [];
+      offersTableBody.innerHTML = '';
+      const paginationLabel = document.querySelector('.pagination-info label');
+      paginationLabel.textContent = `Mostrando 0 de 0 registros`;
+  
+    } catch (error) {
+      // Cerrar el SweetAlert de carga en caso de error
+      Swal.close();
+  
+      // Mostrar un mensaje de error si algo falla
+      Swal.fire({
+        title: 'Error',
+        text: `No se pudieron enviar las ofertas: ${error.message}`,
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        heightAuto: false,
+        customClass: {
+          container: 'swal-container',
+        },
+      });
+    }
+  });
+  
+    // Evento para el botón de "Eliminar"
     offersTableBody.addEventListener('click', (event) => {
       const row = event.target.closest('tr');
       if (!row) return;
@@ -177,6 +283,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }).then((result) => {
           if (result.isConfirmed) {
             // Eliminar la fila de la tabla
+            const index = Array.from(offersTableBody.children).indexOf(row);
+            generatedOffers.splice(index, 1); // Eliminar la oferta del array
             row.remove();
   
             // Mostrar SweetAlert de éxito
