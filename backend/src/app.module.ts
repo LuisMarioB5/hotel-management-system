@@ -14,6 +14,20 @@ import { BillingModule } from './billing/billing.module';
 import { OffersModule } from './offers/offers.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 
+  import { DatabaseModule } from './database/database.module';
+  import { 
+    AmenityCategoryEntity, 
+    AmenityEntity, 
+    TechAmenityEntity, 
+    FoodAmenityEntity, 
+    LuxuryAmenityEntity, 
+    ServiceAmenityEntity, 
+    ViewAmenityEntity, 
+    RoomAmenityEntity, 
+    ClientAmenityEntity, 
+    OfferEntity 
+  } from './entities'; // Nuevas entidades
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -38,6 +52,17 @@ import { MailerModule } from '@nestjs-modules/mailer';
     ReportsModule,
     BillingModule,
     OffersModule,
+    AmenityCategoryEntity,
+        AmenityEntity,
+        TechAmenityEntity,
+        FoodAmenityEntity,
+        LuxuryAmenityEntity,
+        ServiceAmenityEntity,
+        ViewAmenityEntity,
+        RoomAmenityEntity,
+        ClientAmenityEntity,
+        OfferEntity,
+        DatabaseModule,
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',
