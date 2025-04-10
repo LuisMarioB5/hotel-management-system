@@ -148,6 +148,10 @@ document.querySelector('table tbody').addEventListener('dblclick', event => {
             showConfirmButton: false,
             timer: 1000,  // Duración de la alerta (1 segundo)
             timerProgressBar: true,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
         });
 
         // Cerrar el modal después de seleccionar un cliente
