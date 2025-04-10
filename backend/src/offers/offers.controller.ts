@@ -25,15 +25,10 @@ export class OffersController {
   }
 
   @Post('save-and-send')
-async saveAndSendOffers(@Body() body: any) {
-  console.log('Cuerpo completo recibido:', body); // Depuración
-  const offersData = Array.isArray(body) ? body : body.offersData || [];
-  const result = await this.offersService.saveAndSendOffers(offersData);
+  async saveAndSendOffers(@Body() body: any) {
+    const offersData = Array.isArray(body) ? body : body.offersData || [];
+    const result = await this.offersService.saveAndSendOffers(offersData);
 
-  if (result.emailErrors) {
-    console.warn('Algunos correos no se pudieron enviar:', result.emailErrors);
+    return result.savedOffers;
   }
-
-  return result.savedOffers;
-}
 }

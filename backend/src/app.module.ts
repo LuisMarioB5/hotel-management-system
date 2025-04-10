@@ -42,7 +42,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       transport: {
         host: 'smtp.gmail.com',
         port: 465,
-        secure: false, // true para 465, false para otros puertos
+        secure: true, // true para 465, false para otros puertos
         auth: {
           user: 'heatherpretty1@gmail.com', // Tu correo de Gmail
           pass: 'qejw sfee asjc tavj', // Contraseña de aplicación de Gmail
