@@ -11,7 +11,50 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
+<!-- CSS embebido para los checkboxes -->
+<style>
+    /* Estilo para los checkboxes de preferencias */
+    .preference-level-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-left: 10px;
+    }
 
+    .preference-level-container label {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 0.8rem;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .preference-level-container input[type="radio"] {
+        margin: 0;
+        cursor: pointer;
+    }
+
+
+
+    @media (max-width: 768px) {
+        .form-group {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .form-group select {
+            width: 100%;
+            max-width: none;
+        }
+
+        .preference-level-container {
+            margin-left: 0;
+            margin-top: 5px;
+        }
+    }
+</style>
 </head>
 <body>
     <div class="dashboard-page">
@@ -60,7 +103,7 @@
                     
                 </div>
 
-                <!-- Detalles Cliente y Reservación -->
+                <!-- Prefefrencias de habitacion -->
                 <div class="reservation-details-card">
                     <div class="client-details">
                         <h2><i class="fas fa-bed"></i> Preferencias de Habitación</h2>
@@ -85,7 +128,8 @@
                                 <option value="mas_8000">Más de RD$8,000</option>
                             </select>
                         </div>
-
+                     <div class="form-row">   
+                        
                         <div class="form-group">
                             <label for="vista"><i class="fas fa-eye"></i> ¿Qué vista te gustaría tener desde tu habitación?</label>
                             <select id="vista" name="vista">
@@ -97,7 +141,17 @@
                                 <option value="no_importa">No importa</option>
                             </select>
                         </div>
-
+                        <div class="form-group">
+                            <div class="preference-level-container">
+                                <label><input type="radio" name="vista_preference" value="1" checked> 1</label>
+                                <label><input type="radio" name="vista_preference" value="2"> 2</label>
+                                <label><input type="radio" name="vista_preference" value="3"> 3</label>
+                                <label><input type="radio" name="vista_preference" value="4"> 4</label>
+                                <label><input type="radio" name="vista_preference" value="5"> 5</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="insonorizacion"><i class="fas fa-volume-up"></i> ¿Qué nivel de insonorización prefieres?</label>
                             <select id="insonorizacion" name="insonorizacion">
@@ -107,7 +161,18 @@
                                 <option value="no_importa">No importa</option>
                             </select>
                         </div>
-                        
+                        <div class="form-group">
+                            <div class="preference-level-container">
+                                <label><input type="radio" name="insonorizacion_preference" value="1" checked> 1</label>
+                                <label><input type="radio" name="insonorizacion_preference" value="2"> 2</label>
+                                <label><input type="radio" name="insonorizacion_preference" value="3"> 3</label>
+                                <label><input type="radio" name="insonorizacion_preference" value="4"> 4</label>
+                                <label><input type="radio" name="insonorizacion_preference" value="5"> 5</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="tv"><i class="fas fa-tv"></i> ¿Qué tamaño de TV prefieres?</label> 
                             <select id="tv" name="tv"> 
@@ -119,8 +184,17 @@
                                 <option value="indiferente">Indiferente</option>
                             </select> 
                         </div>
+                        <div class="form-group">
+                            <div class="preference-level-container">
+                                <label><input type="radio" name="tv_preference" value="1" checked> 1</label>
+                                <label><input type="radio" name="tv_preference" value="2"> 2</label>
+                                <label><input type="radio" name="tv_preference" value="3"> 3</label>
+                                <label><input type="radio" name="tv_preference" value="4"> 4</label>
+                                <label><input type="radio" name="tv_preference" value="5"> 5</label>
+                            </div>
+                        </div>
                     </div>
-
+                </div>
                     <div class="reservation-details">
                         <h2><i class="fas fa-calendar-alt"></i> Detalle de servicios</h2>
                         
@@ -132,7 +206,18 @@
                                     <option value="no">No</option>
                                     <option value="indiferente">Indiferente</option>
                                 </select> 
+
+                             
+                                    <div class="preference-level-container">
+                                        <label><input type="radio" name="wifi_preference" value="1" checked> 1</label>
+                                        <label><input type="radio" name="wifi_preference" value="2"> 2</label>
+                                        <label><input type="radio" name="wifi_preference" value="3"> 3</label>
+                                        <label><input type="radio" name="wifi_preference" value="4"> 4</label>
+                                        <label><input type="radio" name="wifi_preference" value="5"> 5</label>
+                                    </div>
+                              <br>
                             </div>
+                        
 
                             <div class="form-group">
                                 <label for="balcon"><i class="fas fa-door-open"></i> ¿Te gustaría tener un balcón privado?:</label>
@@ -141,6 +226,15 @@
                                     <option value="no">No</option>
                                     <option value="indiferente">Indiferente</option>
                                 </select> 
+
+                                <div class="preference-level-container">
+                                    <label><input type="radio" name="balcon_preference" value="1" checked> 1</label>
+                                    <label><input type="radio" name="balcon_preference" value="2"> 2</label>
+                                    <label><input type="radio" name="balcon_preference" value="3"> 3</label>
+                                    <label><input type="radio" name="balcon_preference" value="4"> 4</label>
+                                    <label><input type="radio" name="balcon_preference" value="5"> 5</label>
+                                </div>
+                                <br>
                             </div>
                            
                         </div>
@@ -153,6 +247,14 @@
                                     <option value="no">No</option>
                                     <option value="indiferente">Indiferente</option>
                                 </select> 
+                                <div class="preference-level-container">
+                                    <label><input type="radio" name="jacuzzi_preference" value="1" checked> 1</label>
+                                    <label><input type="radio" name="jacuzzi_preference" value="2"> 2</label>
+                                    <label><input type="radio" name="jacuzzi_preference" value="3"> 3</label>
+                                    <label><input type="radio" name="jacuzzi_preference" value="4"> 4</label>
+                                    <label><input type="radio" name="jacuzzi_preference" value="5"> 5</label>
+                                </div>
+                                <br>
                             </div>
                             <div class="form-group">
                                 <label for="minibar"><i class="fas fa-cocktail"></i> ¿Te gustaría tener un minibar gourmet?:</label>
@@ -161,6 +263,14 @@
                                     <option value="no">No</option>
                                     <option value="indiferente">Indiferente</option>
                                 </select> 
+                                <div class="preference-level-container">
+                                    <label><input type="radio" name="minibar_preference" value="1" checked> 1</label>
+                                    <label><input type="radio" name="minibar_preference" value="2"> 2</label>
+                                    <label><input type="radio" name="minibar_preference" value="3"> 3</label>
+                                    <label><input type="radio" name="minibar_preference" value="4"> 4</label>
+                                    <label><input type="radio" name="minibar_preference" value="5"> 5</label>
+                                </div>
+                                <br>
                             </div>
                         </div>
                         <div class="form-row">
@@ -173,6 +283,14 @@
                                     <option value="sin_desayuno">Sin desayuno</option>
                                     <option value="indiferente">Indiferente</option>
                                 </select> 
+                                <div class="preference-level-container">
+                                    <label><input type="radio" name="desayuno_preference" value="1" checked> 1</label>
+                                    <label><input type="radio" name="desayuno_preference" value="2"> 2</label>
+                                    <label><input type="radio" name="desayuno_preference" value="3"> 3</label>
+                                    <label><input type="radio" name="desayuno_preference" value="4"> 4</label>
+                                    <label><input type="radio" name="desayuno_preference" value="5"> 5</label>
+                                </div>
+                                <br>
                             </div>
 
                             <div class="form-group">
@@ -182,6 +300,14 @@
                                     <option value="no">No</option>
                                     <option value="indiferente">Indiferente</option>
                                 </select> 
+                                <div class="preference-level-container">
+                                    <label><input type="radio" name="aire_acondicionado_preference" value="1" checked> 1</label>
+                                    <label><input type="radio" name="aire_acondicionado_preference" value="2"> 2</label>
+                                    <label><input type="radio" name="aire_acondicionado_preference" value="3"> 3</label>
+                                    <label><input type="radio" name="aire_acondicionado_preference" value="4"> 4</label>
+                                    <label><input type="radio" name="aire_acondicionado_preference" value="5"> 5</label>
+                                </div>
+                                <br>
                             </div>
                         </div>
 
@@ -222,7 +348,7 @@
 
        
     <script type="module" src="../scripts/clientemodalreserva.js"></script>
-
+    <script src="../scripts/cuestionario.js"></script>
   
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
