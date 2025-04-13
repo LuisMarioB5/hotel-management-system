@@ -1,34 +1,34 @@
-import { Controller, Get, Post, Query, Body } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { OffersService } from './offers.service';
 
 @Controller('offers')
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
-  @Get('generate')
+  @Post('generate')
   async generateOffers(
-    @Query('numCustomers') numCustomers: string,
-    @Query('isFrequentGuest') isFrequentGuest: string,
+    @Body() body: { numCustomers: number; isFrequentGuest: number; specificCustomer: number },
   ) {
-    const numCustomersInt = parseInt(numCustomers);
-    const isFrequentGuestInt = parseInt(isFrequentGuest);
+    const { numCustomers, isFrequentGuest, specificCustomer } = body;
 
-    if (isNaN(numCustomersInt) || isNaN(isFrequentGuestInt)) {
-      throw new Error('numCustomers e isFrequentGuest deben ser números');
+    if (!Number.isInteger(numCustomers) || numCustomers < 0) {
+      throw new Error('numCustomers debe ser un número entero no negativo');
     }
 
-    if (isFrequentGuestInt !== 0 && isFrequentGuestInt !== 1) {
+    if (isFrequentGuest !== 0 && isFrequentGuest !== 1) {
       throw new Error('isFrequentGuest debe ser 0 o 1');
     }
 
-    return await this.offersService.generateOffers(numCustomersInt, isFrequentGuestInt);
+    if (!Number.isInteger(specificCustomer) || specificCustomer < 0) {
+      throw new Error('specificCustomer debe ser un número entero no negativo');
+    }
+
+    return await this.offersService.generateOffers(numCustomers, isFrequentGuest, specificCustomer);
   }
 
-  @Post('save-and-send')
-  async saveAndSendOffers(@Body() body: any) {
-    const offersData = Array.isArray(body) ? body : body.offersData || [];
+  @Post('send')
+  async sendOffers(@Body() offersData: any[]) {
     const result = await this.offersService.saveAndSendOffers(offersData);
-
-    return result.savedOffers;
+    return result;
   }
 }

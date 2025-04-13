@@ -18,14 +18,12 @@ import { CustomerEntity } from './customers/customer.entity';
 import { RoomEntity } from './rooms/room.entity';
 import { ConsumptionEntity } from './consumptions/consumption.entity';
 import { InvoiceEntity } from './billing/invoice.entity';
+
 import { 
   AmenityCategoryEntity, 
-  AmenityEntity, 
-  TechAmenityEntity, 
-  FoodAmenityEntity, 
-  LuxuryAmenityEntity, 
-  ServiceAmenityEntity, 
-  ViewAmenityEntity, 
+  AmenityEntity,
+  AmenityOptionEntity,
+  ClientConfigurationEntity,
   RoomAmenityEntity, 
   ClientAmenityEntity, 
   OfferEntity 
@@ -49,11 +47,8 @@ import {
         InvoiceEntity,
         AmenityCategoryEntity,
         AmenityEntity,
-        TechAmenityEntity,
-        FoodAmenityEntity,
-        LuxuryAmenityEntity,
-        ServiceAmenityEntity,
-        ViewAmenityEntity,
+        ClientConfigurationEntity,
+        AmenityOptionEntity,
         RoomAmenityEntity,
         ClientAmenityEntity,
         OfferEntity,
@@ -63,6 +58,7 @@ import {
       timezone: 'Z',
     }),
     UsersModule,
+    OffersModule,
     AuthModule,
     RoomsModule,
     CustomersModule,

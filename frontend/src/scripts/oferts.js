@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const offersTableBody = document.querySelector('.user-table tbody');
   let generatedOffers = [];
 
+  // Estilo para los botones de acción
   const style = document.createElement('style');
   style.textContent = `
     .action-btn {
@@ -26,10 +27,26 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.head.appendChild(style);
 
+  // Evento para generar ofertas
   generateButton.addEventListener('click', async () => {
-    const numCustomers = document.getElementById('topProSer').value;
+    const numCustomers = parseInt(document.getElementById('topProSer').value);
     const frequency = document.getElementById('topcategory').value;
     const isFrequentGuest = frequency === 'HABITUAL' ? 1 : 0;
+    const specificCustomer = 0; // Nuevo parámetro, modo 1 (asignaciones aleatorias)
+
+    if (!numCustomers || numCustomers <= 0) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Por favor, ingrese un número válido de clientes.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        heightAuto: false,
+        customClass: {
+          container: 'swal-container',
+        },
+      });
+      return;
+    }
 
     try {
       Swal.fire({
@@ -46,8 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
 
-      const response = await fetch(`http://localhost:3000/offers/generate?numCustomers=${numCustomers}&isFrequentGuest=${isFrequentGuest}`);
-      
+      // Realizamos la solicitud al backend usando POST, incluyendo el nuevo parámetro
+      const response = await fetch('http://localhost:3000/offers/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ numCustomers, isFrequentGuest, specificCustomer }),
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al generar las ofertas');
@@ -74,18 +98,21 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
 
+      // Limpiar la tabla antes de mostrar las nuevas ofertas
       offersTableBody.innerHTML = '';
 
+      // Generar las fechas de validez
       const currentDate = new Date();
       const offerDate = currentDate.toLocaleDateString('es-ES');
       const validFrom = currentDate.toISOString().split('T')[0];
       const validToDate = new Date(currentDate);
-      validToDate.setDate(currentDate.getDate() + 1);
+      validToDate.setDate(currentDate.getDate() + 7); // Oferta válida por 7 días
       const validTo = validToDate.toISOString().split('T')[0];
 
+      // Mapear las ofertas recibidas del backend
       generatedOffers = offers.map(offer => {
         const discountPercentage = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
-        const originalPrice = offer.price || 0;
+        const originalPrice = parseFloat(offer.price) || 0;
         const discountAmount = (originalPrice * discountPercentage) / 100;
         const offerPrice = originalPrice - discountAmount;
 
@@ -104,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
       });
 
+      // Mostrar las ofertas en la tabla
       generatedOffers.forEach(offer => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -124,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         offersTableBody.appendChild(row);
       });
 
+      // Actualizar la información de paginación
       const paginationLabel = document.querySelector('.pagination-info label');
       paginationLabel.textContent = `Mostrando ${generatedOffers.length} de ${generatedOffers.length} registros`;
 
@@ -143,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Evento para enviar ofertas (sin cambios aquí)
   sendOffersButton.addEventListener('click', async () => {
     if (!Array.isArray(generatedOffers) || generatedOffers.length === 0) {
       Swal.fire({
@@ -173,9 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
 
-      const offersToSend = generatedOffers.map(({ name, ...offer }) => offer); // Excluimos el campo name
+      // Excluimos el campo 'name' de las ofertas enviadas
+      const offersToSend = generatedOffers.map(({ name, ...offer }) => offer);
 
-      const response = await fetch('http://localhost:3000/offers/save-and-send', {
+      // Enviar las ofertas al backend
+      const response = await fetch('http://localhost:3000/offers/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -188,13 +220,13 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(errorData.error || 'Error al enviar las ofertas');
       }
 
-      const savedOffers = await response.json();
+      const result = await response.json();
 
       Swal.close();
 
       let message = 'Las ofertas han sido guardadas y enviadas a los clientes.';
-      if (savedOffers.emailErrors && savedOffers.emailErrors.length > 0) {
-        const failedEmails = savedOffers.emailErrors.map(err => err.email).join(', ');
+      if (result.emailErrors && result.emailErrors.length > 0) {
+        const failedEmails = result.emailErrors.map(err => err.email).join(', ');
         message += `<br><br>Advertencia: No se pudieron enviar correos a: ${failedEmails}.`;
       }
 
@@ -209,6 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
 
+      // Limpiar la tabla y el array de ofertas generadas
       generatedOffers = [];
       offersTableBody.innerHTML = '';
       const paginationLabel = document.querySelector('.pagination-info label');
@@ -230,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Evento para eliminar una oferta de la tabla (sin cambios aquí)
   offersTableBody.addEventListener('click', (event) => {
     const row = event.target.closest('tr');
     if (!row) return;

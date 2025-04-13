@@ -8,117 +8,48 @@ export class AmenityCategoryEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 150, nullable: false, unique: true })
+  @Column({ type: 'varchar', length: 100, nullable: false, unique: true })
   name: string;
 }
 
-// Entidad para amenities
-@Entity('amenities')
-export class AmenityEntity {
+// Entidad para amenity_options (antes amenities)
+@Entity('amenity_options')
+export class AmenityOptionEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ type: 'varchar', length: 100, nullable: false })
-  name: string;
 
   @Column({ type: 'int', nullable: false })
   id_category: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  description: string;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.00 })
-  cost: number;
+  @Column({ type: 'varchar', length: 100, nullable: false })
+  name: string;
 
   @ManyToOne(() => AmenityCategoryEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'id_category' })
   category: AmenityCategoryEntity;
 }
 
-// Índice para amenities
-@Index('idx_amenities_category', ['id_category'])
-export class AmenityWithIndex {}
-
-// Entidad para tech_amenities
-@Entity('tech_amenities')
-export class TechAmenityEntity {
+// Entidad para amenities (antes amenity_options)
+@Entity('amenities')
+export class AmenityEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int', nullable: true })
-  speed: number; // Velocidad en Mbps (para Wi-Fi)
+  @Column({ type: 'int', nullable: false })
+  amenity_option_id: number;
 
-  @Column({ type: 'int', nullable: true })
-  size: number; // Tamaño en pulgadas (para TV)
+  @Column({ type: 'varchar', length: 100, nullable: false })
+  value: string;
 
-  @Column({ type: 'enum', enum: ['WIFI', 'TV', 'DISPOSITIVO_INTELIGENTE'], nullable: false })
-  type: string;
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.00 })
+  cost: number;
 
-  @OneToOne(() => AmenityEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'id' })
-  amenity: AmenityEntity;
-}
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  description: string;
 
-// Entidad para food_amenities
-@Entity('food_amenities')
-export class FoodAmenityEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'enum', enum: ['CONTINENTAL', 'BUFFET', 'VEGANO', 'GOURMET', 'SIN_DESAYUNO'], nullable: false })
-  type: string;
-
-  @OneToOne(() => AmenityEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'id' })
-  amenity: AmenityEntity;
-}
-
-// Entidad para luxury_amenities
-@Entity('luxury_amenities')
-export class LuxuryAmenityEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'int', nullable: true })
-  capacity: number; // Capacidad de personas (para jacuzzi)
-
-  @Column({ type: 'boolean', nullable: true })
-  has_view: boolean; // Indica si tiene vista (para balcón)
-
-  @Column({ type: 'enum', enum: ['Interior', 'Exterior'], nullable: true })
-  location: string;
-
-  @OneToOne(() => AmenityEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'id' })
-  amenity: AmenityEntity;
-}
-
-// Entidad para service_amenities
-@Entity('service_amenities')
-export class ServiceAmenityEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'enum', enum: ['ALTA', 'MEDIA', 'BAJA'], nullable: false })
-  level: string;
-
-  @OneToOne(() => AmenityEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'id' })
-  amenity: AmenityEntity;
-}
-
-// Entidad para view_amenities
-@Entity('view_amenities')
-export class ViewAmenityEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'enum', enum: ['MAR', 'MONTAÑA', 'PISCINA', 'CALLE', 'INTERIOR'], nullable: false })
-  type: string;
-
-  @OneToOne(() => AmenityEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'id' })
-  amenity: AmenityEntity;
+  @ManyToOne(() => AmenityOptionEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'amenity_option_id' })
+  amenityOption: AmenityOptionEntity;
 }
 
 // Entidad para room_amenities
@@ -133,8 +64,8 @@ export class RoomAmenityEntity {
   @Column({ type: 'int', nullable: false })
   amenity_id: number;
 
-  @Column({ type: 'int', default: 1 })
-  level: number; // Calidad de la comodidad en la habitación
+  @Column({ type: 'tinyint', default: 1 })
+  availability_level: number; // Nivel de disponibilidad (1-5)
 
   @ManyToOne(() => RoomEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'room_id' })
@@ -158,8 +89,8 @@ export class ClientAmenityEntity {
   @Column({ type: 'int', nullable: false })
   amenity_id: number;
 
-  @Column({ type: 'int', default: 1 })
-  preference_level: number; // Nivel de preferencia
+  @Column({ type: 'tinyint', default: 1 })
+  preference_level: number; // Nivel de preferencia (1-5)
 
   @ManyToOne(() => CustomerEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'customer_id' })
@@ -170,7 +101,30 @@ export class ClientAmenityEntity {
   amenity: AmenityEntity;
 }
 
-// Entidad para offers
+// Entidad para client_configuration
+@Entity('client_configuration')
+export class ClientConfigurationEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'int', nullable: false })
+  customer_id: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+  min_cost: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+  max_cost: number;
+
+  @Column({ type: 'tinyint', nullable: false })
+  weight_level: number; // Nivel de peso (1-5)
+
+  @ManyToOne(() => CustomerEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'customer_id' })
+  customer: CustomerEntity;
+}
+
+// Entidad para offers (sin cambios)
 @Entity('offers')
 export class OfferEntity {
   @PrimaryGeneratedColumn()

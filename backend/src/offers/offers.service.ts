@@ -10,11 +10,11 @@ export class OffersService {
     private readonly mailerService: MailerService,
   ) {}
 
-  async generateOffers(numCustomers: number, isFrequentGuest: number) {
+  async generateOffers(numCustomers: number, isFrequentGuest: number, specificCustomer: number) {
     try {
       const [results] = await this.dataSource.query(
-        'CALL GenerateRoomAssignments(?, ?)',
-        [numCustomers, isFrequentGuest],
+        'CALL GenerateRoomAssignments(?, ?, ?)',
+        [numCustomers, isFrequentGuest, specificCustomer],
       );
 
       let offers = results;
@@ -59,6 +59,7 @@ export class OffersService {
     const savedOffers = [];
     const emailErrors = [];
 
+    // Validar que todas las ofertas tengan los campos requeridos
     for (const offer of offersData) {
       const {
         customer_id,
@@ -73,11 +74,27 @@ export class OffersService {
         room_number,
       } = offer;
 
-      if (!customer_id || !discount || !validFrom || !validTo || !status || !price || !email || !room_number) {
-        throw new Error('Faltan campos requeridos en una oferta');
+      if (
+        !customer_id ||
+        !discount ||
+        !validFrom ||
+        !validTo ||
+        !status ||
+        !price ||
+        !email ||
+        !room_number
+      ) {
+        throw new Error(
+          `Faltan campos requeridos en una oferta: ${JSON.stringify(offer)}`,
+        );
+      }
+
+      if (!['PENDIENTE', 'ACEPTADA', 'RECHAZADA'].includes(status)) {
+        throw new Error(`Estado inválido en la oferta: ${status}`);
       }
     }
 
+    // Guardar las ofertas en la base de datos
     const savePromises = offersData.map(async (offer) => {
       const {
         customer_id,
@@ -125,6 +142,7 @@ export class OffersService {
       throw new Error(`Error al guardar ofertas: ${error.message}`);
     }
 
+    // Enviar correos electrónicos
     const emailPromises = savedOffers.map(async (offer) => {
       const { email, room_number, details, price, discount, validFrom, validTo } = offer;
 
