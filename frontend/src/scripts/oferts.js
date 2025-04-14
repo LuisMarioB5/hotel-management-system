@@ -1,8 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
   const generateButton = document.getElementById('topservicios');
   const sendOffersButton = document.getElementById('enviarreportes');
+  const viewAllOffersButton = document.getElementById('viewAllOffersBtn');
   const offersTableBody = document.querySelector('.user-table tbody');
+  const modalOffersTableBody = document.getElementById('offersTableBody');
+  const dateFromFilter = document.getElementById('dateFromFilter');
+  const monthFilter = document.getElementById('monthFilter');
+  const statusFilter = document.getElementById('statusFilter');
+  const recordsPerPageSelect = document.getElementById('recordsPerPage');
+  const prevPageButton = document.getElementById('prevPage');
+  const nextPageButton = document.getElementById('nextPage');
+  const paginationLabel = document.getElementById('paginationLabel');
   let generatedOffers = [];
+  let filteredOffers = [];
+  let currentPage = 1;
+  let recordsPerPage = parseInt(recordsPerPageSelect.value);
 
   // Estilo para los botones de acción
   const style = document.createElement('style');
@@ -26,6 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   `;
   document.head.appendChild(style);
+
+  // Función para limpiar los filtros
+  function clearFilters() {
+    dateFromFilter.value = '';
+    monthFilter.value = '';
+    statusFilter.value = '';
+    // También recargamos las ofertas sin filtros para asegurar que se muestren todas
+    loadOffers();
+  }
 
   // Evento para generar ofertas
   generateButton.addEventListener('click', async () => {
@@ -103,8 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Generar las fechas de validez
       const currentDate = new Date();
-      const offerDate = currentDate.toLocaleDateString('es-ES');
-      const validFrom = currentDate.toISOString().split('T')[0];
+      const validFrom = currentDate.toISOString().split('T')[0]; // Esto ya debería ser correcto
       const validToDate = new Date(currentDate);
       validToDate.setDate(currentDate.getDate() + 7); // Oferta válida por 7 días
       const validTo = validToDate.toISOString().split('T')[0];
@@ -143,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${offer.details || 'Sin detalles'}</td>
           <td style="display: none;" class="original-price">${offer.price}</td>
           <td>$${offer.price.toFixed(2)} (${offer.discount}% OFF)</td>
-          <td>${offerDate}</td>
+          <td>${currentDate.toLocaleDateString('es-ES')}</td>
           <td style="display: none;" class="valid-to">${offer.validTo}</td>
           <td>
             <button class="action-btn remove-offer"><i class="fas fa-times"></i></button>
@@ -172,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Evento para enviar ofertas (sin cambios aquí)
+  // Evento para enviar ofertas
   sendOffersButton.addEventListener('click', async () => {
     if (!Array.isArray(generatedOffers) || generatedOffers.length === 0) {
       Swal.fire({
@@ -263,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Evento para eliminar una oferta de la tabla (sin cambios aquí)
+  // Evento para eliminar una oferta de la tabla
   offersTableBody.addEventListener('click', (event) => {
     const row = event.target.closest('tr');
     if (!row) return;
@@ -304,4 +324,118 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
+
+  // Función para cargar ofertas con filtros
+  async function loadOffers() {
+    try {
+      const params = new URLSearchParams();
+      if (dateFromFilter.value) {
+      
+        params.append('dateFrom', dateFromFilter.value);
+      }
+      if (monthFilter.value) params.append('month', monthFilter.value);
+      if (statusFilter.value) params.append('status', statusFilter.value);
+
+      const response = await fetch(`http://localhost:3000/offers?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al obtener las ofertas');
+      }
+
+      filteredOffers = await response.json();
+      
+      currentPage = 1;
+      renderOffers();
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: `No se pudieron cargar las ofertas: ${error.message}`,
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        heightAuto: false,
+        customClass: {
+          container: 'swal-container',
+        },
+      });
+    }
+  }
+
+  // Cargar ofertas al abrir el modal
+  viewAllOffersButton.addEventListener('click', () => {
+    // Limpiar filtros al abrir el modal para asegurar que se muestren todas las ofertas
+    clearFilters();
+    document.getElementById('offersModal').style.display = 'flex';
+  });
+
+  // Función para renderizar las ofertas en la tabla del modal
+  function renderOffers() {
+    modalOffersTableBody.innerHTML = '';
+
+    const start = (currentPage - 1) * recordsPerPage;
+    const end = start + recordsPerPage;
+    const offersToShow = filteredOffers.slice(start, end);
+
+    offersToShow.forEach(offer => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${offer.customer_name || 'Desconocido'}</td>
+        <td>${offer.customer_email || 'Sin correo'}</td>
+        <td>${offer.room_number || 'Sin asignar'}</td>
+        <td>${offer.details || 'Sin detalles'}</td>
+        <td>$${parseFloat(offer.price).toFixed(2)}</td>
+        <td>${offer.discount}%</td>
+        <td>${new Date(offer.validFrom).toLocaleDateString('es-ES')}</td>
+        <td>${new Date(offer.validTo).toLocaleDateString('es-ES')}</td>
+        <td>${offer.status}</td>
+      `;
+      modalOffersTableBody.appendChild(row);
+    });
+
+    // Actualizar paginación
+    const totalRecords = filteredOffers.length;
+    paginationLabel.textContent = `Mostrando ${Math.min(recordsPerPage, totalRecords)} de ${totalRecords} registros`;
+
+    // Habilitar/deshabilitar botones de paginación
+    prevPageButton.disabled = currentPage === 1;
+    nextPageButton.disabled = end >= totalRecords;
+  }
+
+  // Evento para cambiar el número de registros por página
+  recordsPerPageSelect.addEventListener('change', () => {
+    recordsPerPage = parseInt(recordsPerPageSelect.value);
+    currentPage = 1;
+    renderOffers();
+  });
+
+  // Evento para la paginación
+  prevPageButton.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderOffers();
+    }
+  });
+
+  nextPageButton.addEventListener('click', () => {
+    if ((currentPage * recordsPerPage) < filteredOffers.length) {
+      currentPage++;
+      renderOffers();
+    }
+  });
+
+  // Eventos para los filtros (dinámicos, sin botón de "Filtrar")
+  dateFromFilter.addEventListener('change', loadOffers);
+  monthFilter.addEventListener('change', loadOffers);
+  statusFilter.addEventListener('change', loadOffers);
 });
+
+// Función global para cerrar el modal y limpiar los filtros
+function closeOffersModal() {
+  document.getElementById('offersModal').style.display = 'none';
+  clearFilters();
+}

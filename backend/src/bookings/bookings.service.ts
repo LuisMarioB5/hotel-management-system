@@ -18,7 +18,7 @@ export class BookingsService {
         private readonly repository: Repository<BookingEntity>,
         private readonly customersService: CustomersService,
         private readonly roomsService: RoomsService,
-        private readonly mailerService: MailerService, // Inyectamos el MailerService
+        private readonly mailerService: MailerService,
     ) {}
 
     async create(b: CreateBookingDTO): Promise<BookingEntity> {
@@ -30,45 +30,85 @@ export class BookingsService {
             checkInDate: b.checkInDate,
         };
 
-        if(b.checkOutDate !== null) newBooking.checkOutDate = b.checkOutDate;
-        if(b.details !== null) newBooking.details = b.details;
-        if(b.cashAdvance !== null) newBooking.cashAdvance = b.cashAdvance;
-        if(b.stayCost !== null) newBooking.stayCost = b.stayCost;
-        if(b.totalStayDays !== null) newBooking.totalStayDays = b.totalStayDays;
-        if(b.totalCost !== null) newBooking.totalCost = b.totalCost;
-        if(b.priceAdjustment !== null) newBooking.priceAdjustment = b.priceAdjustment;
-        if(b.status !== null) newBooking.status = b.status;
-        if(b.isActive !== null) newBooking.isActive = b.isActive;
+        if (b.checkOutDate !== null) newBooking.checkOutDate = b.checkOutDate;
+        if (b.details !== null) newBooking.details = b.details;
+        if (b.cashAdvance !== null) newBooking.cashAdvance = b.cashAdvance;
+        if (b.stayCost !== null) newBooking.stayCost = b.stayCost;
+        if (b.totalStayDays !== null) newBooking.totalStayDays = b.totalStayDays;
+        if (b.totalCost !== null) newBooking.totalCost = b.totalCost;
+        if (b.priceAdjustment !== null) newBooking.priceAdjustment = b.priceAdjustment;
+        if (b.status !== null) newBooking.status = b.status;
+        if (b.isActive !== null) newBooking.isActive = b.isActive;
 
         const booking = this.repository.create(newBooking);
-        
-        const saved = await this.repository.save(booking);
-        return saved;
+        const savedBooking = await this.repository.save(booking); // Guardamos la reserva inmediatamente
+        return savedBooking;
     }
 
-    // Nuevo método para crear una reserva y enviar el correo de notificación
     async createAndNotify(bookingData: CreateBookingDTO, customerEmail: string, roomNumber: string): Promise<BookingEntity> {
-        // Crear la reserva usando el método existente
+        // Crear y guardar la reserva
         const savedBooking = await this.create(bookingData);
 
-        // Enviar el correo de confirmación
-        await this.sendBookingConfirmationEmail(savedBooking, customerEmail, roomNumber);
+        try {
+            // Enviar el correo de confirmación
+            await this.sendBookingConfirmationEmail(savedBooking, customerEmail, roomNumber);
+        } catch (error) {
+            // Si el correo falla, eliminamos la reserva para mantener la consistencia
+            await this.repository.delete(savedBooking.id);
+            throw new Error(`Error al enviar el correo de confirmación: ${error.message}`);
+        }
 
         return savedBooking;
     }
 
-    // Método para enviar el correo con los botones de Confirmar y Cancelar
     async sendBookingConfirmationEmail(booking: BookingEntity, customerEmail: string, roomNumber: string) {
         try {
             const confirmUrl = `http://localhost:3000/bookings/confirm-from-email/${booking.id}`;
             const cancelUrl = `http://localhost:3000/bookings/cancel-from-email/${booking.id}`;
+            const questionnaireUrl = `http://127.0.0.1:5500/frontend/src/pages/cuestionario.html`;
+
+            // Obtener las amenidades de la habitación
+            const roomAmenities = await this.roomsService.getRoomAmenities(booking.room.id);
+
+            // Generar el HTML para las amenidades
+            let amenitiesHtml = '';
+            roomAmenities.forEach(category => {
+                amenitiesHtml += `
+                    <li style="margin-bottom: 10px;">
+                        <strong>${category.name}</strong>
+                        <ul style="list-style: none; padding-left: 20px;">
+                `;
+                category.options.forEach(option => {
+                    if (option.amenities.length > 0) {
+                        amenitiesHtml += `
+                            <li>${option.name}</li>
+                            <ul style="list-style: none; padding-left: 20px;">
+                        `;
+                        option.amenities.forEach(amenity => {
+                            amenitiesHtml += `
+                                <li>${amenity.value} (Disponibilidad: ${amenity.availability_level})</li>
+                            `;
+                        });
+                        amenitiesHtml += `</ul>`;
+                    }
+                });
+                amenitiesHtml += `
+                        </ul>
+                    </li>
+                `;
+            });
+
+            // Si no hay amenidades, mostramos un mensaje
+            if (!amenitiesHtml) {
+                amenitiesHtml = '<li>No hay amenidades asociadas a esta habitación.</li>';
+            }
 
             await this.mailerService.sendMail({
                 to: customerEmail,
                 subject: 'Confirma tu Reserva en Hotel Hodelpa',
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-                        <img src="cid:hotel-image" alt="Hotel Hodelpa" style="width: 100%; height: auto; border-radius: 10px;" />
+                        <img src="cid:hotel-image" alt="Hotel Hodelpa" style="max-width: 300px; height: auto; border-radius: 10px; display: block; margin: 0 auto;" />
                         <h2 style="color: #333; text-align: center;">¡Tu Reserva en Hotel Hodelpa!</h2>
                         <p style="color: #555;">Hola,</p>
                         <p style="color: #555;">Hemos recibido tu solicitud de reserva. Aquí están los detalles:</p>
@@ -79,10 +119,18 @@ export class BookingsService {
                             <li><strong>Fecha de Salida:</strong> ${new Date(booking.checkOutDate).toLocaleDateString()}</li>
                             <li><strong>Costo Total:</strong> RD$${booking.totalCost.toLocaleString()}</li>
                         </ul>
+                        <h3 style="color: #333;">Amenidades de la Habitación:</h3>
+                        <ul style="color: #555; list-style: none; padding: 0;">
+                            ${amenitiesHtml}
+                        </ul>
                         <p style="color: #555; text-align: center;">Por favor, confirma o cancela tu reserva haciendo clic en uno de los botones a continuación:</p>
                         <div style="text-align: center; margin: 20px 0;">
                             <a href="${confirmUrl}" style="background: linear-gradient(135deg, #488ada, #ab2497); color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Confirmar</a>
-                            <a href="${cancelUrl}" style="background-color: #ccc; color: #333; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Cancelar</a>
+                            <a href="${cancelUrl}" style="background-color: #ff3333; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Cancelar</a>
+                        </div>
+                        <p style="color: #555; text-align: center;">¿Quieres personalizar tu experiencia? Ingresa tus preferencias:</p>
+                        <div style="text-align: center; margin: 20px 0;">
+                            <a href="${questionnaireUrl}" style="background: linear-gradient(135deg, #48c9da, #24ab97); color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Ingresar Preferencias</a>
                         </div>
                         <p style="color: #555;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
                         <p style="color: #555;">Saludos,<br>El equipo de Hotel Hodelpa</p>
@@ -103,7 +151,6 @@ export class BookingsService {
         }
     }
 
-    // Método para confirmar una reserva desde el enlace del correo
     async confirmBookingFromEmail(bookingId: number) {
         try {
             const booking = await this.repository.findOne({ where: { id: bookingId } });
@@ -124,7 +171,6 @@ export class BookingsService {
         }
     }
 
-    // Método para cancelar una reserva desde el enlace del correo
     async cancelBookingFromEmail(bookingId: number) {
         try {
             const booking = await this.repository.findOne({ where: { id: bookingId } });
@@ -187,7 +233,7 @@ export class BookingsService {
     async delete(id: number): Promise<void> {
         const result = await this.repository.delete(id);
         if (result.affected === 0) {
-          this.throwBookingNotFoundException(id);
+            this.throwBookingNotFoundException(id);
         }
     }
     

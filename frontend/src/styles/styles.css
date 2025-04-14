@@ -1,278 +1,304 @@
 /* Estilos para el formulario de preferencias */
 .amenities-container {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    max-height: 300px; /* Reducido para que el modal sea más compacto */
-    overflow-y: auto;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  max-height: 300px; /* Reducido para que el modal sea más compacto */
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: grid; /* Usamos CSS Grid para las columnas */
+  grid-template-columns: repeat(1, 1fr); /* Por defecto, 1 columna */
+  gap: 10px; /* Espacio entre las columnas */
+}
+
+/* Ajustamos el estilo de las categorías para que se adapten a las columnas */
+.amenity-category {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.amenity-category h3 {
+  font-size: 0.75rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.amenity-option {
+  margin-bottom: 6px;
+  cursor: pointer;
+  padding: 4px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.amenity-option:hover {
+  background-color: #f0f0f0;
+}
+
+.amenity-option .option-label {
+  font-size: 0.65rem;
+  color: #555;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.amenity-option .option-label .toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.amenity-option .option-label .toggle-icon.open {
+  transform: rotate(180deg);
+}
+
+.amenity-suboptions {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.amenity-suboptions.open {
+  max-height: 400px;
+  padding-left: 15px;
+  margin-top: 4px;
+}
+
+.suboption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.suboption label {
+  font-size: 0.7rem;
+  color: #555;
+  flex: 1;
+}
+
+.suboption input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* Aseguramos que los checkboxes de "weight level" siempre sean horizontales */
+.preference-level-checkboxes {
+  display: flex;
+  flex-direction: row; /* Forzamos dirección horizontal */
+  flex-wrap: nowrap; /* Evitamos que se envuelvan */
+  gap: 4px;
+  align-items: left;
+}
+
+.preference-level-checkboxes input[type="checkbox"] {
+  margin: 0;
+}
+
+.preference-level-checkboxes label {
+  margin-right: 4px;
+}
+
+.preference-level-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.preference-level-container select {
+  padding: 4px;
+  font-size: 0.7rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+/* Estilos para el modal de SweetAlert2 */
+.swal2-container .amenities-container {
+  max-height: 200px; /* Reducido para que el modal sea más compacto */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 8px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  display: block; /* En el modal de SweetAlert, mantenemos el diseño original (una columna) */
+}
+
+.swal2-container .option-name {
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.swal2-container .suboption {
+  font-size: 0.65rem;
+  color: #555;
+  padding-left: 8px;
+  margin-bottom: 2px;
+}
+
+/* Estilos para los inputs de fecha */
+.date-input-container {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.date-input-container label {
+  font-size: 0.8rem;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.date-input-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+}
+
+.date-input {
+  width: 100%;
+  padding: 8px 8px 8px 35px; /* Reduced padding */
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box; /* Add this to include padding in width calculation */
+  max-width: 100%; /* Ensure it doesn't exceed container width */
+}
+
+.date-input:focus {
+  border-color: #488ada;
+  box-shadow: 0 0 5px rgba(72, 138, 218, 0.3);
+  outline: none;
+}
+
+.date-icon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* Estilos para los botones del modal */
+.swal2-container .swal-confirm-btn {
+  background: linear-gradient(135deg, #488ada, #ab2497);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.swal2-container .swal-confirm-btn:hover {
+  background: linear-gradient(135deg, #ab2497, #488ada);
+}
+
+.swal2-container .swal-cancel-btn {
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.swal2-container .swal-cancel-btn:hover {
+  background-color: #bbb;
+}
+
+/* Estilos generales del modal */
+.swal2-container .swal2-html-container {
+  padding: 15px;
+  overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+.swal2-container h3 {
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.swal2-container p {
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+}
+
+.swal2-popup {
+  width: auto !important;
+  max-width: 95vw !important; /* Limit width on small screens */
+}
+
+/* Ensure the date inputs in SweetAlert are properly sized */
+.swal2-container .date-input-container {
+  width: 100%;
+}
+
+.swal2-container .date-input-wrapper {
+  width: 100%;
+}
+
+.swal2-container .date-input {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Responsive adjustments para las amenidades */
+@media (min-width: 576px) {
+  .amenities-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas medianas */
   }
-  
-  .preference-level-checkboxes {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+}
+
+@media (min-width: 992px) {
+  .amenities-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en pantallas grandes */
   }
-  
-  .preference-level-checkboxes input[type="checkbox"] {
-    margin: 0;
+}
+
+@media (max-width: 576px) {
+  .amenities-container {
+    grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
   }
-  
-  .preference-level-checkboxes label {
-    margin-right: 4px;
-  }
-  
-  .amenity-category {
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 8px;
-  }
-  
-  .amenity-category h3 {
-    font-size: 0.75rem;
-    color: #333;
-    margin-bottom: 8px;
-  }
-  
-  .amenity-option {
-    margin-bottom: 6px;
-    cursor: pointer;
-    padding: 4px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-  }
-  
-  .amenity-option:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .amenity-option .option-label {
-    font-size: 0.65rem;
-    color: #555;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .amenity-option .option-label .toggle-icon {
-    transition: transform 0.3s ease;
-  }
-  
-  .amenity-option .option-label .toggle-icon.open {
-    transform: rotate(180deg);
-  }
-  
-  .amenity-suboptions {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-  }
-  
-  .amenity-suboptions.open {
-    max-height: 400px;
-    padding-left: 15px;
-    margin-top: 4px;
-  }
-  
+}
+
+/* Ajustes responsive para otros elementos */
+@media (max-width: 768px) {
   .suboption {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  .suboption label {
-    font-size: 0.7rem;
-    color: #555;
-    flex: 1;
-  }
-  
-  .suboption input[type="checkbox"] {
-    cursor: pointer;
-  }
-  
+
   .preference-level-container {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  
-  .preference-level-container select {
-    padding: 4px;
-    font-size: 0.7rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-  }
-  
-  /* Estilos para el modal de SweetAlert2 */
-  .swal2-container .amenities-container {
-    max-height: 200px; /* Reducido para que el modal sea más compacto */
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    padding: 8px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-  }
-  
-  .swal2-container .option-name {
-    font-size: 0.7rem;
-    font-weight: bold;
-    color: #333;
     margin-top: 4px;
-    margin-bottom: 4px;
   }
-  
-  .swal2-container .suboption {
-    font-size: 0.65rem;
-    color: #555;
-    padding-left: 8px;
-    margin-bottom: 2px;
-  }
-  
-  /* Estilos para los inputs de fecha */
-  .date-input-container {
-    margin-bottom: 10px;
-    width: 100%;
-  }
-  
-  .date-input-container label {
-    font-size: 0.8rem;
-    color: #333;
-    display: block;
-    margin-bottom: 4px;
-  }
-  
-  .date-input-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-  }
-  
+
   .date-input {
-    width: 100%;
-    padding: 8px 8px 8px 35px; /* Reduced padding */
-    font-size: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    box-sizing: border-box; /* Add this to include padding in width calculation */
-    max-width: 100%; /* Ensure it doesn't exceed container width */
+    font-size: 0.75rem;
+    padding: 6px 6px 6px 30px;
   }
-  
-  .date-input:focus {
-    border-color: #488ada;
-    box-shadow: 0 0 5px rgba(72, 138, 218, 0.3);
-    outline: none;
-  }
-  
+
   .date-icon {
-    position: absolute;
-    left: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #888;
-    font-size: 0.9rem;
-  }
-  
-  /* Estilos para los botones del modal */
-  .swal2-container .swal-confirm-btn {
-    background: linear-gradient(135deg, #488ada, #ab2497);
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    transition: background 0.3s ease;
-  }
-  
-  .swal2-container .swal-confirm-btn:hover {
-    background: linear-gradient(135deg, #ab2497, #488ada);
-  }
-  
-  .swal2-container .swal-cancel-btn {
-    background-color: #ccc;
-    color: #333;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    transition: background 0.3s ease;
-  }
-  
-  .swal2-container .swal-cancel-btn:hover {
-    background-color: #bbb;
-  }
-  
-  /* Estilos generales del modal */
-  .swal2-container .swal2-html-container {
-    padding: 15px;
-    overflow-x: hidden; /* Prevent horizontal overflow */
-  }
-  
-  .swal2-container h3 {
-    font-size: 0.95rem;
-    color: #333;
-    margin-bottom: 8px;
-  }
-  
-  .swal2-container p {
     font-size: 0.8rem;
-    margin-bottom: 8px;
   }
-  
+}
+
+@media (max-width: 500px) {
   .swal2-popup {
-    width: auto !important;
-    max-width: 95vw !important; /* Limit width on small screens */
+    width: 95vw !important;
+    padding: 10px;
   }
-  
-  /* Ensure the date inputs in SweetAlert are properly sized */
-  .swal2-container .date-input-container {
-    width: 100%;
+
+  .date-input {
+    font-size: 0.7rem;
+    padding: 6px 6px 6px 25px;
   }
-  
-  .swal2-container .date-input-wrapper {
-    width: 100%;
-  }
-  
-  .swal2-container .date-input {
-    width: 100%;
-    max-width: 100%;
-  }
-  
-  @media (max-width: 768px) {
-    .suboption {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .preference-level-container {
-      margin-top: 4px;
-    }
-  
-    .date-input {
-      font-size: 0.75rem;
-      padding: 6px 6px 6px 30px;
-    }
-  
-    .date-icon {
-      font-size: 0.8rem;
-    }
-  }
-  
-  /* Responsive adjustments for small screens */
-  @media (max-width: 500px) {
-    .swal2-popup {
-      width: 95vw !important;
-      padding: 10px;
-    }
-  
-    .date-input {
-      font-size: 0.7rem;
-      padding: 6px 6px 6px 25px;
-    }
-  }
-  
+}

@@ -28,6 +28,71 @@ export class OffersService {
     }
   }
 
+  async getAllOffers(filters: {
+    dateFrom?: string;
+    month?: number;
+    status?: string;
+  }) {
+    try {
+      // Forzar la zona horaria de la sesión a UTC para evitar problemas
+      await this.dataSource.query("SET time_zone = '+00:00';");
+  
+      const { dateFrom, month, status } = filters;
+  
+      // Construir la consulta base
+      let query = `
+        SELECT 
+          o.id,
+          o.customer_id,
+          o.room_id,
+          o.discount,
+          o.validFrom,
+          o.validTo,
+          o.status,
+          o.details,
+          o.price,
+          c.name AS customer_name,
+          c.email AS customer_email,
+          r.number AS room_number
+        FROM offers o
+        LEFT JOIN customers c ON o.customer_id = c.id
+        LEFT JOIN rooms r ON o.room_id = r.id
+        WHERE 1=1
+      `;
+  
+      const params: any[] = [];
+  
+      // Filtro por fecha exacta (validFrom)
+      if (dateFrom) {
+        const formattedDate = new Date(dateFrom);
+
+        query += ` AND DATE(o.validFrom) = DATE(?)`;
+        params.push(dateFrom);
+      }
+  
+      // Filtro por mes (basado en validFrom)
+      if (month) {
+        query += ` AND MONTH(o.validFrom) = ?`;
+        params.push(month);
+      }
+  
+      // Filtro por estado
+      if (status) {
+        query += ` AND o.status = ?`;
+        params.push(status);
+      }
+  
+      
+  
+      const offers = await this.dataSource.query(query, params);
+  
+  
+      return offers;
+    } catch (error) {
+      throw new Error(`Error al obtener las ofertas: ${error.message}`);
+    }
+  }
+
   private async withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
     const timeout = new Promise((_, reject) => {
       setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms);

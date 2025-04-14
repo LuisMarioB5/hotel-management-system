@@ -1,4 +1,4 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, Get, Query } from '@nestjs/common';
 import { OffersService } from './offers.service';
 
 @Controller('offers')
@@ -30,5 +30,31 @@ export class OffersController {
   async sendOffers(@Body() offersData: any[]) {
     const result = await this.offersService.saveAndSendOffers(offersData);
     return result;
+  }
+
+  @Get()
+  async getAllOffers(
+    @Query('dateFrom') dateFrom?: string,
+    @Query('month') month?: string,
+    @Query('status') status?: string,
+  ) {
+    // Validaciones
+    if (dateFrom && !/^\d{4}-\d{2}-\d{2}$/.test(dateFrom)) {
+      throw new BadRequestException('dateFrom debe tener el formato YYYY-MM-DD');
+    }
+    if (month && (isNaN(parseInt(month)) || parseInt(month) < 1 || parseInt(month) > 12)) {
+      throw new BadRequestException('month debe ser un número entre 1 y 12');
+    }
+    if (status && !['PENDIENTE', 'ACEPTADA', 'RECHAZADA'].includes(status)) {
+      throw new BadRequestException('status debe ser PENDIENTE, ACEPTADA o RECHAZADA');
+    }
+
+    const filters = {
+      dateFrom,
+      month: month ? parseInt(month) : undefined,
+      status,
+    };
+
+    return await this.offersService.getAllOffers(filters);
   }
 }
