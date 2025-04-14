@@ -8,7 +8,8 @@ import { CustomersService } from 'src/customers/customers.service';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { RoomEntity, RoomStatus } from 'src/rooms/room.entity';
 import { getEnumValues } from 'src/utils/showEnum.values';
-import { start } from 'repl';
+import { MailerService } from '@nestjs-modules/mailer';
+import { join } from 'path';
 
 @Injectable()
 export class BookingsService {
@@ -17,6 +18,7 @@ export class BookingsService {
         private readonly repository: Repository<BookingEntity>,
         private readonly customersService: CustomersService,
         private readonly roomsService: RoomsService,
+        private readonly mailerService: MailerService, // Inyectamos el MailerService
     ) {}
 
     async create(b: CreateBookingDTO): Promise<BookingEntity> {
@@ -42,6 +44,106 @@ export class BookingsService {
         
         const saved = await this.repository.save(booking);
         return saved;
+    }
+
+    // Nuevo método para crear una reserva y enviar el correo de notificación
+    async createAndNotify(bookingData: CreateBookingDTO, customerEmail: string, roomNumber: string): Promise<BookingEntity> {
+        // Crear la reserva usando el método existente
+        const savedBooking = await this.create(bookingData);
+
+        // Enviar el correo de confirmación
+        await this.sendBookingConfirmationEmail(savedBooking, customerEmail, roomNumber);
+
+        return savedBooking;
+    }
+
+    // Método para enviar el correo con los botones de Confirmar y Cancelar
+    async sendBookingConfirmationEmail(booking: BookingEntity, customerEmail: string, roomNumber: string) {
+        try {
+            const confirmUrl = `http://localhost:3000/bookings/confirm-from-email/${booking.id}`;
+            const cancelUrl = `http://localhost:3000/bookings/cancel-from-email/${booking.id}`;
+
+            await this.mailerService.sendMail({
+                to: customerEmail,
+                subject: 'Confirma tu Reserva en Hotel Hodelpa',
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                        <img src="cid:hotel-image" alt="Hotel Hodelpa" style="width: 100%; height: auto; border-radius: 10px;" />
+                        <h2 style="color: #333; text-align: center;">¡Tu Reserva en Hotel Hodelpa!</h2>
+                        <p style="color: #555;">Hola,</p>
+                        <p style="color: #555;">Hemos recibido tu solicitud de reserva. Aquí están los detalles:</p>
+                        <h3 style="color: #333;">Detalles de la Reserva:</h3>
+                        <ul style="color: #555; list-style: none; padding: 0;">
+                            <li><strong>Habitación:</strong> ${roomNumber}</li>
+                            <li><strong>Fecha de Entrada:</strong> ${new Date(booking.checkInDate).toLocaleDateString()}</li>
+                            <li><strong>Fecha de Salida:</strong> ${new Date(booking.checkOutDate).toLocaleDateString()}</li>
+                            <li><strong>Costo Total:</strong> RD$${booking.totalCost.toLocaleString()}</li>
+                        </ul>
+                        <p style="color: #555; text-align: center;">Por favor, confirma o cancela tu reserva haciendo clic en uno de los botones a continuación:</p>
+                        <div style="text-align: center; margin: 20px 0;">
+                            <a href="${confirmUrl}" style="background: linear-gradient(135deg, #488ada, #ab2497); color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Confirmar</a>
+                            <a href="${cancelUrl}" style="background-color: #ccc; color: #333; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Cancelar</a>
+                        </div>
+                        <p style="color: #555;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
+                        <p style="color: #555;">Saludos,<br>El equipo de Hotel Hodelpa</p>
+                    </div>
+                `,
+                attachments: [
+                    {
+                        filename: 'hotel-image.jpg',
+                        path: join(__dirname, '..', '..', '..', 'frontend', 'public', 'assets', 'login-img.jpg'),
+                        cid: 'hotel-image',
+                    },
+                ],
+            });
+
+            return { success: true };
+        } catch (error) {
+            throw new Error(`Error al enviar el correo de confirmación: ${error.message}`);
+        }
+    }
+
+    // Método para confirmar una reserva desde el enlace del correo
+    async confirmBookingFromEmail(bookingId: number) {
+        try {
+            const booking = await this.repository.findOne({ where: { id: bookingId } });
+            if (!booking) {
+                throw new Error('Reserva no encontrada');
+            }
+
+            if (booking.status !== BookingStatus.PENDIENTE) {
+                throw new Error('La reserva ya ha sido procesada');
+            }
+
+            booking.status = BookingStatus.CONFIRMADA;
+            await this.repository.save(booking);
+
+            return { success: true, message: 'Reserva confirmada exitosamente' };
+        } catch (error) {
+            throw new Error(`Error al confirmar la reserva: ${error.message}`);
+        }
+    }
+
+    // Método para cancelar una reserva desde el enlace del correo
+    async cancelBookingFromEmail(bookingId: number) {
+        try {
+            const booking = await this.repository.findOne({ where: { id: bookingId } });
+            if (!booking) {
+                throw new Error('Reserva no encontrada');
+            }
+
+            if (booking.status !== BookingStatus.PENDIENTE) {
+                throw new Error('La reserva ya ha sido procesada');
+            }
+
+            booking.status = BookingStatus.CANCELADA;
+            booking.isActive = false;
+            await this.repository.save(booking);
+
+            return { success: true, message: 'Reserva cancelada exitosamente' };
+        } catch (error) {
+            throw new Error(`Error al cancelar la reserva: ${error.message}`);
+        }
     }
     
     async findAll(): Promise<BookingEntity[]> {
@@ -177,7 +279,7 @@ export class BookingsService {
         }
     
         return availableRooms;
-      }
+    }
 
     private async isRoomAvailable(roomId: number, checkInDate: Date, checkOutDate: Date, bookingId?: number): Promise<boolean> {
         const overlappingBookings = await this.repository.find({

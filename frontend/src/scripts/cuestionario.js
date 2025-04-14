@@ -1,4 +1,4 @@
-import { createBooking } from '../integrations/booking.integration.js'; // Importamos createBooking
+import { createBooking } from '../integrations/booking.integration.js'; 
 
 document.addEventListener('DOMContentLoaded', async () => {
     const clienteIdInput = document.getElementById('cliente-id');
@@ -300,6 +300,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        const customerEmail = correoInput.value;
+        if (!customerEmail) {
+            Swal.fire({
+                title: 'Error',
+                text: 'El cliente no tiene un correo electrónico registrado.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
+            });
+            return;
+        }
+
         const minCost = parseInt(minPriceSelect.value);
         const maxCost = parseInt(maxPriceSelect.value);
         const selectedWeightCheckbox = Array.from(priceWeightCheckboxes).find(cb => cb.checked);
@@ -425,7 +440,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <div class="amenity-suboptions">
                         `;
                         category.options.forEach(option => {
-                            // Mostrar el nombre de la opción (como "TV" o "WI-FI")
                             if (option.amenities.length > 0) {
                                 amenitiesHtml += `
                                     <div class="option-name">${option.name}</div>
@@ -508,7 +522,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             const stayCost = totalStayDays * price;
                             const totalCost = stayCost; // No hay consumos adicionales
 
-                            // Crear la reserva usando createBooking
+                            // Crear la reserva y enviar el correo usando el nuevo endpoint
                             try {
                                 const bookingData = {
                                     customerId: customerId,
@@ -525,16 +539,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     isActive: true,
                                 };
 
-                                const result = await createBooking(bookingData);
+                                const response = await fetch('http://localhost:3000/bookings/create-and-notify', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        bookingData: bookingData,
+                                        customerEmail: customerEmail,
+                                        roomNumber: room_number,
+                                    }),
+                                });
 
-                                if (result.error === 'OVERLAPPING_BOOKINGS') {
-                                    const overlappingDates = result.overlappingBookings
-                                        .map(booking => `desde ${new Date(booking.checkInDate).toLocaleDateString()} hasta ${new Date(booking.checkOutDate).toLocaleDateString()}`)
-                                        .join(', ');
-                                    throw new Error(`La habitación ya está reservada en las fechas seleccionadas: ${overlappingDates}`);
+                                if (!response.ok) {
+                                    const errorData = await response.json();
+                                    throw new Error(errorData.message || 'Error al crear la reserva y enviar el correo');
                                 }
 
-                                return result; // Retornar el resultado para usarlo después
+                                const result = await response.json();
+                                return result.booking; // Retornar el resultado para usarlo después
                             } catch (error) {
                                 Swal.showValidationMessage(`Error al crear la reserva: ${error.message}`);
                                 return false;
@@ -591,7 +614,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (reservationModal.isConfirmed) {
                         await Swal.fire({
                             title: '¡Reserva creada correctamente!',
-                            text: 'Esperando aprobación del hotel.',
+                            text: 'Se ha enviado un correo al cliente para confirmar o cancelar la reserva.',
                             icon: 'success',
                             confirmButtonText: 'Aceptar',
                             heightAuto: false,
