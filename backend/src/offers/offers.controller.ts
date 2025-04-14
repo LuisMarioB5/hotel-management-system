@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { OffersService } from './offers.service';
 
 @Controller('offers')
@@ -12,15 +12,15 @@ export class OffersController {
     const { numCustomers, isFrequentGuest, specificCustomer } = body;
 
     if (!Number.isInteger(numCustomers) || numCustomers < 0) {
-      throw new Error('numCustomers debe ser un número entero no negativo');
+      throw new BadRequestException('numCustomers debe ser un número entero no negativo');
     }
 
     if (isFrequentGuest !== 0 && isFrequentGuest !== 1) {
-      throw new Error('isFrequentGuest debe ser 0 o 1');
+      throw new BadRequestException('isFrequentGuest debe ser 0 o 1');
     }
 
     if (!Number.isInteger(specificCustomer) || specificCustomer < 0) {
-      throw new Error('specificCustomer debe ser un número entero no negativo');
+      throw new BadRequestException('specificCustomer debe ser un número entero no negativo');
     }
 
     return await this.offersService.generateOffers(numCustomers, isFrequentGuest, specificCustomer);

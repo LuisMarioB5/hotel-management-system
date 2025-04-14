@@ -21,10 +21,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Variable para almacenar el último ID de cliente conocido
     let lastClientId = null;
 
-    // Función para cargar las amenidades desde el backend
     const loadAmenities = async () => {
         try {
             const response = await fetch('http://localhost:3000/amenities/list', {
@@ -33,29 +31,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                     'Content-Type': 'application/json',
                 },
             });
-    
+
             if (!response.ok) {
                 throw new Error('Error al cargar las amenidades');
             }
-    
+
             const categories = await response.json();
-    
-            // Limpiar el contenedor de amenidades antes de renderizar
+
             amenitiesContainer.innerHTML = '';
-    
-            // Generar las categorías y sus opciones
+
             categories.forEach(category => {
                 const categoryDiv = document.createElement('div');
                 categoryDiv.classList.add('amenity-category');
-    
+
                 const categoryTitle = document.createElement('h3');
                 categoryTitle.textContent = category.name;
                 categoryDiv.appendChild(categoryTitle);
-    
+
                 category.options.forEach(option => {
                     const optionDiv = document.createElement('div');
                     optionDiv.classList.add('amenity-option');
-    
+
                     const optionLabel = document.createElement('div');
                     optionLabel.classList.add('option-label');
                     optionLabel.innerHTML = `
@@ -63,58 +59,55 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <span class="toggle-icon">▼</span>
                     `;
                     optionDiv.appendChild(optionLabel);
-    
+
                     const suboptionsDiv = document.createElement('div');
                     suboptionsDiv.classList.add('amenity-suboptions');
-    
-                    // Generar las subopciones (amenidades) para esta opción
+
                     option.amenities.forEach(amenity => {
-                        
                         const suboptionDiv = document.createElement('div');
                         suboptionDiv.classList.add('suboption');
-    
+
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
                         checkbox.id = `amenity-${amenity.id}`;
                         checkbox.value = amenity.id;
-    
+
                         const label = document.createElement('label');
                         label.htmlFor = `amenity-${amenity.id}`;
                         label.textContent = `${amenity.value} (RD$${amenity.cost.toLocaleString()})`;
-    
+
                         const preferenceSelect = document.createElement('select');
                         preferenceSelect.classList.add('preference-level');
                         preferenceSelect.name = `preference-${amenity.id}`;
                         preferenceSelect.disabled = true;
-                        preferenceSelect.title = '¿Qué tan importante es esta amenidad para ti?'; // Tooltip
+                        preferenceSelect.title = '¿Qué tan importante es esta amenidad para ti?';
                         for (let i = 1; i <= 5; i++) {
                             const option = document.createElement('option');
                             option.value = i;
                             option.textContent = i;
                             preferenceSelect.appendChild(option);
                         }
-    
+
                         checkbox.addEventListener('change', () => {
                             preferenceSelect.disabled = !checkbox.checked;
                         });
-    
+
                         suboptionDiv.appendChild(checkbox);
                         suboptionDiv.appendChild(label);
                         suboptionDiv.appendChild(preferenceSelect);
                         suboptionsDiv.appendChild(suboptionDiv);
                     });
-    
-                    // Toggle para mostrar/ocultar las subopciones
+
                     optionLabel.addEventListener('click', () => {
                         const isOpen = suboptionsDiv.classList.toggle('open');
                         const toggleIcon = optionLabel.querySelector('.toggle-icon');
                         toggleIcon.classList.toggle('open', isOpen);
                     });
-    
+
                     optionDiv.appendChild(suboptionsDiv);
                     categoryDiv.appendChild(optionDiv);
                 });
-    
+
                 amenitiesContainer.appendChild(categoryDiv);
             });
         } catch (error) {
@@ -131,7 +124,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Función para cargar los rangos de precios dinámicos desde la tabla rooms
     const loadPriceRanges = async () => {
         try {
             const response = await fetch('http://localhost:3000/rooms/price-range', {
@@ -147,12 +139,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const { minPrice, maxPrice } = await response.json();
 
-            // Convertir los valores a números
             const minPriceNum = parseInt(minPrice);
             const maxPriceNum = parseInt(maxPrice);
 
-            // Generar opciones para min_price y max_price
-            const step = Math.ceil((maxPriceNum - minPriceNum) / 10); // Dividimos en 10 pasos
+            const step = Math.ceil((maxPriceNum - minPriceNum) / 10);
             for (let price = minPriceNum; price <= maxPriceNum; price += step) {
                 const minOption = document.createElement('option');
                 minOption.value = price.toString();
@@ -165,11 +155,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 maxPriceSelect.appendChild(maxOption);
             }
 
-            // Establecer valores iniciales
             minPriceSelect.value = minPriceNum.toString();
             maxPriceSelect.value = maxPriceNum.toString();
 
-            // Validar que min_price no sea mayor que max_price
             minPriceSelect.addEventListener('change', () => {
                 const minPrice = parseInt(minPriceSelect.value);
                 const maxPrice = parseInt(maxPriceSelect.value);
@@ -199,7 +187,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Función para cargar las preferencias del cliente
     const loadClientPreferences = async (customerId) => {
         try {
             const response = await fetch(`http://localhost:3000/preferences/${customerId}`, {
@@ -217,7 +204,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const { configuration, amenities } = preferences;
 
-            // Cargar los valores de client_configuration
             if (configuration.min_cost && configuration.max_cost) {
                 const minOptions = Array.from(minPriceSelect.options).map(opt => parseInt(opt.value));
                 let closestMin = minOptions.reduce((prev, curr) =>
@@ -235,15 +221,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 maxPriceSelect.value = maxPriceSelect.options[maxPriceSelect.options.length - 1].value;
             }
 
-            // Cargar weight_level
             const weightLevel = parseInt(configuration.weight_level);
             priceWeightCheckboxes.forEach(checkbox => {
                 checkbox.checked = parseInt(checkbox.value) === weightLevel;
             });
 
-            // Cargar las amenidades seleccionadas (client_amenities)
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                if (checkbox.name === 'price_weight_level') return; // Ignorar los checkboxes de price_weight_level
+                if (checkbox.name === 'price_weight_level') return;
                 checkbox.checked = false;
                 const preferenceSelect = document.querySelector(`select[name="preference-${checkbox.value}"]`);
                 if (preferenceSelect) {
@@ -253,10 +237,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             if (amenities && amenities.length > 0) {
-               
+              
                 amenities.forEach(amenity => {
                     const checkbox = document.getElementById(`amenity-${amenity.amenity_id}`);
                     if (checkbox) {
+                        
                         checkbox.checked = true;
                         const preferenceSelect = document.querySelector(`select[name="preference-${amenity.amenity_id}"]`);
                         if (preferenceSelect) {
@@ -286,20 +271,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Cargar las amenidades y los rangos de precios al iniciar
-    await loadAmenities(); // Esperar a que las amenidades se carguen
+    await loadAmenities();
     await loadPriceRanges();
 
-    // Comenzar a observar cambios en cliente-id después de cargar las amenidades
     setInterval(() => {
         const currentClientId = clienteIdInput.value;
         if (currentClientId && currentClientId !== lastClientId && parseInt(currentClientId) > 0) {
             lastClientId = currentClientId;
             loadClientPreferences(parseInt(currentClientId));
         }
-    }, 500); // Verificar cada 500ms
+    }, 500);
 
-    // Manejar el evento de "Guardar"
     registrarBtn.addEventListener('click', async () => {
         const customerId = parseInt(clienteIdInput.value);
         if (!customerId || customerId <= 0) {
@@ -321,11 +303,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const selectedWeightCheckbox = Array.from(priceWeightCheckboxes).find(cb => cb.checked);
         const priceWeightLevel = selectedWeightCheckbox ? parseInt(selectedWeightCheckbox.value) : 0;
 
-        // Recolectar las amenidades seleccionadas y sus niveles de preferencia
         const selectedAmenities = [];
         const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
         checkboxes.forEach(checkbox => {
-            if (checkbox.name === 'price_weight_level') return; // Ignorar los checkboxes de price_weight_level
+            if (checkbox.name === 'price_weight_level') return;
             const amenityId = parseInt(checkbox.value);
             const preferenceLevel = parseInt(document.querySelector(`select[name="preference-${amenityId}"]`).value);
             selectedAmenities.push({
@@ -370,37 +351,210 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error(errorData.error || 'Error al guardar las preferencias');
             }
 
-            const result = await response.json();
+            await response.json();
 
             Swal.close();
 
-            Swal.fire({
-                title: 'Preferencias Guardadas',
-                text: 'Las preferencias se han guardado exitosamente.',
+            // Mostrar alerta para ofrecer recomendación
+            const result = await Swal.fire({
+                title: 'Cuestionario guardado correctamente',
+                text: '¿Desea generar una habitación adecuada a sus gustos?',
                 icon: 'success',
-                confirmButtonText: 'Aceptar',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, generar',
+                cancelButtonText: 'No, gracias',
                 heightAuto: false,
                 customClass: {
                     container: 'swal-container',
                 },
             });
 
-            // Limpiar el formulario
-            minPriceSelect.value = minPriceSelect.options[0].value;
-            maxPriceSelect.value = maxPriceSelect.options[maxPriceSelect.options.length - 1].value;
-            priceWeightCheckboxes.forEach(checkbox => checkbox.checked = false);
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                if (checkbox.name === 'price_weight_level') return;
-                checkbox.checked = false;
-                const preferenceSelect = document.querySelector(`select[name="preference-${checkbox.value}"]`);
-                if (preferenceSelect) {
-                    preferenceSelect.disabled = true;
-                    preferenceSelect.value = '1';
-                }
-            });
+            if (result.isConfirmed) {
+                // Llamar al backend para generar la oferta
+                try {
+                    const offerResponse = await fetch('http://localhost:3000/offers/generate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            numCustomers: 0,
+                            isFrequentGuest: 0,
+                            specificCustomer: customerId,
+                        }),
+                    });
 
-            // Restablecer lastClientId para permitir cargar nuevas preferencias
-            lastClientId = null;
+                    if (!offerResponse.ok) {
+                        const errorData = await offerResponse.json();
+                        throw new Error(errorData.error || 'Error al generar la oferta');
+                    }
+
+                    const offers = await offerResponse.json();
+                    if (!offers || offers.length === 0) {
+                        throw new Error('No se encontraron habitaciones adecuadas');
+                    }
+
+                    const offer = offers[0]; // Tomamos la primera oferta (la mejor según el procedimiento)
+                    const { room_id, room_number, price, total_score } = offer;
+
+                    // Obtener las amenidades de la habitación
+                    const amenitiesResponse = await fetch(`http://localhost:3000/rooms/${room_id}/amenities`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (!amenitiesResponse.ok) {
+                        throw new Error('Error al obtener las amenidades de la habitación');
+                    }
+
+                    const roomAmenities = await amenitiesResponse.json();
+
+                    // Generar el HTML para las amenidades (acordeón por categoría)
+                    let amenitiesHtml = '';
+                    roomAmenities.forEach(category => {
+                        amenitiesHtml += `
+                            <div class="amenity-category">
+                                <div class="option-label">
+                                    ${category.name}
+                                    <span class="toggle-icon">▼</span>
+                                </div>
+                                <div class="amenity-suboptions">
+                        `;
+                        category.options.forEach(option => {
+                            // Mostrar el nombre de la opción (como "TV" o "WI-FI")
+                            if (option.amenities.length > 0) {
+                                amenitiesHtml += `
+                                    <div class="option-name">${option.name}</div>
+                                `;
+                                option.amenities.forEach(amenity => {
+                                    amenitiesHtml += `
+                                        <div class="suboption">
+                                            ${amenity.value}
+                                        </div>
+                                    `;
+                                });
+                            }
+                        });
+                        amenitiesHtml += `
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // Mostrar el modal con los detalles de la habitación y los inputs de fecha
+                    Swal.fire({
+                        title: `Habitación Sugerida: ${room_number}`,
+                        html: `
+                            <div style="text-align: left;">
+                                <h3>Detalles de la Habitación</h3>
+                                <div class="amenities-container">${amenitiesHtml}</div>
+                                <p><strong>Precio por Noche:</strong> RD$${price.toLocaleString()}</p>
+                                <hr>
+                                <h3>Seleccione las Fechas de su Estancia</h3>
+                                <div class="date-input-container">
+                                    <label for="checkInDate">Fecha de Entrada:</label>
+                                    <div class="date-input-wrapper">
+                                        <input type="date" id="checkInDate" class="date-input">
+                                        <i class="fas fa-calendar-alt date-icon"></i>
+                                    </div>
+                                </div>
+                                <div class="date-input-container">
+                                    <label for="checkOutDate">Fecha de Salida:</label>
+                                    <div class="date-input-wrapper">
+                                        <input type="date" id="checkOutDate" class="date-input">
+                                        <i class="fas fa-calendar-alt date-icon"></i>
+                                    </div>
+                                </div>
+                                <p><strong>Costo Total:</strong> <span id="totalCost">Seleccione las fechas</span></p>
+                            </div>
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Reservar',
+                        cancelButtonText: 'Cancelar',
+                        width: '500px', // Reducido de 600px a 500px
+                        heightAuto: false,
+                        customClass: {
+                            container: 'swal-container',
+                            confirmButton: 'swal-confirm-btn',
+                            cancelButton: 'swal-cancel-btn',
+                        },
+                        didOpen: () => {
+                            // Agregar eventos para los acordeones
+                            document.querySelectorAll('.option-label').forEach(label => {
+                                label.addEventListener('click', () => {
+                                    const suboptions = label.nextElementSibling;
+                                    const isOpen = suboptions.classList.toggle('open');
+                                    const toggleIcon = label.querySelector('.toggle-icon');
+                                    toggleIcon.classList.toggle('open', isOpen);
+                                });
+                            });
+
+                            // Agregar eventos para calcular el costo total
+                            const checkInDateInput = document.getElementById('checkInDate');
+                            const checkOutDateInput = document.getElementById('checkOutDate');
+                            const totalCostSpan = document.getElementById('totalCost');
+
+                            const calculateTotalCost = () => {
+                                const checkInDate = new Date(checkInDateInput.value);
+                                const checkOutDate = new Date(checkOutDateInput.value);
+
+                                if (checkInDate && checkOutDate && checkOutDate > checkInDate) {
+                                    const timeDiff = checkOutDate - checkInDate;
+                                    const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                                    const totalCost = days * price;
+                                    totalCostSpan.textContent = `RD$${totalCost.toLocaleString()}`;
+                                } else {
+                                    totalCostSpan.textContent = 'Seleccione fechas válidas';
+                                }
+                            };
+
+                            checkInDateInput.addEventListener('change', calculateTotalCost);
+                            checkOutDateInput.addEventListener('change', calculateTotalCost);
+
+                            // Establecer fecha mínima para checkInDate (hoy)
+                            const today = new Date().toISOString().split('T')[0];
+                            checkInDateInput.setAttribute('min', today);
+
+                            // Establecer fecha mínima para checkOutDate (un día después de checkInDate)
+                            checkInDateInput.addEventListener('change', () => {
+                                const checkInDate = new Date(checkInDateInput.value);
+                                const minCheckOutDate = new Date(checkInDate);
+                                minCheckOutDate.setDate(checkInDate.getDate() + 1);
+                                checkOutDateInput.setAttribute('min', minCheckOutDate.toISOString().split('T')[0]);
+                            });
+                        },
+                    });
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: `No se pudo generar la recomendación: ${error.message}`,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                        heightAuto: false,
+                        customClass: {
+                            container: 'swal-container',
+                        },
+                    });
+                }
+            } else {
+                // Si el cliente no acepta, limpiar el formulario
+                minPriceSelect.value = minPriceSelect.options[0].value;
+                maxPriceSelect.value = maxPriceSelect.options[maxPriceSelect.options.length - 1].value;
+                priceWeightCheckboxes.forEach(checkbox => checkbox.checked = false);
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    if (checkbox.name === 'price_weight_level') return;
+                    checkbox.checked = false;
+                    const preferenceSelect = document.querySelector(`select[name="preference-${checkbox.value}"]`);
+                    if (preferenceSelect) {
+                        preferenceSelect.disabled = true;
+                        preferenceSelect.value = '1';
+                    }
+                });
+
+                lastClientId = null;
+            }
         } catch (error) {
             Swal.close();
 

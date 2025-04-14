@@ -7,122 +7,13 @@
     <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
+    <link rel="stylesheet" href="../styles/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-    <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <!-- CSS embebido para los checkboxes -->
-    <style>
-        /* Estilo para los checkboxes de preferencias */
-        .amenities-container {
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        .preference-level-checkboxes {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .preference-level-checkboxes input[type="checkbox"] {
-            margin: 0;
-        }
-
-        .preference-level-checkboxes label {
-            margin-right: 5px;
-        }
-        .amenity-category {
-            margin-bottom: 15px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-    
-        .amenity-category h3 {
-            font-size: 0.8rem;
-            color: #333;
-            margin-bottom: 10px;
-        }
-    
-        .amenity-option {
-            margin-bottom: 8px;
-            cursor: pointer;
-            padding: 5px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-        }
-    
-        .amenity-option:hover {
-            background-color: #f0f0f0;
-        }
-    
-        .amenity-option .option-label {
-            font-size: 0.7rem;
-            color: #555;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-    
-        .amenity-option .option-label .toggle-icon {
-            transition: transform 0.3s ease;
-        }
-    
-        .amenity-option .option-label .toggle-icon.open {
-            transform: rotate(180deg);
-        }
-    
-        .amenity-suboptions {
-            display: none;
-            padding-left: 20px;
-            margin-top: 5px;
-        }
-    
-        .amenity-suboptions.open {
-            display: block;
-        }
-    
-        .suboption {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 5px;
-        }
-    
-        .suboption label {
-            font-size: 0.8rem;
-            color: #555;
-            flex: 1;
-        }
-    
-        .suboption input[type="checkbox"] {
-            cursor: pointer;
-        }
-    
-        .preference-level-container {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-    
-        .preference-level-container select {
-            padding: 5px;
-            font-size: 0.8rem;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            cursor: pointer;
-        }
-    
-        @media (max-width: 768px) {
-            .suboption {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-    
-            .preference-level-container {
-                margin-top: 5px;
-            }
-        }
-    </style>
+    <script defer src="https://kit.fontawesome.com/a076d05399.js"> </script>
+   
+   
 </head>
 <body>
     <div class="dashboard-page">
