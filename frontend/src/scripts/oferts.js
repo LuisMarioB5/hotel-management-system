@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     dateFromFilter.value = '';
     monthFilter.value = '';
     statusFilter.value = '';
-    // También recargamos las ofertas sin filtros para asegurar que se muestren todas
     loadOffers();
   }
 
@@ -53,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const numCustomers = parseInt(document.getElementById('topProSer').value);
     const frequency = document.getElementById('topcategory').value;
     const isFrequentGuest = frequency === 'HABITUAL' ? 1 : 0;
-    const specificCustomer = 0; // Nuevo parámetro, modo 1 (asignaciones aleatorias)
+    const specificCustomer = 0;
 
     if (!numCustomers || numCustomers <= 0) {
       Swal.fire({
@@ -84,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
 
-      // Realizamos la solicitud al backend usando POST, incluyendo el nuevo parámetro
       const response = await fetch('http://localhost:3000/offers/generate', {
         method: 'POST',
         headers: {
@@ -119,17 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
 
-      // Limpiar la tabla antes de mostrar las nuevas ofertas
       offersTableBody.innerHTML = '';
 
-      // Generar las fechas de validez
       const currentDate = new Date();
-      const validFrom = currentDate.toISOString().split('T')[0]; // Esto ya debería ser correcto
+      const validFrom = currentDate.toISOString().split('T')[0];
       const validToDate = new Date(currentDate);
-      validToDate.setDate(currentDate.getDate() + 7); // Oferta válida por 7 días
+      validToDate.setDate(currentDate.getDate() + 7);
       const validTo = validToDate.toISOString().split('T')[0];
 
-      // Mapear las ofertas recibidas del backend
       generatedOffers = offers.map(offer => {
         const discountPercentage = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
         const originalPrice = parseFloat(offer.price) || 0;
@@ -151,9 +146,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
       });
 
-      // Mostrar las ofertas en la tabla
       generatedOffers.forEach(offer => {
         const row = document.createElement('tr');
+        const price = typeof offer.price === 'number' ? offer.price : 0;
         row.innerHTML = `
           <td style="display: none;" class="customer-id">${offer.customer_id || ''}</td>
           <td>${offer.name || 'Desconocido'}</td>
@@ -161,8 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <td style="display: none;" class="room-id">${offer.room_id || ''}</td>
           <td>${offer.room_number || 'Sin asignar'}</td>
           <td>${offer.details || 'Sin detalles'}</td>
-          <td style="display: none;" class="original-price">${offer.price}</td>
-          <td>$${offer.price.toFixed(2)} (${offer.discount}% OFF)</td>
+          <td style="display: none;" class="original-price">${price}</td>
+          <td>$${price.toFixed(2)} (${offer.discount}% OFF)</td>
           <td>${currentDate.toLocaleDateString('es-ES')}</td>
           <td style="display: none;" class="valid-to">${offer.validTo}</td>
           <td>
@@ -172,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
         offersTableBody.appendChild(row);
       });
 
-      // Actualizar la información de paginación
       const paginationLabel = document.querySelector('.pagination-info label');
       paginationLabel.textContent = `Mostrando ${generatedOffers.length} de ${generatedOffers.length} registros`;
 
@@ -192,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Evento para enviar ofertas
   sendOffersButton.addEventListener('click', async () => {
     if (!Array.isArray(generatedOffers) || generatedOffers.length === 0) {
       Swal.fire({
@@ -223,10 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
 
-      // Excluimos el campo 'name' de las ofertas enviadas
       const offersToSend = generatedOffers.map(({ name, ...offer }) => offer);
 
-      // Enviar las ofertas al backend
       const response = await fetch('http://localhost:3000/offers/send', {
         method: 'POST',
         headers: {
@@ -261,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
 
-      // Limpiar la tabla y el array de ofertas generadas
       generatedOffers = [];
       offersTableBody.innerHTML = '';
       const paginationLabel = document.querySelector('.pagination-info label');
@@ -283,7 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Evento para eliminar una oferta de la tabla
   offersTableBody.addEventListener('click', (event) => {
     const row = event.target.closest('tr');
     if (!row) return;
@@ -325,12 +314,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Función para cargar ofertas con filtros
   async function loadOffers() {
     try {
       const params = new URLSearchParams();
       if (dateFromFilter.value) {
-      
         params.append('dateFrom', dateFromFilter.value);
       }
       if (monthFilter.value) params.append('month', monthFilter.value);
@@ -349,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       filteredOffers = await response.json();
-      
       currentPage = 1;
       renderOffers();
     } catch (error) {
@@ -366,14 +352,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Cargar ofertas al abrir el modal
   viewAllOffersButton.addEventListener('click', () => {
-    // Limpiar filtros al abrir el modal para asegurar que se muestren todas las ofertas
     clearFilters();
     document.getElementById('offersModal').style.display = 'flex';
   });
 
-  // Función para renderizar las ofertas en la tabla del modal
   function renderOffers() {
     modalOffersTableBody.innerHTML = '';
 
@@ -383,12 +366,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     offersToShow.forEach(offer => {
       const row = document.createElement('tr');
+      // Convertimos price a número, manejando casos donde sea cadena o undefined
+      const price = parseFloat(offer.price) || 0;
       row.innerHTML = `
         <td>${offer.customer_name || 'Desconocido'}</td>
         <td>${offer.customer_email || 'Sin correo'}</td>
         <td>${offer.room_number || 'Sin asignar'}</td>
         <td>${offer.details || 'Sin detalles'}</td>
-        <td>$${parseFloat(offer.price).toFixed(2)}</td>
+        <td>$${price.toFixed(2)}</td>
         <td>${offer.discount}%</td>
         <td>${new Date(offer.validFrom).toLocaleDateString('es-ES')}</td>
         <td>${new Date(offer.validTo).toLocaleDateString('es-ES')}</td>
@@ -397,23 +382,19 @@ document.addEventListener('DOMContentLoaded', () => {
       modalOffersTableBody.appendChild(row);
     });
 
-    // Actualizar paginación
     const totalRecords = filteredOffers.length;
     paginationLabel.textContent = `Mostrando ${Math.min(recordsPerPage, totalRecords)} de ${totalRecords} registros`;
 
-    // Habilitar/deshabilitar botones de paginación
     prevPageButton.disabled = currentPage === 1;
     nextPageButton.disabled = end >= totalRecords;
   }
 
-  // Evento para cambiar el número de registros por página
   recordsPerPageSelect.addEventListener('change', () => {
     recordsPerPage = parseInt(recordsPerPageSelect.value);
     currentPage = 1;
     renderOffers();
   });
 
-  // Evento para la paginación
   prevPageButton.addEventListener('click', () => {
     if (currentPage > 1) {
       currentPage--;
@@ -428,13 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Eventos para los filtros (dinámicos, sin botón de "Filtrar")
   dateFromFilter.addEventListener('change', loadOffers);
   monthFilter.addEventListener('change', loadOffers);
   statusFilter.addEventListener('change', loadOffers);
 });
 
-// Función global para cerrar el modal y limpiar los filtros
 function closeOffersModal() {
   document.getElementById('offersModal').style.display = 'none';
   clearFilters();

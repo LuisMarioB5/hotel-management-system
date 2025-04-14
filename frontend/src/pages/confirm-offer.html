@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Oferta | Hotel Hodelpa</title>
+    <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../styles/recepcion.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .confirmation-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .confirmation-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .confirmation-container p {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .date-inputs {
+            margin-bottom: 20px;
+        }
+        .date-inputs label {
+            display: block;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .date-inputs input {
+            padding: 8px;
+            width: 100%;
+            max-width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: 0 auto;
+            display: block;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .action-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 16px;
+        }
+        .action-buttons .confirm-btn {
+            background: linear-gradient(135deg, #488ada, #ab2497);
+        }
+        .action-buttons .cancel-btn {
+            background-color: #ff3333;
+        }
+        .action-buttons button:hover {
+            opacity: 0.9;
+        }
+        .action-buttons button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .preferences-link {
+            display: block;
+            margin-top: 20px;
+            color: #fff;
+            background: linear-gradient(135deg, #48c9da, #24ab97);
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            max-width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .preferences-link:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <h2 id="actionTitle">Confirmar Acción</h2>
+        <p id="actionMessage"></p>
+        <div class="date-inputs" id="dateInputs">
+            <label for="checkInDate">Fecha de Entrada:</label>
+            <input type="date" id="checkInDate">
+            <label for="checkOutDate">Fecha de Salida:</label>
+            <input type="date" id="checkOutDate">
+        </div>
+        <div class="action-buttons">
+            <button class="confirm-btn" id="confirmBtn">Confirmar</button>
+            <button class="cancel-btn" id="cancelBtn">Cancelar</button>
+        </div>
+        <a href="cuestionario.html" class="preferences-link">Ingresar Preferencias</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const offerId = urlParams.get('offerId');
+            const action = urlParams.get('action');
+            const validFrom = urlParams.get('validFrom');
+            const validTo = urlParams.get('validTo');
+
+            if (!offerId || !action) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Faltan parámetros en la URL.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    heightAuto: false,
+                }).then(() => {
+                    window.location.href = 'login.html';
+                });
+                return;
+            }
+
+            const actionTitle = document.getElementById('actionTitle');
+            const actionMessage = document.getElementById('actionMessage');
+            const dateInputs = document.getElementById('dateInputs');
+            const confirmBtn = document.getElementById('confirmBtn');
+
+            if (action === 'accept') {
+                actionTitle.textContent = 'Aceptar Oferta';
+                actionMessage.textContent = 'Por favor, selecciona las fechas de tu reserva y confirma para aceptar la oferta.';
+                dateInputs.style.display = 'block';
+                document.getElementById('checkInDate').setAttribute('min', validFrom);
+                document.getElementById('checkInDate').setAttribute('max', validTo);
+                document.getElementById('checkOutDate').setAttribute('min', validFrom);
+                document.getElementById('checkOutDate').setAttribute('max', validTo);
+            } else if (action === 'reject') {
+                actionTitle.textContent = 'Rechazar Oferta';
+                actionMessage.textContent = '¿Estás seguro de que deseas rechazar esta oferta?';
+                dateInputs.style.display = 'none';
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Acción no válida.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    heightAuto: false,
+                }).then(() => {
+                    window.location.href = 'login.html';
+                });
+                return;
+            }
+
+            confirmBtn.addEventListener('click', async () => {
+                confirmBtn.disabled = true;
+
+                let url;
+                if (action === 'accept') {
+                    const checkInDate = document.getElementById('checkInDate').value;
+                    const checkOutDate = document.getElementById('checkOutDate').value;
+
+                    if (!checkInDate || !checkOutDate) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Por favor, selecciona las fechas de entrada y salida.',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar',
+                            heightAuto: false,
+                        });
+                        confirmBtn.disabled = false;
+                        return;
+                    }
+
+                    url = `http://localhost:3000/offers/respond-from-email/${offerId}/accept?checkInDate=${encodeURIComponent(checkInDate)}&checkOutDate=${encodeURIComponent(checkOutDate)}`;
+                } else {
+                    url = `http://localhost:3000/offers/respond-from-email/${offerId}/reject`;
+                }
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        let errorMessage = 'No se pudo procesar la solicitud.';
+                        if (errorText.includes('La oferta ya ha sido procesada')) {
+                            errorMessage = 'Esta oferta ya ha sido aceptada o rechazada anteriormente.';
+                        } else if (errorText.includes('La habitación no está disponible')) {
+                            errorMessage = 'La habitación no está disponible en las fechas seleccionadas.';
+                        } else if (errorText.includes('Las fechas de entrada y salida son obligatorias')) {
+                            errorMessage = 'Por favor, selecciona las fechas de entrada y salida.';
+                        } else if (errorText.includes('La fecha de salida debe ser posterior')) {
+                            errorMessage = 'La fecha de salida debe ser posterior a la fecha de entrada.';
+                        }
+                        throw new Error(errorMessage);
+                    }
+
+                    const result = await response.text();
+                    document.body.innerHTML = result;
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: error.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                        heightAuto: false,
+                    });
+                    confirmBtn.disabled = false;
+                }
+            });
+
+            document.getElementById('cancelBtn').addEventListener('click', () => {
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>

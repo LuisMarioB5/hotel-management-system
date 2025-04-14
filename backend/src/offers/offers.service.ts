@@ -2,12 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { MailerService } from '@nestjs-modules/mailer';
+import { RoomsService } from 'src/rooms/rooms.service';
+import { CustomersService } from 'src/customers/customers.service';
+import { join } from 'path';
 
 @Injectable()
 export class OffersService {
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly mailerService: MailerService,
+    private readonly roomsService: RoomsService,
+    private readonly customersService: CustomersService,
   ) {}
 
   async generateOffers(numCustomers: number, isFrequentGuest: number, specificCustomer: number) {
@@ -34,12 +39,12 @@ export class OffersService {
     status?: string;
   }) {
     try {
-      // Forzar la zona horaria de la sesión a UTC para evitar problemas
       await this.dataSource.query("SET time_zone = '+00:00';");
-  
+
       const { dateFrom, month, status } = filters;
-  
-      // Construir la consulta base
+
+      console.log('Filtros recibidos:', { dateFrom, month, status });
+
       let query = `
         SELECT 
           o.id,
@@ -59,57 +64,420 @@ export class OffersService {
         LEFT JOIN rooms r ON o.room_id = r.id
         WHERE 1=1
       `;
-  
+
       const params: any[] = [];
-  
-      // Filtro por fecha exacta (validFrom)
+
       if (dateFrom) {
         const formattedDate = new Date(dateFrom);
+        console.log('Fecha recibida (dateFrom):', dateFrom);
+        console.log('Fecha formateada para comparación:', formattedDate.toISOString().split('T')[0]);
 
         query += ` AND DATE(o.validFrom) = DATE(?)`;
         params.push(dateFrom);
       }
-  
-      // Filtro por mes (basado en validFrom)
+
       if (month) {
         query += ` AND MONTH(o.validFrom) = ?`;
         params.push(month);
       }
-  
-      // Filtro por estado
+
       if (status) {
         query += ` AND o.status = ?`;
         params.push(status);
       }
-  
-      
-  
+
+      console.log('Consulta SQL:', query);
+      console.log('Parámetros de la consulta:', params);
+
       const offers = await this.dataSource.query(query, params);
-  
-  
-      return offers;
+      console.log('Ofertas encontradas:', offers);
+
+      return offers.map(offer => ({
+        ...offer,
+        price: parseFloat(offer.price),
+      }));
     } catch (error) {
       throw new Error(`Error al obtener las ofertas: ${error.message}`);
     }
   }
 
-  private async withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-    const timeout = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms);
-    });
-    return Promise.race([promise, timeout]) as Promise<T>;
+  async getOfferById(offerId: number) {
+    try {
+      const [offer] = await this.dataSource.query(
+        `
+        SELECT 
+          o.id,
+          o.customer_id,
+          o.room_id,
+          o.discount,
+          o.validFrom,
+          o.validTo,
+          o.status,
+          o.details,
+          o.price,
+          c.name AS customer_name,
+          c.email AS customer_email,
+          r.number AS room_number
+        FROM offers o
+        LEFT JOIN customers c ON o.customer_id = c.id
+        LEFT JOIN rooms r ON o.room_id = r.id
+        WHERE o.id = ?
+      `,
+        [offerId],
+      );
+
+      if (offer) {
+        offer.price = parseFloat(offer.price);
+      }
+
+      return offer;
+    } catch (error) {
+      throw new Error(`Error al obtener la oferta: ${error.message}`);
+    }
   }
 
-  private async retry<T>(fn: () => Promise<T>, retries: number, delay: number): Promise<T> {
-    for (let i = 0; i < retries; i++) {
-      try {
-        return await fn();
-      } catch (error) {
-        if (i === retries - 1) throw error;
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
+  async respondToOffer(data: {
+    offerId: number;
+    action: string;
+    checkInDate?: string;
+    checkOutDate?: string;
+  }) {
+    const { offerId, action, checkInDate, checkOutDate } = data;
+
+    const offer = await this.getOfferById(offerId);
+    if (!offer) {
+      throw new Error('Oferta no encontrada');
     }
-    throw new Error('No se deberían alcanzar esta línea');
+
+    if (offer.status !== 'PENDIENTE') {
+      throw new Error('La oferta ya ha sido procesada');
+    }
+
+    const newStatus = action === 'accept' ? 'ACEPTADA' : 'RECHAZADA';
+    await this.dataSource.query(
+      `UPDATE offers SET status = ? WHERE id = ?`,
+      [newStatus, offerId],
+    );
+
+    let message = `Oferta ${newStatus.toLowerCase()} exitosamente.`;
+    if (action === 'accept') {
+      if (!checkInDate || !checkOutDate) {
+        await this.dataSource.query(
+          `UPDATE offers SET status = 'PENDIENTE' WHERE id = ?`,
+          [offerId],
+        );
+        throw new Error('Las fechas de entrada y salida son obligatorias para aceptar la oferta');
+      }
+
+      const overlappingBookings = await this.dataSource.query(
+        `
+        SELECT COUNT(*) as count
+        FROM bookings
+        WHERE room_id = ?
+        AND (
+          (checkInDate <= ? AND checkOutDate >= ?) OR
+          (checkInDate <= ? AND checkOutDate >= ?) OR
+          (checkInDate >= ? AND checkOutDate <= ?)
+        )
+        AND status = 'CONFIRMADA'
+      `,
+        [
+          offer.room_id,
+          checkInDate,
+          checkInDate,
+          checkOutDate,
+          checkOutDate,
+          checkInDate,
+          checkOutDate,
+        ],
+      );
+
+      if (overlappingBookings[0].count > 0) {
+        await this.dataSource.query(
+          `UPDATE offers SET status = 'PENDIENTE' WHERE id = ?`,
+          [offerId],
+        );
+        throw new Error('La habitación no está disponible en las fechas seleccionadas');
+      }
+
+      // Calcular los días totales de la estancia
+      const checkIn = new Date(checkInDate);
+      const checkOut = new Date(checkOutDate);
+      const timeDiff = checkOut.getTime() - checkIn.getTime();
+      const totalStayDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+      if (totalStayDays <= 0) {
+        await this.dataSource.query(
+          `UPDATE offers SET status = 'PENDIENTE' WHERE id = ?`,
+          [offerId],
+        );
+        throw new Error('La fecha de salida debe ser posterior a la fecha de entrada');
+      }
+
+      // El precio base de la habitación es el precio de la oferta (por noche)
+      const roomPricePerNight = offer.price;
+      // Calcular el costo total: precio por noche * días de estancia
+      const totalCost = roomPricePerNight * totalStayDays;
+
+      const bookingResult = await this.dataSource.query(
+        `
+        INSERT INTO bookings (customer_id, room_id, checkInDate, checkOutDate, status, totalStayDays, totalCost)
+        VALUES (?, ?, ?, ?, 'CONFIRMADA', ?, ?)
+      `,
+        [
+          offer.customer_id,
+          offer.room_id,
+          checkInDate,
+          checkOutDate,
+          totalStayDays,
+          totalCost,
+        ],
+      );
+
+      const bookingId = bookingResult.insertId;
+      if (!bookingId) {
+        await this.dataSource.query(
+          `UPDATE offers SET status = 'PENDIENTE' WHERE id = ?`,
+          [offerId],
+        );
+        throw new Error('Error al crear la reserva');
+      }
+
+      message = 'Oferta aceptada y reserva creada exitosamente.';
+
+      await this.sendBookingConfirmation({
+        email: offer.customer_email,
+        room_number: offer.room_number,
+        details: offer.details,
+        price: roomPricePerNight, // Precio por noche
+        discount: offer.discount,
+        checkInDate,
+        checkOutDate,
+        totalStayDays,
+        totalCost,
+        roomId: offer.room_id,
+      });
+    }
+
+    return { success: true, message };
+  }
+
+  async respondFromEmail(offerId: number, action: string, checkInDate?: string, checkOutDate?: string) {
+    try {
+      const offer = await this.getOfferById(offerId);
+      if (!offer) {
+        throw new Error('Oferta no encontrada');
+      }
+
+      if (offer.status !== 'PENDIENTE') {
+        throw new Error('La oferta ya ha sido procesada');
+      }
+
+      const newStatus = action === 'accept' ? 'ACEPTADA' : 'RECHAZADA';
+      await this.dataSource.query(
+        `UPDATE offers SET status = ? WHERE id = ?`,
+        [newStatus, offerId],
+      );
+
+      if (action === 'accept') {
+        if (!checkInDate || !checkOutDate) {
+          await this.dataSource.query(
+            `UPDATE offers SET status = 'PENDIENTE' WHERE id = ?`,
+            [offerId],
+          );
+          throw new Error('Las fechas de entrada y salida son obligatorias para aceptar la oferta');
+        }
+
+        const overlappingBookings = await this.dataSource.query(
+          `
+          SELECT COUNT(*) as count
+          FROM bookings
+          WHERE room_id = ?
+          AND (
+            (checkInDate <= ? AND checkOutDate >= ?) OR
+            (checkInDate <= ? AND checkOutDate >= ?) OR
+            (checkInDate >= ? AND checkOutDate <= ?)
+          )
+          AND status = 'CONFIRMADA'
+        `,
+          [
+            offer.room_id,
+            checkInDate,
+            checkInDate,
+            checkOutDate,
+            checkOutDate,
+            checkInDate,
+            checkOutDate,
+          ],
+        );
+
+        if (overlappingBookings[0].count > 0) {
+          await this.dataSource.query(
+            `UPDATE offers SET status = 'PENDIENTE' WHERE id = ?`,
+            [offerId],
+          );
+          throw new Error('La habitación no está disponible en las fechas seleccionadas');
+        }
+
+        // Calcular los días totales de la estancia
+        const checkIn = new Date(checkInDate);
+        const checkOut = new Date(checkOutDate);
+        const timeDiff = checkOut.getTime() - checkIn.getTime();
+        const totalStayDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+        if (totalStayDays <= 0) {
+          await this.dataSource.query(
+            `UPDATE offers SET status = 'PENDIENTE' WHERE id = ?`,
+            [offerId],
+          );
+          throw new Error('La fecha de salida debe ser posterior a la fecha de entrada');
+        }
+
+        // El precio base de la habitación es el precio de la oferta (por noche)
+        const roomPricePerNight = offer.price;
+        // Calcular el costo total: precio por noche * días de estancia
+        const totalCost = roomPricePerNight * totalStayDays;
+
+        const bookingResult = await this.dataSource.query(
+          `
+          INSERT INTO bookings (customer_id, room_id, checkInDate, checkOutDate, status, totalStayDays, totalCost)
+          VALUES (?, ?, ?, ?, 'CONFIRMADA', ?, ?)
+        `,
+          [
+            offer.customer_id,
+            offer.room_id,
+            checkInDate,
+            checkOutDate,
+            totalStayDays,
+            totalCost,
+          ],
+        );
+
+        const bookingId = bookingResult.insertId;
+        if (!bookingId) {
+          await this.dataSource.query(
+            `UPDATE offers SET status = 'PENDIENTE' WHERE id = ?`,
+            [offerId],
+          );
+          throw new Error('Error al crear la reserva');
+        }
+
+        await this.sendBookingConfirmation({
+          email: offer.customer_email,
+          room_number: offer.room_number,
+          details: offer.details,
+          price: roomPricePerNight, // Precio por noche
+          discount: offer.discount,
+          checkInDate,
+          checkOutDate,
+          totalStayDays,
+          totalCost,
+          roomId: offer.room_id,
+        });
+
+        return { success: true, message: 'Oferta aceptada y reserva creada exitosamente' };
+      }
+
+      return { success: true, message: 'Oferta rechazada exitosamente' };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async sendBookingConfirmation(data: {
+    email: string;
+    room_number: string;
+    details: string;
+    price: number;
+    discount: number;
+    checkInDate: string;
+    checkOutDate: string;
+    totalStayDays: number;
+    totalCost: number;
+    roomId: number;
+  }) {
+    const { email, room_number, details, price, discount, checkInDate, checkOutDate, totalStayDays, totalCost, roomId } = data;
+
+    try {
+      const questionnaireUrl = `http://127.0.0.1:5500/frontend/src/pages/cuestionario.html`;
+
+      const roomAmenities = await this.roomsService.getRoomAmenities(roomId);
+
+      let amenitiesHtml = '';
+      if (roomAmenities && roomAmenities.length > 0) {
+        roomAmenities.forEach(category => {
+          amenitiesHtml += `
+            <li style="margin-bottom: 10px;">
+              <strong>${category.name}</strong>
+              <ul style="list-style: none; padding-left: 20px;">
+          `;
+          category.options.forEach(option => {
+            if (option.amenities.length > 0) {
+              amenitiesHtml += `
+                <li>${option.name}</li>
+                <ul style="list-style: none; padding-left: 20px;">
+              `;
+              option.amenities.forEach(amenity => {
+                amenitiesHtml += `
+                  <li>${amenity.value} (Disponibilidad: ${amenity.availability_level})</li>
+                `;
+              });
+              amenitiesHtml += `</ul>`;
+            }
+          });
+          amenitiesHtml += `
+              </ul>
+            </li>
+          `;
+        });
+      } else {
+        amenitiesHtml = '<li>No hay amenidades asociadas a esta habitación.</li>';
+      }
+
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Confirmación de tu Reserva en Hotel Hodelpa',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+            <img src="cid:hotel-image" alt="Hotel Hodelpa" style="max-width: 300px; height: auto; border-radius: 10px; display: block; margin: 0 auto;" />
+            <h2 style="color: #333; text-align: center;">¡Tu Reserva en Hotel Hodelpa!</h2>
+            <p style="color: #555;">Hola,</p>
+            <p style="color: #555;">Gracias por aceptar tu oferta. Tu reserva ha sido confirmada con los siguientes detalles:</p>
+            <h3 style="color: #333;">Detalles de la Reserva:</h3>
+            <ul style="color: #555; list-style: none; padding: 0;">
+              <li><strong>Habitación:</strong> ${room_number}</li>
+              <li><strong>Detalles:</strong> ${details}</li>
+              <li><strong>Precio por noche:</strong> RD$${price.toLocaleString()} (Descuento: ${discount}%)</li>
+              <li><strong>Fecha de Entrada:</strong> ${new Date(checkInDate).toLocaleDateString()}</li>
+              <li><strong>Fecha de Salida:</strong> ${new Date(checkOutDate).toLocaleDateString()}</li>
+              <li><strong>Días de Estancia:</strong> ${totalStayDays}</li>
+              <li><strong>Costo Total:</strong> RD$${totalCost.toLocaleString()}</li>
+            </ul>
+            <h3 style="color: #333;">Amenidades de la Habitación:</h3>
+            <ul style="color: #555; list-style: none; padding: 0;">
+              ${amenitiesHtml}
+            </ul>
+            <p style="color: #555; text-align: center;">¿Quieres personalizar tu experiencia? Ingresa tus preferencias:</p>
+            <div style="text-align: center; margin: 20px 0;">
+              <a href="${questionnaireUrl}" style="background: linear-gradient(135deg, #48c9da, #24ab97); color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Ingresar Preferencias</a>
+            </div>
+            <p style="color: #555;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
+            <p style="color: #555;">Saludos,<br>El equipo de Hotel Hodelpa</p>
+          </div>
+        `,
+        attachments: [
+          {
+            filename: 'hotel-image.jpg',
+            path: join(__dirname, '..', '..', '..', 'frontend', 'public', 'assets', 'login-img.jpg'),
+            cid: 'hotel-image',
+          },
+        ],
+      });
+
+      return { success: true };
+    } catch (error) {
+      throw new Error(`Error al enviar el correo de confirmación: ${error.message}`);
+    }
   }
 
   async saveAndSendOffers(offersData: any[]) {
@@ -124,7 +492,6 @@ export class OffersService {
     const savedOffers = [];
     const emailErrors = [];
 
-    // Validar que todas las ofertas tengan los campos requeridos
     for (const offer of offersData) {
       const {
         customer_id,
@@ -159,7 +526,6 @@ export class OffersService {
       }
     }
 
-    // Guardar las ofertas en la base de datos
     const savePromises = offersData.map(async (offer) => {
       const {
         customer_id,
@@ -207,37 +573,89 @@ export class OffersService {
       throw new Error(`Error al guardar ofertas: ${error.message}`);
     }
 
-    // Enviar correos electrónicos
     const emailPromises = savedOffers.map(async (offer) => {
-      const { email, room_number, details, price, discount, validFrom, validTo } = offer;
+      const { id, email, room_number, details, price, discount, validFrom, validTo, room_id } = offer;
+
+      const acceptUrl = `http://127.0.0.1:5500/frontend/src/pages/confirm-offer.html?offerId=${id}&action=accept&validFrom=${validFrom}&validTo=${validTo}`;
+      const rejectUrl = `http://127.0.0.1:5500/frontend/src/pages/confirm-offer.html?offerId=${id}&action=reject&validFrom=${validFrom}&validTo=${validTo}`;
+      const questionnaireUrl = `http://127.0.0.1:5500/frontend/src/pages/cuestionario.html`;
 
       try {
-        await this.retry(
-          () =>
-            this.withTimeout(
-              this.mailerService.sendMail({
-                to: email,
-                subject: '¡Tu Oferta Exclusiva en Hotel Hodelpa!',
-                html: `
-                  <h2>Hola,</h2>
-                  <p>¡Tenemos una oferta especial para ti!</p>
-                  <h3>Detalles de la Oferta:</h3>
-                  <ul>
-                    <li><strong>Habitación:</strong> ${room_number}</li>
-                    <li><strong>Detalles:</strong> ${details}</li>
-                    <li><strong>Precio:</strong> $${price} (Descuento: ${discount}%)</li>
-                    <li><strong>Válida desde:</strong> ${validFrom}</li>
-                    <li><strong>Válida hasta:</strong> ${validTo}</li>
-                  </ul>
-                  <p>¡Aprovecha esta oferta antes de que expire!</p>
-                  <p>Saludos,<br>El equipo de Hotel Hodelpa</p>
-                `,
-              }),
-              10000,
-            ),
-          2,
-          2000,
-        );
+        const roomAmenities = await this.roomsService.getRoomAmenities(room_id);
+
+        let amenitiesHtml = '';
+        if (roomAmenities && roomAmenities.length > 0) {
+          roomAmenities.forEach(category => {
+            amenitiesHtml += `
+              <li style="margin-bottom: 10px;">
+                <strong>${category.name}</strong>
+                <ul style="list-style: none; padding-left: 20px;">
+            `;
+            category.options.forEach(option => {
+              if (option.amenities.length > 0) {
+                amenitiesHtml += `
+                  <li>${option.name}</li>
+                  <ul style="list-style: none; padding-left: 20px;">
+                `;
+                option.amenities.forEach(amenity => {
+                  amenitiesHtml += `
+                    <li>${amenity.value} (Disponibilidad: ${amenity.availability_level})</li>
+                  `;
+                });
+                amenitiesHtml += `</ul>`;
+              }
+            });
+            amenitiesHtml += `
+                </ul>
+              </li>
+            `;
+          });
+        } else {
+          amenitiesHtml = '<li>No hay amenidades asociadas a esta habitación.</li>';
+        }
+
+        await this.mailerService.sendMail({
+          to: email,
+          subject: '¡Tu Oferta Exclusiva en Hotel Hodelpa!',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+              <img src="cid:hotel-image" alt="Hotel Hodelpa" style="max-width: 300px; height: auto; border-radius: 10px; display: block; margin: 0 auto;" />
+              <h2 style="color: #333; text-align: center;">¡Tu Oferta en Hotel Hodelpa!</h2>
+              <p style="color: #555;">Hola,</p>
+              <p style="color: #555;">¡Tenemos una oferta especial para ti! Aquí están los detalles:</p>
+              <h3 style="color: #333;">Detalles de la Oferta:</h3>
+              <ul style="color: #555; list-style: none; padding: 0;">
+                <li><strong>Habitación:</strong> ${room_number}</li>
+                <li><strong>Detalles:</strong> ${details}</li>
+                <li><strong>Precio:</strong> RD$${price.toLocaleString()} (Descuento: ${discount}%)</li>
+                <li><strong>Válida desde:</strong> ${new Date(validFrom).toLocaleDateString()}</li>
+                <li><strong>Válida hasta:</strong> ${new Date(validTo).toLocaleDateString()}</li>
+              </ul>
+              <h3 style="color: #333;">Amenidades de la Habitación:</h3>
+              <ul style="color: #555; list-style: none; padding: 0;">
+                ${amenitiesHtml}
+              </ul>
+              <p style="color: #555; text-align: center;">Por favor, acepta o rechaza tu oferta haciendo clic en uno de los botones a continuación:</p>
+              <div style="text-align: center; margin: 20px 0;">
+                <a href="${acceptUrl}" style="background: linear-gradient(135deg, #488ada, #ab2497); color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Aceptar</a>
+                <a href="${rejectUrl}" style="background-color: #ff3333; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Rechazar</a>
+              </div>
+              <p style="color: #555; text-align: center;">¿Quieres personalizar tu experiencia? Ingresa tus preferencias:</p>
+              <div style="text-align: center; margin: 20px 0;">
+                <a href="${questionnaireUrl}" style="background: linear-gradient(135deg, #48c9da, #24ab97); color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Ingresar Preferencias</a>
+              </div>
+              <p style="color: #555;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
+              <p style="color: #555;">Saludos,<br>El equipo de Hotel Hodelpa</p>
+            </div>
+          `,
+          attachments: [
+            {
+              filename: 'hotel-image.jpg',
+              path: join(__dirname, '..', '..', '..', 'frontend', 'public', 'assets', 'login-img.jpg'),
+              cid: 'hotel-image',
+            },
+          ],
+        });
       } catch (emailError) {
         emailErrors.push({ email, error: emailError.message });
       }

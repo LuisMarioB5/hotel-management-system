@@ -3,10 +3,12 @@ import { OffersController } from './offers.controller';
 import { OffersService } from './offers.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { RoomsModule } from '../rooms/rooms.module'; // Importar RoomsModule
+import { CustomersModule } from '../customers/customers.module'; // Importar CustomersModule
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([]), 
+    TypeOrmModule.forFeature([]),
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',
@@ -21,6 +23,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
         from: '"Hotel Hodelpa" <heatherpretty1@gmail.com>',
       },
     }),
+    RoomsModule, // Añadir RoomsModule para inyectar RoomsService
+    CustomersModule, // Añadir CustomersModule para inyectar CustomersService
   ],
   controllers: [OffersController],
   providers: [OffersService],
