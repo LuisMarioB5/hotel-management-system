@@ -1,3 +1,5 @@
+import { createBooking } from '../integrations/booking.integration.js'; // Importamos createBooking
+
 document.addEventListener('DOMContentLoaded', async () => {
     const clienteIdInput = document.getElementById('cliente-id');
     const nombreInput = document.getElementById('nombre');
@@ -201,7 +203,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             const preferences = await response.json();
-            
+            console.log('Preferencias recibidas:', preferences);
             const { configuration, amenities } = preferences;
 
             if (configuration.min_cost && configuration.max_cost) {
@@ -237,11 +239,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             if (amenities && amenities.length > 0) {
-              
+                console.log('Amenidades a cargar:', amenities);
                 amenities.forEach(amenity => {
                     const checkbox = document.getElementById(`amenity-${amenity.amenity_id}`);
                     if (checkbox) {
-                        
+                        console.log(`Marcando amenity_id: ${amenity.amenity_id} con preference_level: ${amenity.preference_level}`);
                         checkbox.checked = true;
                         const preferenceSelect = document.querySelector(`select[name="preference-${amenity.amenity_id}"]`);
                         if (preferenceSelect) {
@@ -444,7 +446,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
 
                     // Mostrar el modal con los detalles de la habitación y los inputs de fecha
-                    Swal.fire({
+                    const reservationModal = await Swal.fire({
                         title: `Habitación Sugerida: ${room_number}`,
                         html: `
                             <div style="text-align: left;">
@@ -473,12 +475,70 @@ document.addEventListener('DOMContentLoaded', async () => {
                         showCancelButton: true,
                         confirmButtonText: 'Reservar',
                         cancelButtonText: 'Cancelar',
-                        width: '500px', // Reducido de 600px a 500px
+                        width: '600px',
                         heightAuto: false,
                         customClass: {
                             container: 'swal-container',
                             confirmButton: 'swal-confirm-btn',
                             cancelButton: 'swal-cancel-btn',
+                        },
+                        preConfirm: async () => {
+                            const checkInDateInput = document.getElementById('checkInDate');
+                            const checkOutDateInput = document.getElementById('checkOutDate');
+
+                            const checkInDate = checkInDateInput.value;
+                            const checkOutDate = checkOutDateInput.value;
+
+                            if (!checkInDate || !checkOutDate) {
+                                Swal.showValidationMessage('Por favor, seleccione las fechas de entrada y salida.');
+                                return false;
+                            }
+
+                            const checkIn = new Date(checkInDate);
+                            const checkOut = new Date(checkOutDate);
+
+                            if (checkOut <= checkIn) {
+                                Swal.showValidationMessage('La fecha de salida debe ser posterior a la fecha de entrada.');
+                                return false;
+                            }
+
+                            // Calcular el número de días y el costo total
+                            const timeDiff = checkOut - checkIn;
+                            const totalStayDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                            const stayCost = totalStayDays * price;
+                            const totalCost = stayCost; // No hay consumos adicionales
+
+                            // Crear la reserva usando createBooking
+                            try {
+                                const bookingData = {
+                                    customerId: customerId,
+                                    roomId: room_id,
+                                    checkInDate: checkInDate,
+                                    checkOutDate: checkOutDate,
+                                    totalStayDays: totalStayDays,
+                                    stayCost: stayCost,
+                                    totalCost: totalCost,
+                                    cashAdvance: 0.00,
+                                    priceAdjustment: 0.00,
+                                    details: null,
+                                    status: 'PENDIENTE',
+                                    isActive: true,
+                                };
+
+                                const result = await createBooking(bookingData);
+
+                                if (result.error === 'OVERLAPPING_BOOKINGS') {
+                                    const overlappingDates = result.overlappingBookings
+                                        .map(booking => `desde ${new Date(booking.checkInDate).toLocaleDateString()} hasta ${new Date(booking.checkOutDate).toLocaleDateString()}`)
+                                        .join(', ');
+                                    throw new Error(`La habitación ya está reservada en las fechas seleccionadas: ${overlappingDates}`);
+                                }
+
+                                return result; // Retornar el resultado para usarlo después
+                            } catch (error) {
+                                Swal.showValidationMessage(`Error al crear la reserva: ${error.message}`);
+                                return false;
+                            }
                         },
                         didOpen: () => {
                             // Agregar eventos para los acordeones
@@ -526,6 +586,36 @@ document.addEventListener('DOMContentLoaded', async () => {
                             });
                         },
                     });
+
+                    // Si la reserva se creó correctamente, mostrar confirmación
+                    if (reservationModal.isConfirmed) {
+                        await Swal.fire({
+                            title: '¡Reserva creada correctamente!',
+                            text: 'Esperando aprobación del hotel.',
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar',
+                            heightAuto: false,
+                            customClass: {
+                                container: 'swal-container',
+                            },
+                        });
+
+                        // Limpiar el formulario después de crear la reserva
+                        minPriceSelect.value = minPriceSelect.options[0].value;
+                        maxPriceSelect.value = maxPriceSelect.options[maxPriceSelect.options.length - 1].value;
+                        priceWeightCheckboxes.forEach(checkbox => checkbox.checked = false);
+                        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                            if (checkbox.name === 'price_weight_level') return;
+                            checkbox.checked = false;
+                            const preferenceSelect = document.querySelector(`select[name="preference-${checkbox.value}"]`);
+                            if (preferenceSelect) {
+                                preferenceSelect.disabled = true;
+                                preferenceSelect.value = '1';
+                            }
+                        });
+
+                        lastClientId = null;
+                    }
                 } catch (error) {
                     Swal.fire({
                         title: 'Error',
