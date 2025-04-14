@@ -11,50 +11,118 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
-<!-- CSS embebido para los checkboxes -->
-<style>
-    /* Estilo para los checkboxes de preferencias */
-    .preference-level-container {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        margin-left: 10px;
-    }
-
-    .preference-level-container label {
-        display: flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 0.8rem;
-        color: #333;
-        cursor: pointer;
-    }
-
-    .preference-level-container input[type="radio"] {
-        margin: 0;
-        cursor: pointer;
-    }
-
-
-
-    @media (max-width: 768px) {
-        .form-group {
-            flex-direction: column;
-            align-items: flex-start;
+    <!-- CSS embebido para los checkboxes -->
+    <style>
+        /* Estilo para los checkboxes de preferencias */
+        .amenities-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .preference-level-checkboxes {
+            display: flex;
             gap: 10px;
+            align-items: center;
         }
 
-        .form-group select {
-            width: 100%;
-            max-width: none;
+        .preference-level-checkboxes input[type="checkbox"] {
+            margin: 0;
         }
 
-        .preference-level-container {
-            margin-left: 0;
+        .preference-level-checkboxes label {
+            margin-right: 5px;
+        }
+        .amenity-category {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+    
+        .amenity-category h3 {
+            font-size: 0.8rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+    
+        .amenity-option {
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 5px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+    
+        .amenity-option:hover {
+            background-color: #f0f0f0;
+        }
+    
+        .amenity-option .option-label {
+            font-size: 0.7rem;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    
+        .amenity-option .option-label .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+    
+        .amenity-option .option-label .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+    
+        .amenity-suboptions {
+            display: none;
+            padding-left: 20px;
             margin-top: 5px;
         }
-    }
-</style>
+    
+        .amenity-suboptions.open {
+            display: block;
+        }
+    
+        .suboption {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+    
+        .suboption label {
+            font-size: 0.8rem;
+            color: #555;
+            flex: 1;
+        }
+    
+        .suboption input[type="checkbox"] {
+            cursor: pointer;
+        }
+    
+        .preference-level-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    
+        .preference-level-container select {
+            padding: 5px;
+            font-size: 0.8rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+    
+        @media (max-width: 768px) {
+            .suboption {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+    
+            .preference-level-container {
+                margin-top: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-page">
@@ -63,7 +131,7 @@
                 <div class="user-info">
                     <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
                 </div>
-                 <!-- Detalles de la Habitación -->
+                <!-- Detalles de la Habitación -->
                 <div class="info-card">
                     <input type="hidden" id="cliente-id" name="cliente-id">
                     <input type="hidden" id="nroDocumento" name="nroDocumento">
@@ -85,7 +153,6 @@
                         <div class="info-group">
                             <label><i class="fas fa-users"></i> Apellido:</label>
                             <input type="text" id="apellido" readonly>
-
                         </div>        
                         <div class="info-group">
                             <label><i class="fas fa-phone"></i> Telefono:</label>
@@ -96,266 +163,71 @@
                             <input type="email" id="correo" readonly>
                         </div>
                         <div class="search-container"> 
-                            <button class="search-btn" data-toggle="modal" data-target="#createUserModal" ><i class="fas fa-search"></i> Buscar</button>
+                            <button class="search-btn" data-toggle="modal" data-target="#createUserModal"><i class="fas fa-search"></i> Buscar</button>
                         </div>
                     </div>
-                   
-                    
                 </div>
 
-                <!-- Prefefrencias de habitacion -->
+                <!-- Preferencias de Habitación -->
                 <div class="reservation-details-card">
                     <div class="client-details">
                         <h2><i class="fas fa-bed"></i> Preferencias de Habitación</h2>
-                        
                         <div class="form-group">
-                            <label for="tipo_habitacion"><i class="fas fa-users"></i> ¿Qué tipo de habitación prefieres?:</label>
-                            <select id="tipo_habitacion" name="tipo_habitacion">
-                                <option value="INDIVIDUAL">Individual</option>
-                                <option value="DOBLE">Doble</option>
-                                <option value="TRIPLE">Triple</option>
-                                <option value="MATRIMONIAL">Matrimonial</option>
-                            </select>
-                        </div>
-                       
-                        <div class="form-group">
-                            <label for="rango_precio"><i class="fas fa-hand-holding-usd"></i> ¿Cuál es tu rango de precio por noche?</label>
-                            <select id="rango_precio" name="rango_precio">
-                                <option value="menos_2000">Menos de RD$2,000</option>
-                                <option value="2000_4000">RD$2,000 - RD$4,000</option>
-                                <option value="4000_6000">RD$4,000 - RD$6,000</option>
-                                <option value="6000_8000">RD$6,000 - RD$8,000</option>
-                                <option value="mas_8000">Más de RD$8,000</option>
-                            </select>
-                        </div>
-                     <div class="form-row">   
-                        
-                        <div class="form-group">
-                            <label for="vista"><i class="fas fa-eye"></i> ¿Qué vista te gustaría tener desde tu habitación?</label>
-                            <select id="vista" name="vista">
-                                <option value="mar">Vista al mar</option>
-                                <option value="montaña">Vista a la montaña</option>
-                                <option value="piscina">Vista a la piscina</option>
-                                <option value="calle">Vista a la calle</option>
-                                <option value="interior">Vista interior</option>
-                                <option value="no_importa">No importa</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <div class="preference-level-container">
-                                <label><input type="radio" name="vista_preference" value="1" checked> 1</label>
-                                <label><input type="radio" name="vista_preference" value="2"> 2</label>
-                                <label><input type="radio" name="vista_preference" value="3"> 3</label>
-                                <label><input type="radio" name="vista_preference" value="4"> 4</label>
-                                <label><input type="radio" name="vista_preference" value="5"> 5</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="insonorizacion"><i class="fas fa-volume-up"></i> ¿Qué nivel de insonorización prefieres?</label>
-                            <select id="insonorizacion" name="insonorizacion">
-                                <option value="alta">Alta (muy tranquila)</option>
-                                <option value="media">Media (algo de ruido)</option>
-                                <option value="baja">Baja (no importa el ruido)</option>
-                                <option value="no_importa">No importa</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <div class="preference-level-container">
-                                <label><input type="radio" name="insonorizacion_preference" value="1" checked> 1</label>
-                                <label><input type="radio" name="insonorizacion_preference" value="2"> 2</label>
-                                <label><input type="radio" name="insonorizacion_preference" value="3"> 3</label>
-                                <label><input type="radio" name="insonorizacion_preference" value="4"> 4</label>
-                                <label><input type="radio" name="insonorizacion_preference" value="5"> 5</label>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="tv"><i class="fas fa-tv"></i> ¿Qué tamaño de TV prefieres?</label> 
-                            <select id="tv" name="tv"> 
-                                <option value="32">32"</option>
-                                <option value="43">43"</option>
-                                <option value="55">55"</option>
-                                <option value="65">65"</option>
-                                <option value="70">70"</option>
-                                <option value="indiferente">Indiferente</option>
-                            </select> 
-                        </div>
-                        <div class="form-group">
-                            <div class="preference-level-container">
-                                <label><input type="radio" name="tv_preference" value="1" checked> 1</label>
-                                <label><input type="radio" name="tv_preference" value="2"> 2</label>
-                                <label><input type="radio" name="tv_preference" value="3"> 3</label>
-                                <label><input type="radio" name="tv_preference" value="4"> 4</label>
-                                <label><input type="radio" name="tv_preference" value="5"> 5</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                    <div class="reservation-details">
-                        <h2><i class="fas fa-calendar-alt"></i> Detalle de servicios</h2>
-                        
-                        <div class="form-row"> 
-                            <div class="form-group"> 
-                                <label for="wifi"><i class="fas fa-wifi"></i> ¿Te gustaría tener WiFi premium?:</label> 
-                                <select id="wifi" name="wifi"> 
-                                    <option value="si">Sí</option>
-                                    <option value="no">No</option>
-                                    <option value="indiferente">Indiferente</option>
-                                </select> 
-
-                             
-                                    <div class="preference-level-container">
-                                        <label><input type="radio" name="wifi_preference" value="1" checked> 1</label>
-                                        <label><input type="radio" name="wifi_preference" value="2"> 2</label>
-                                        <label><input type="radio" name="wifi_preference" value="3"> 3</label>
-                                        <label><input type="radio" name="wifi_preference" value="4"> 4</label>
-                                        <label><input type="radio" name="wifi_preference" value="5"> 5</label>
-                                    </div>
-                              <br>
-                            </div>
-                        
-
-                            <div class="form-group">
-                                <label for="balcon"><i class="fas fa-door-open"></i> ¿Te gustaría tener un balcón privado?:</label>
-                                <select id="balcon" name="balcon"> 
-                                    <option value="si">Sí</option>
-                                    <option value="no">No</option>
-                                    <option value="indiferente">Indiferente</option>
-                                </select> 
-
-                                <div class="preference-level-container">
-                                    <label><input type="radio" name="balcon_preference" value="1" checked> 1</label>
-                                    <label><input type="radio" name="balcon_preference" value="2"> 2</label>
-                                    <label><input type="radio" name="balcon_preference" value="3"> 3</label>
-                                    <label><input type="radio" name="balcon_preference" value="4"> 4</label>
-                                    <label><input type="radio" name="balcon_preference" value="5"> 5</label>
+                            <label><i class="fas fa-hand-holding-usd"></i> Rango de Precio por Noche</label>
+                            <div style="display: flex; gap: 10px;">
+                                <div style="flex: 1;">
+                                    <label for="min_price">Precio Mínimo:</label>
+                                    <select id="min_price" name="min_price">
+                                        <!-- Las opciones se cargarán dinámicamente -->
+                                    </select>
                                 </div>
-                                <br>
-                            </div>
-                           
-                        </div>
-                        <div class="form-row">
-            
-                            <div class="form-group">
-                                <label for="jacuzzi"><i class="fas fa-bath"></i> ¿Te gustaría tener un jacuzzi en la habitación?:</label>
-                                <select id="jacuzzi" name="jacuzzi"> 
-                                    <option value="si">Sí</option>
-                                    <option value="no">No</option>
-                                    <option value="indiferente">Indiferente</option>
-                                </select> 
-                                <div class="preference-level-container">
-                                    <label><input type="radio" name="jacuzzi_preference" value="1" checked> 1</label>
-                                    <label><input type="radio" name="jacuzzi_preference" value="2"> 2</label>
-                                    <label><input type="radio" name="jacuzzi_preference" value="3"> 3</label>
-                                    <label><input type="radio" name="jacuzzi_preference" value="4"> 4</label>
-                                    <label><input type="radio" name="jacuzzi_preference" value="5"> 5</label>
+                                <div style="flex: 1;">
+                                    <label for="max_price">Precio Máximo:</label>
+                                    <select id="max_price" name="max_price">
+                                        <!-- Las opciones se cargarán dinámicamente -->
+                                    </select>
                                 </div>
-                                <br>
                             </div>
-                            <div class="form-group">
-                                <label for="minibar"><i class="fas fa-cocktail"></i> ¿Te gustaría tener un minibar gourmet?:</label>
-                                <select id="minibar" name="minibar"> 
-                                    <option value="si">Sí</option>
-                                    <option value="no">No</option>
-                                    <option value="indiferente">Indiferente</option>
-                                </select> 
-                                <div class="preference-level-container">
-                                    <label><input type="radio" name="minibar_preference" value="1" checked> 1</label>
-                                    <label><input type="radio" name="minibar_preference" value="2"> 2</label>
-                                    <label><input type="radio" name="minibar_preference" value="3"> 3</label>
-                                    <label><input type="radio" name="minibar_preference" value="4"> 4</label>
-                                    <label><input type="radio" name="minibar_preference" value="5"> 5</label>
+                            <div class="suboption" style="margin-top: 10px;">
+                                <label>¿Qué tan importante es el rango de precios? (1-5)</label>
+                                <div class="preference-level-checkboxes">
+                                    <input type="checkbox" id="price_weight_1" name="price_weight_level" value="1">
+                                    <label for="price_weight_1">1</label>
+                                    <input type="checkbox" id="price_weight_2" name="price_weight_level" value="2">
+                                    <label for="price_weight_2">2</label>
+                                    <input type="checkbox" id="price_weight_3" name="price_weight_level" value="3">
+                                    <label for="price_weight_3">3</label>
+                                    <input type="checkbox" id="price_weight_4" name="price_weight_level" value="4">
+                                    <label for="price_weight_4">4</label>
+                                    <input type="checkbox" id="price_weight_5" name="price_weight_level" value="5">
+                                    <label for="price_weight_5">5</label>
                                 </div>
-                                <br>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="desayuno"><i class="fas fa-coffee"></i> ¿Qué tipo de desayuno prefieres?:</label>
-                                <select id="desayuno" name="desayuno"> 
-                                    <option value="continental">Continental</option>
-                                    <option value="buffet">Buffet</option>
-                                    <option value="vegano">Vegano</option>
-                                    <option value="sin_desayuno">Sin desayuno</option>
-                                    <option value="indiferente">Indiferente</option>
-                                </select> 
-                                <div class="preference-level-container">
-                                    <label><input type="radio" name="desayuno_preference" value="1" checked> 1</label>
-                                    <label><input type="radio" name="desayuno_preference" value="2"> 2</label>
-                                    <label><input type="radio" name="desayuno_preference" value="3"> 3</label>
-                                    <label><input type="radio" name="desayuno_preference" value="4"> 4</label>
-                                    <label><input type="radio" name="desayuno_preference" value="5"> 5</label>
-                                </div>
-                                <br>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="aire_acondicionado"><i class="fas fa-snowflake"></i> ¿Prefieres una habitación con aire acondicionado?:</label>
-                                <select id="aire_acondicionado" name="aire_acondicionado"> 
-                                    <option value="si">Sí</option>
-                                    <option value="no">No</option>
-                                    <option value="indiferente">Indiferente</option>
-                                </select> 
-                                <div class="preference-level-container">
-                                    <label><input type="radio" name="aire_acondicionado_preference" value="1" checked> 1</label>
-                                    <label><input type="radio" name="aire_acondicionado_preference" value="2"> 2</label>
-                                    <label><input type="radio" name="aire_acondicionado_preference" value="3"> 3</label>
-                                    <label><input type="radio" name="aire_acondicionado_preference" value="4"> 4</label>
-                                    <label><input type="radio" name="aire_acondicionado_preference" value="5"> 5</label>
-                                </div>
-                                <br>
                             </div>
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="ubicacion_piso"><i class="fas fa-map-marker-alt"></i> ¿Tienes alguna preferencia sobre la ubicación de la habitación en el piso?:</label>
-                                <select id="ubicacion_piso" name="ubicacion_piso"> 
-                                    <option value="cerca_ascensor">Cerca del ascensor</option>
-                                    <option value="final_pasillo">Al final del pasillo</option>
-                                    <option value="centro">En el centro</option>
-                                    <option value="no_importa">No importa</option>
-                                </select> 
-                            </div>
-
-                            <div class="form-group">
-                                <label for="decoracion"><i class="fas fa-home"></i> ¿Tienes alguna preferencia sobre el estilo de decoración?:</label>
-                                <select id="decoracion" name="decoracion"> 
-                                    <option value="moderna">Moderna</option>
-                                    <option value="clasica">Clásica</option>
-                                    <option value="minimalista">Minimalista</option>
-                                    <option value="no_importa">No importa</option>
-                                </select> 
-                            </div>
+                        <!-- Sección de Amenidades (Checkboxes Dinámicos) -->
+                        <div class="amenities-container" id="amenities-container">
+                            <!-- Las amenidades se cargarán aquí dinámicamente -->
                         </div>
 
-                        <div class="form-group">
-                            <label><i class="fas fa-comment-alt"></i> Observación:</label>
-                            <textarea id="observacion" rows="3" placeholder="Ingrese observaciones"></textarea>
-                        </div>
                         <div class="form-actions">
                             <button id="registrarBtn" class="register-btn"><i class="fas fa-save"></i> Guardar</button>
                         </div>
                     </div>
-                </div>    
+                </div>
             </div>
         </div>
     </div>
 
-       
     <script type="module" src="../scripts/clientemodalreserva.js"></script>
     <script src="../scripts/cuestionario.js"></script>
-  
+
     <!-- Modal de Logout -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h5>¿Estás seguro de que deseas salir?</h5>
-                <span class="close-button" id="closeModal">&times;</span>
+                <span class="close-button" id="closeModal">×</span>
             </div>
             <div class="modal-body">
                 Presiona "Cerrar sesión" si estás listo para terminar tu sesión actual.
@@ -367,14 +239,13 @@
         </div>
     </div>
 
-    <!--MODAL De lista de clientes-->
+    <!-- MODAL De lista de clientes -->
     <div class="climodal" id="createUserModal">
         <div class="climodal-content">
             <div class="climodal-header">
                 <h2>Lista de Clientes</h2>
-                <span class="cliclose-button" onclick="closeModal()">&times;</span>
+                <span class="cliclose-button" onclick="closeModal()">×</span>
             </div>
-
             <div class="user-actions">
                 <div class="table-controls">
                     <label for="recordsPerPage">Mostrar:</label>
@@ -398,36 +269,32 @@
                             <th>Correo</th>    
                         </tr>
                     </thead>
-                    <tbody>
-                        
-                     </tbody>
+                    <tbody></tbody>
                 </table>
-                    <!-- Div de paginación y conteo de registros -->
                 <div class="pagination-info">
                     <label></label>
                     <div class="pagination-buttons">
-                        <button class="pagination-btn">&lt;</button>
-                        <button class="pagination-btn">&gt;</button>
+                        <button class="pagination-btn"><</button>
+                        <button class="pagination-btn">></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!--Fin -->
     <script>
         // Abrir modal
-       document.querySelector('.search-btn').addEventListener('click', function() {
-           document.getElementById('createUserModal').style.display = 'flex';
-       });
-   
-       // Cerrar modal
-       function closeModal() {
-           document.getElementById('createUserModal').style.display = 'none';
-       }
+        document.querySelector('.search-btn').addEventListener('click', function() {
+            document.getElementById('createUserModal').style.display = 'flex';
+        });
 
-       // Cerrar modal al hacer clic fuera de él
-       window.addEventListener('click', function(event) {
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('createUserModal').style.display = 'none';
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
             if (event.target === createUserModal) {
                 createUserModal.style.display = 'none';
             }

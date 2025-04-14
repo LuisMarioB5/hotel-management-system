@@ -9,7 +9,10 @@ export class RoomsController {
   constructor(
     private readonly service: RoomsService,
   ) {}
-
+  @Get('price-range') // Nuevo endpoint
+  async getPriceRange() {
+    return await this.service.getPriceRange();
+  }
   @Post('register')
   async register(@Body() body: CreateRoomDTO) {
     return this.service.create(body);
@@ -35,6 +38,8 @@ export class RoomsController {
     return this.service.getEnumValues();
   }
 
+ 
+
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateRoomDTO: UpdateRoomDTO) {
     return this.service.update(id, updateRoomDTO);
@@ -48,6 +53,6 @@ export class RoomsController {
   @Delete(':id')
   async delete(@Param('id') id: number) {
     await this.service.delete(id);
-    return { message: `Habitación con ID ${id} eliminada exitosamente` }
+    return { message: `Habitación con ID ${id} eliminada exitosamente` };
   }
 }

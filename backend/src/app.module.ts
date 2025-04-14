@@ -14,11 +14,13 @@ import { BillingModule } from './billing/billing.module';
 import { OffersModule } from './offers/offers.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { BookingEntity } from './bookings/booking.entity';
+
 import { CustomerEntity } from './customers/customer.entity';
 import { RoomEntity } from './rooms/room.entity';
 import { ConsumptionEntity } from './consumptions/consumption.entity';
 import { InvoiceEntity } from './billing/invoice.entity';
-
+import { AmenitiesModule } from './amenities/amenities.module';
+import { PreferencesModule } from './preferences/preferences.module';
 import { 
   AmenityCategoryEntity, 
   AmenityEntity,
@@ -59,15 +61,16 @@ import {
     }),
     UsersModule,
     OffersModule,
-    AuthModule,
     RoomsModule,
+    AmenitiesModule,
+    PreferencesModule,
+    AuthModule,
     CustomersModule,
     BookingsModule,
     ProductsModule,
     ConsumptionsModule,
     ReportsModule,
     BillingModule,
-    OffersModule,
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',

@@ -37,13 +37,13 @@ export class RoomsService {
   async update(id: number, newRoom: UpdateRoomDTO): Promise<RoomEntity> {
     const room = await this.findById(id);
 
-    if(newRoom.number !== null) room.number = newRoom.number;
-    if(newRoom.details !== null) room.details = newRoom.details;
-    if(newRoom.floor !== null) room.floor = newRoom.floor;
-    if(newRoom.type !== null) room.type = newRoom.type;
-    if(newRoom.status !== null) room.status = newRoom.status;
-    if(newRoom.price !== null) room.price = newRoom.price;
-    if(newRoom.isAvailable !== null) room.isAvailable = newRoom.isAvailable;
+    if (newRoom.number !== null) room.number = newRoom.number;
+    if (newRoom.details !== null) room.details = newRoom.details;
+    if (newRoom.floor !== null) room.floor = newRoom.floor;
+    if (newRoom.type !== null) room.type = newRoom.type;
+    if (newRoom.status !== null) room.status = newRoom.status;
+    if (newRoom.price !== null) room.price = newRoom.price;
+    if (newRoom.isAvailable !== null) room.isAvailable = newRoom.isAvailable;
 
     return this.repository.save(room);
   }
@@ -72,5 +72,23 @@ export class RoomsService {
 
   private throwRoomNotFoundException(id: number) {
     throw new NotFoundException(`Habitación con ID ${id} no encontrada`);
+  }
+
+  async getPriceRange() {
+    try {
+      const result = await this.repository.query(`
+        SELECT 
+          MIN(price) AS minPrice,
+          MAX(price) AS maxPrice
+        FROM rooms
+      `);
+  
+      return {
+        minPrice: result[0].minPrice || 1000, // Valor por defecto si no hay datos
+        maxPrice: result[0].maxPrice || 10000, // Valor por defecto si no hay datos
+      };
+    } catch (error) {
+      throw new Error(`Error al obtener el rango de precios: ${error.message}`);
+    }
   }
 }

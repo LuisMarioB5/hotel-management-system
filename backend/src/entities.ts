@@ -12,7 +12,7 @@ export class AmenityCategoryEntity {
   name: string;
 }
 
-// Entidad para amenity_options (antes amenities)
+// Entidad para amenity_options
 @Entity('amenity_options')
 export class AmenityOptionEntity {
   @PrimaryGeneratedColumn()
@@ -29,7 +29,7 @@ export class AmenityOptionEntity {
   category: AmenityCategoryEntity;
 }
 
-// Entidad para amenities (antes amenity_options)
+// Entidad para amenities
 @Entity('amenities')
 export class AmenityEntity {
   @PrimaryGeneratedColumn()
@@ -65,36 +65,11 @@ export class RoomAmenityEntity {
   amenity_id: number;
 
   @Column({ type: 'tinyint', default: 1 })
-  availability_level: number; // Nivel de disponibilidad (1-5)
+  availability_level: number;
 
   @ManyToOne(() => RoomEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'room_id' })
   room: RoomEntity;
-
-  @ManyToOne(() => AmenityEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'amenity_id' })
-  amenity: AmenityEntity;
-}
-
-// Entidad para client_amenities
-@Entity('client_amenities')
-@Index('idx_client_amenities_customer', ['customer_id'])
-export class ClientAmenityEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'int', nullable: false })
-  customer_id: number;
-
-  @Column({ type: 'int', nullable: false })
-  amenity_id: number;
-
-  @Column({ type: 'tinyint', default: 1 })
-  preference_level: number; // Nivel de preferencia (1-5)
-
-  @ManyToOne(() => CustomerEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'customer_id' })
-  customer: CustomerEntity;
 
   @ManyToOne(() => AmenityEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'amenity_id' })
@@ -107,6 +82,7 @@ export class ClientConfigurationEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index('idx_client_configuration_customer', { unique: true })
   @Column({ type: 'int', nullable: false })
   customer_id: number;
 
@@ -117,14 +93,39 @@ export class ClientConfigurationEntity {
   max_cost: number;
 
   @Column({ type: 'tinyint', nullable: false })
-  weight_level: number; // Nivel de peso (1-5)
+  weight_level: number;
 
   @ManyToOne(() => CustomerEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'customer_id' })
   customer: CustomerEntity;
 }
 
-// Entidad para offers (sin cambios)
+// Entidad para client_amenities
+@Entity('client_amenities')
+@Index('idx_client_amenities_customer_amenity', ['customer_id', 'amenity_id'], { unique: true }) // Clave única compuesta
+export class ClientAmenityEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'int', nullable: false })
+  customer_id: number;
+
+  @Column({ type: 'int', nullable: false })
+  amenity_id: number;
+
+  @Column({ type: 'tinyint', default: 1 })
+  preference_level: number;
+
+  @ManyToOne(() => ClientConfigurationEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'customer_id', referencedColumnName: 'customer_id' })
+  customerConfiguration: ClientConfigurationEntity;
+
+  @ManyToOne(() => AmenityEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'amenity_id' })
+  amenity: AmenityEntity;
+}
+
+// Entidad para offers
 @Entity('offers')
 export class OfferEntity {
   @PrimaryGeneratedColumn()
