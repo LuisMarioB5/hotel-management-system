@@ -51,140 +51,188 @@ document.addEventListener('DOMContentLoaded', () => {
   generateButton.addEventListener('click', async () => {
     const numCustomers = parseInt(document.getElementById('topProSer').value);
     const frequency = document.getElementById('topcategory').value;
-    const isFrequentGuest = frequency === 'HABITUAL' ? 1 : 0;
+    const isFrequentGuest = frequency === 'HABITUAL' ? 1 : frequency === 'SERVICIO' ? 0 : -1;
     const specificCustomer = 0;
+    const roomType = document.getElementById('roomType')?.value || '';
+    const minStayDuration = parseInt(document.getElementById('minStayDuration')?.value) || 1;
+    const seasonName = document.getElementById('seasonName')?.value || '';
 
     if (!numCustomers || numCustomers <= 0) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Por favor, ingrese un número válido de clientes.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        heightAuto: false,
-        customClass: {
-          container: 'swal-container',
-        },
-      });
-      return;
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor, ingrese un número válido de clientes.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+        return;
+    }
+
+    if (minStayDuration < 1) {
+        Swal.fire({
+            title: 'Error',
+            text: 'La duración mínima de estancia debe ser al menos 1 noche.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
+        return;
     }
 
     try {
-      Swal.fire({
-        title: 'Generando Ofertas',
-        html: '<i class="fas fa-cog fa-spin fa-2x"></i><br><br>Por favor, espere...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        heightAuto: false,
-        customClass: {
-          container: 'swal-container',
-        },
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
+        Swal.fire({
+            title: 'Generando Ofertas',
+            html: '<i class="fas fa-cog fa-spin fa-2x"></i><br><br>Por favor, espere...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
 
-      const response = await fetch('http://localhost:3000/offers/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ numCustomers, isFrequentGuest, specificCustomer }),
-      });
+        const response = await fetch('http://localhost:3000/offers/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ numCustomers, isFrequentGuest, specificCustomer, roomType, minStayDuration, seasonName }),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al generar las ofertas');
-      }
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al generar las ofertas');
+        }
 
-      const offers = await response.json();
+        const { offers, warningMessage } = await response.json();
 
-      if (!Array.isArray(offers) || offers.length === 0) {
-        throw new Error('No se recibieron ofertas válidas');
-      }
+        // Verificar que offers sea un arreglo
+        if (!Array.isArray(offers)) {
+            throw new Error('La respuesta del servidor no contiene un arreglo de ofertas válido.');
+        }
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-      Swal.close();
+        Swal.close();
 
-      Swal.fire({
-        title: 'Ofertas Generadas Exitosamente',
-        text: `Se generaron ${offers.length} ofertas.`,
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-        heightAuto: false,
-        customClass: {
-          container: 'swal-container',
-        },
-      });
+        // Si no se generaron ofertas y hay un WarningMessage, mostrar la advertencia
+        if (offers.length === 0 && warningMessage) {
+            Swal.fire({
+                title: 'Advertencia',
+                text: warningMessage,
+                icon: 'warning',
+                confirmButtonText: 'Aceptar',
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
+            });
+            return;
+        }
 
-      offersTableBody.innerHTML = '';
+        // Mostrar mensaje de éxito y advertencia si aplica
+        if (warningMessage) {
+            Swal.fire({
+                title: 'Ofertas Generadas Parcialmente',
+                text: `${warningMessage} Se generaron ${offers.length} ofertas.`,
+                icon: 'warning',
+                confirmButtonText: 'Aceptar',
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
+            });
+        } else {
+            Swal.fire({
+                title: 'Ofertas Generadas Exitosamente',
+                text: `Se generaron ${offers.length} ofertas.`,
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
+            });
+        }
 
-      const currentDate = new Date();
-      const validFrom = currentDate.toISOString().split('T')[0];
-      const validToDate = new Date(currentDate);
-      validToDate.setDate(currentDate.getDate() + 7);
-      const validTo = validToDate.toISOString().split('T')[0];
+        offersTableBody.innerHTML = '';
 
-      generatedOffers = offers.map(offer => {
-        const discountPercentage = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
-        const originalPrice = parseFloat(offer.price) || 0;
-        const discountAmount = (originalPrice * discountPercentage) / 100;
-        const offerPrice = originalPrice - discountAmount;
+        const currentDate = new Date();
+        const validFrom = currentDate.toISOString().split('T')[0];
+        const validToDate = new Date(currentDate);
+        validToDate.setDate(currentDate.getDate() + 7);
+        const validTo = validToDate.toISOString().split('T')[0];
 
-        return {
-          customer_id: offer.customer_id,
-          room_id: offer.room_id,
-          discount: discountPercentage,
-          validFrom: validFrom,
-          validTo: validTo,
-          status: 'PENDIENTE',
-          details: offer.details,
-          price: offerPrice,
-          email: offer.email,
-          room_number: offer.room_number,
-          name: offer.name,
-        };
-      });
+        // Mapear las ofertas para agregar descuento y fechas de validez
+        generatedOffers = offers.map(offer => {
+            const discountPercentage = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
+            const adjustedPrice = parseFloat(offer.price) || 0; // El precio ya incluye el price_multiplier
+            const discountAmount = (adjustedPrice * discountPercentage) / 100;
+            const offerPrice = adjustedPrice - discountAmount;
 
-      generatedOffers.forEach(offer => {
-        const row = document.createElement('tr');
-        const price = typeof offer.price === 'number' ? offer.price : 0;
-        row.innerHTML = `
-          <td style="display: none;" class="customer-id">${offer.customer_id || ''}</td>
-          <td>${offer.name || 'Desconocido'}</td>
-          <td>${offer.email || 'Sin correo'}</td>
-          <td style="display: none;" class="room-id">${offer.room_id || ''}</td>
-          <td>${offer.room_number || 'Sin asignar'}</td>
-          <td>${offer.details || 'Sin detalles'}</td>
-          <td style="display: none;" class="original-price">${price}</td>
-          <td>$${price.toFixed(2)} (${offer.discount}% OFF)</td>
-          <td>${currentDate.toLocaleDateString('es-ES')}</td>
-          <td style="display: none;" class="valid-to">${offer.validTo}</td>
-          <td>
-            <button class="action-btn remove-offer"><i class="fas fa-times"></i></button>
-          </td>
-        `;
-        offersTableBody.appendChild(row);
-      });
+            return {
+                customer_id: offer.customer_id,
+                room_id: offer.room_id,
+                discount: discountPercentage,
+                validFrom: validFrom,
+                validTo: validTo,
+                status: 'PENDIENTE',
+                details: offer.details,
+                price: offerPrice,
+                email: offer.email,
+                room_number: offer.room_number,
+                name: offer.name,
+            };
+        });
 
-      const paginationLabel = document.querySelector('.pagination-info label');
-      paginationLabel.textContent = `Mostrando ${generatedOffers.length} de ${generatedOffers.length} registros`;
+        generatedOffers.forEach(offer => {
+            const row = document.createElement('tr');
+            const price = typeof offer.price === 'number' ? offer.price : 0;
+            row.innerHTML = `
+                <td style="display: none;" class="customer-id">${offer.customer_id || ''}</td>
+                <td>${offer.name || 'Desconocido'}</td>
+                <td>${offer.email || 'Sin correo'}</td>
+                <td style="display: none;" class="room-id">${offer.room_id || ''}</td>
+                <td>${offer.room_number || 'Sin asignar'}</td>
+                <td>${offer.details || 'Sin detalles'}</td>
+                <td style="display: none;" class="original-price">${price}</td>
+                <td>$${price.toFixed(2)} (${offer.discount}% OFF)</td>
+                <td>${currentDate.toLocaleDateString('es-ES')}</td>
+                <td style="display: none;" class="valid-to">${offer.validTo}</td>
+                <td>
+                    <button class="action-btn remove-offer"><i class="fas fa-times"></i></button>
+                </td>
+            `;
+            offersTableBody.appendChild(row);
+        });
+
+        const paginationLabel = document.querySelector('.pagination-info label');
+        paginationLabel.textContent = `Mostrando ${generatedOffers.length} de ${generatedOffers.length} registros`;
 
     } catch (error) {
-      Swal.close();
+        Swal.close();
 
-      Swal.fire({
-        title: 'Error',
-        text: `No se pudieron generar las ofertas: ${error.message}`,
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        heightAuto: false,
-        customClass: {
-          container: 'swal-container',
-        },
-      });
+        Swal.fire({
+            title: 'Error',
+            text: `No se pudieron generar las ofertas: ${error.message}`,
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
     }
-  });
+});
 
   sendOffersButton.addEventListener('click', async () => {
     if (!Array.isArray(generatedOffers) || generatedOffers.length === 0) {

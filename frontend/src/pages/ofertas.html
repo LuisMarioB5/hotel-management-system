@@ -62,13 +62,9 @@
                 <div class="rooms-container">
                     <h3 style="color: #007bff;">Cuestionario a realizar al cliente</h3>
                     <hr>
-                    
                         <div class="form-group">
                             <button class="button_show_question" onclick="window.location.href='../pages/cuestionario.html'"><i class="fas fa-eye"></i> Pulse para ver cuestionario</button>
-                        </div>
-                           
-                    
-                    
+                        </div>  
                 </div>
 
                 <div class="rooms-container">
@@ -87,11 +83,35 @@
                         <div class="form-group">
                             <label for="topcategory"><i class="fas fa-box" style="color: green;"></i> Frecuencia:</label>
                             <select id="topcategory">
+                                <option value="">Seleccione</option>
                                 <option value="HABITUAL">Frecuente</option>
                                 <option value="SERVICIO">Habitual</option>
                             </select>
                         </div>
-                       
+                        <div class="form-group">
+                            <label for="roomType"><i class="fas fa-tag" style="color: green;"></i>Tipo de Habitación:</label>
+                            <select id="roomType" name="roomType">
+                                <option value="">Seleccione un tipo</option>
+                                <option value="MATRIMONIAL">Matrimonial</option>
+                                <option value="INDIVIDUAL">Individual</option>
+                                <option value="DOBLE">Doble</option>
+                                <option value="TRIPLE">Triple</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="minStayDuration"><i class="fas fa-clock" style="color: green;"></i>Duración Mínima de Estancias:</label>
+                            <input type="number" id="minStayDuration" name="minStayDuration" min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="seasonName"><i class="fas fa-snowflake" style="color: green;"></i>Temporada:</label>
+                            <select id="seasonName" name="seasonName">
+                                <option value="">Seleccione una temporada</option>
+                                <option value="Alta">Temporada Alta</option>
+                                <option value="Media">Temporada Media</option>
+                                <option value="Baja">Temporada Baja</option>
+                            </select>
+                        </div>
                         
                     </div>
                     <div class="form-group">

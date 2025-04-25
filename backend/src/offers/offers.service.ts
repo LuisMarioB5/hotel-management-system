@@ -15,19 +15,42 @@ export class OffersService {
     private readonly customersService: CustomersService,
   ) {}
 
-  async generateOffers(numCustomers: number, isFrequentGuest: number, specificCustomer: number) {
+  async generateOffers(
+    numCustomers: number,
+    isFrequentGuest: number,
+    specificCustomer: number,
+    roomType: string = '',
+    minStayDuration: number = 1,
+    seasonName: string = '',
+  ) {
     try {
-      const [results] = await this.dataSource.query(
-        'CALL GenerateRoomAssignments(?, ?, ?)',
-        [numCustomers, isFrequentGuest, specificCustomer],
+     
+      // Ejecutar el procedimiento almacenado
+      const results = await this.dataSource.query(
+        'CALL GenerateRoomAssignments(?, ?, ?, ?, ?, ?)',
+        [numCustomers, isFrequentGuest, specificCustomer, roomType, minStayDuration, seasonName],
       );
 
-      let offers = results;
-      if (Array.isArray(results) && results.length > 0 && Array.isArray(results[0])) {
-        offers = results[0];
+      // Manejar los múltiples conjuntos de resultados
+      let offers = [];
+      let warningMessage = null;
+
+      if (Array.isArray(results)) {
+        // Buscar el conjunto de ofertas
+        const offersResult = results.find(item => Array.isArray(item) && item.length > 0 && item[0].customer_id);
+        if (offersResult) {
+          offers = offersResult;
+        }
+
+        // Buscar el WarningMessage
+        const warningResult = results.find(item => item && item.WarningMessage);
+        if (warningResult) {
+          warningMessage = warningResult.WarningMessage;
+        }
       }
 
-      return offers;
+      // Retornar un objeto con las ofertas y el mensaje de advertencia
+      return { offers, warningMessage };
     } catch (error) {
       throw new Error(`Error al generar ofertas: ${error.message}`);
     }
@@ -42,8 +65,6 @@ export class OffersService {
       await this.dataSource.query("SET time_zone = '+00:00';");
 
       const { dateFrom, month, status } = filters;
-
-      console.log('Filtros recibidos:', { dateFrom, month, status });
 
       let query = `
         SELECT 
@@ -69,8 +90,7 @@ export class OffersService {
 
       if (dateFrom) {
         const formattedDate = new Date(dateFrom);
-        console.log('Fecha recibida (dateFrom):', dateFrom);
-        console.log('Fecha formateada para comparación:', formattedDate.toISOString().split('T')[0]);
+
 
         query += ` AND DATE(o.validFrom) = DATE(?)`;
         params.push(dateFrom);
@@ -85,13 +105,7 @@ export class OffersService {
         query += ` AND o.status = ?`;
         params.push(status);
       }
-
-      console.log('Consulta SQL:', query);
-      console.log('Parámetros de la consulta:', params);
-
       const offers = await this.dataSource.query(query, params);
-      console.log('Ofertas encontradas:', offers);
-
       return offers.map(offer => ({
         ...offer,
         price: parseFloat(offer.price),

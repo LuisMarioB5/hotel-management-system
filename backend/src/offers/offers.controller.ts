@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, Param,BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Param, BadRequestException } from '@nestjs/common';
 import { OffersService } from './offers.service';
 
 @Controller('offers')
@@ -7,29 +7,37 @@ export class OffersController {
 
   @Post('generate')
   async generateOffers(
-    @Body()
-    body: {
-      numCustomers: number;
-      isFrequentGuest: number;
-      specificCustomer: number;
-    },
+    @Body('numCustomers') numCustomers: number,
+    @Body('isFrequentGuest') isFrequentGuest: number,
+    @Body('specificCustomer') specificCustomer: number,
+    @Body('roomType') roomType: string,
+    @Body('minStayDuration') minStayDuration: number,
+    @Body('seasonName') seasonName: string,
   ) {
-    const { numCustomers, isFrequentGuest, specificCustomer } = body;
-    if (!Number.isInteger(numCustomers) || numCustomers < 0) {
-      throw new BadRequestException('numCustomers debe ser un número entero no negativo');
+    // Ajustar la validación para permitir numCustomers = 0
+    if (numCustomers === undefined || numCustomers === null || numCustomers < 0) {
+      throw new BadRequestException('numCustomers debe ser un número mayor o igual a 0');
     }
-  
-    if (isFrequentGuest !== 0 && isFrequentGuest !== 1) {
-      throw new BadRequestException('isFrequentGuest debe ser 0 o 1');
+    if (isFrequentGuest !== -1 && isFrequentGuest !== 0 && isFrequentGuest !== 1) {
+      throw new BadRequestException('isFrequentGuest debe ser -1, 0 o 1');
     }
-  
-    if (!Number.isInteger(specificCustomer) || specificCustomer < 0) {
-      throw new BadRequestException('specificCustomer debe ser un número entero no negativo');
+    if (specificCustomer < 0) {
+      throw new BadRequestException('specificCustomer debe ser un número mayor o igual a 0');
     }
-    return await this.offersService.generateOffers(
+    if (minStayDuration && minStayDuration < 1) {
+      throw new BadRequestException('minStayDuration debe ser un número mayor o igual a 1');
+    }
+    if (seasonName && !['Alta', 'Media', 'Baja'].includes(seasonName)) {
+      throw new BadRequestException('seasonName debe ser Temporada Alta, Temporada Media o Temporada Baja');
+    }
+
+    return this.offersService.generateOffers(
       numCustomers,
       isFrequentGuest,
       specificCustomer,
+      roomType || '',
+      minStayDuration || 1,
+      seasonName || '',
     );
   }
 
@@ -156,7 +164,7 @@ export class OffersController {
         </html>
       `;
     } catch (error) {
-      throw new Error(error.message); // Esto será manejado por el frontend
+      throw new Error(error.message);
     }
   }
 }
