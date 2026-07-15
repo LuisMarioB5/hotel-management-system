@@ -1,0 +1,19 @@
+{
+  "name": "hotel-management-system",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "predev": "node scripts/setup-env.js",
+    "dev": "concurrently -n BACKEND,FRONTEND -c blue,green \"npm run start:dev -w backend\" \"npm run start -w frontend\"",
+    "setup": "node scripts/setup-env.js"
+  },
+  "dependencies": {
+    "mysql2": "^3.11.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
