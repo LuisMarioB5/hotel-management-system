@@ -7,10 +7,27 @@
     <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/login.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Aplicar el tema guardado lo antes posible para que el fondo coincida
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
 </head>
 
 <body>
     <div id="root">
+        <div class="bubbles" aria-hidden="true">
+            <span class="bubble"></span>
+            <span class="bubble"></span>
+            <span class="bubble"></span>
+            <span class="bubble"></span>
+            <span class="bubble"></span>
+            <span class="bubble"></span>
+            <span class="bubble"></span>
+            <span class="bubble"></span>
+            <span class="bubble"></span>
+            <span class="bubble"></span>
+        </div>
         <div class="login-container">
             <div class="login-hotel-img-section">
                 <img src="../../public/assets/login-img.jpg" alt="hodelpa Logo" class="login-hotel-img">

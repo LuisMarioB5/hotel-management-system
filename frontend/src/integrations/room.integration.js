@@ -19,9 +19,12 @@ export async function getAllRooms() {
         if (response.ok) {
             return await response.json();
         }
+
+        console.error('Error al obtener habitaciones, respuesta no OK:', response.status, await response.text());
     } catch (error) {
         console.error('Error de red', error);
     }
+    return [];
 }
 
 /**

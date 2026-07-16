@@ -21,6 +21,8 @@ import { ConsumptionEntity } from './consumptions/consumption.entity';
 import { InvoiceEntity } from './billing/invoice.entity';
 import { AmenitiesModule } from './amenities/amenities.module';
 import { PreferencesModule } from './preferences/preferences.module';
+import { HousekeepingModule } from './housekeeping/housekeeping.module';
+import { MaintenanceTaskEntity } from './housekeeping/maintenance-task.entity';
 import { 
   AmenityCategoryEntity, 
   AmenityEntity,
@@ -54,6 +56,7 @@ import {
         RoomAmenityEntity,
         ClientAmenityEntity,
         OfferEntity,
+        MaintenanceTaskEntity,
       ],
       autoLoadEntities: true,
       synchronize: true,
@@ -64,6 +67,7 @@ import {
     RoomsModule,
     AmenitiesModule,
     PreferencesModule,
+    HousekeepingModule,
     AuthModule,
     CustomersModule,
     BookingsModule,

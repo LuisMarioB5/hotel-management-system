@@ -20,11 +20,18 @@ async function loadProducts() {
 
 function filterAndRenderProducts() {
     const searchTerm = document.getElementById('searchUser').value.toLowerCase();
-    let filteredProducts = allProducts.filter(product => 
-        Object.values(product).some(value => 
+    const statusFilter = document.getElementById('statusFilter').value;
+    let filteredProducts = allProducts.filter(product =>
+        Object.values(product).some(value =>
             value && value.toString().toLowerCase().includes(searchTerm)
         )
     );
+
+    if (statusFilter === 'active') {
+        filteredProducts = filteredProducts.filter(product => product.isActive);
+    } else if (statusFilter === 'inactive') {
+        filteredProducts = filteredProducts.filter(product => !product.isActive);
+    }
 
     const totalFilteredRecords = filteredProducts.length;
 
@@ -58,6 +65,10 @@ function renderProducts(products) {
                 <td ${quantityStyle}>${product.quantity || 'N/A'}</td>
                 <td><span class="status ${product.isActive ? 'active' : 'inactive'}">${product.isActive ? 'Activo' : 'Inactivo'}</span></td>
                 <td>
+                    <label class="status-toggle" title="${product.isActive ? 'Desactivar' : 'Activar'}">
+                        <input type="checkbox" class="status-toggle-input" data-id="${product.id}" ${product.isActive ? 'checked' : ''}>
+                        <span class="status-toggle-slider"></span>
+                    </label>
                     <button class="edit-btn" data-id="${product.id}"><i class="fas fa-edit"></i></button>
                     <button class="delete-btn" data-id="${product.id}"><i class="fas fa-trash-alt"></i></button>
                 </td>
@@ -90,9 +101,16 @@ function setupEventListeners() {
     saveButton.addEventListener('click', handleSaveProduct);
 
     document.querySelector('table').addEventListener('click', handleTableActions);
+    document.querySelector('table').addEventListener('change', handleStatusToggle);
 
     const searchInput = document.getElementById('searchUser');
     searchInput.addEventListener('input', filterAndRenderProducts);
+
+    const statusFilter = document.getElementById('statusFilter');
+    statusFilter.addEventListener('change', () => {
+        currentPage = 1;
+        filterAndRenderProducts();
+    });
 
     const recordsPerPageSelect = document.getElementById('recordsPerPage');
     recordsPerPageSelect.addEventListener('change', handleRecordsPerPageChange);
@@ -127,14 +145,20 @@ function handlePaginationClick(event) {
 function openModal(productData = null) {
     const modal = document.getElementById('createUserModal');
     const modalTitle = modal.querySelector('.modalusu-header h2');
+    const asideTitle = document.getElementById('modalAsideTitle');
+    const asideText = document.getElementById('modalAsideText');
     const saveButton = modal.querySelector('.btn_saveusu');
 
     if (productData) {
         modalTitle.textContent = 'Editar Producto';
+        if (asideTitle) asideTitle.innerHTML = 'Editar<br>Producto';
+        if (asideText) asideText.textContent = 'Actualiza la información del producto seleccionado.';
         fillModalWithProductData(productData);
         saveButton.setAttribute('data-id', productData.id);
     } else {
         modalTitle.textContent = 'Crear Producto';
+        if (asideTitle) asideTitle.innerHTML = 'Crear<br>Producto';
+        if (asideText) asideText.textContent = 'Completa la información para registrar un nuevo producto o servicio.';
         document.getElementById('nombre').value = '';
         document.getElementById('detalle').value = '';
         document.getElementById('categoria').value = 'PRODUCTO';
@@ -306,6 +330,41 @@ function handleTableActions(event) {
         handleEdit(productId);
     } else if (target.classList.contains('delete-btn')) {
         handleDeleteProduct(productId);
+    }
+}
+
+async function handleStatusToggle(event) {
+    if (!event.target.classList.contains('status-toggle-input')) return;
+
+    const checkbox = event.target;
+    const id = checkbox.getAttribute('data-id');
+    const newState = checkbox.checked;
+
+    checkbox.disabled = true;
+    const result = await updateProduct({ id, isActive: newState });
+    checkbox.disabled = false;
+
+    if (result) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: newState ? 'Producto activado' : 'Producto desactivado',
+            showConfirmButton: false,
+            timer: 1800,
+            timerProgressBar: true,
+        });
+        loadProducts();
+    } else {
+        checkbox.checked = !newState;
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'No se pudo actualizar el estado',
+            showConfirmButton: false,
+            timer: 2000,
+        });
     }
 }
 

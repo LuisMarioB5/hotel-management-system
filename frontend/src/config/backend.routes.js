@@ -8,6 +8,7 @@ const products = 'products';
 const consumptions = 'consumptions';
 const billing = 'billing/invoices';
 const reports = 'reports';
+const housekeeping = 'housekeeping/tasks';
 
 export const BACKEND_ROUTES = {
   auth: {
@@ -86,5 +87,18 @@ export const BACKEND_ROUTES = {
     generateProductsOffered:(isActive, category) => `${BASE_URL}/${reports}/productsOffered/pdf?isActive=${isActive}&category=${category}`,
     generateBookingsByRoom:(roomId, checkInDate, checkOutDate) => `${BASE_URL}/${reports}/bookingsByRoom/${roomId}/pdf?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`,
     generateTopConsumptions:(limit, category) => `${BASE_URL}/${reports}/topConsumptions/pdf?limit=${limit}&category=${category}`,
+  },
+  housekeeping: {
+    create: `${BASE_URL}/${housekeeping}`,
+    getAll: (filters = {}) => {
+      const params = new URLSearchParams(filters).toString();
+      return `${BASE_URL}/${housekeeping}${params ? `?${params}` : ''}`;
+    },
+    getById: (id) => `${BASE_URL}/${housekeeping}/${id}`,
+    getEnumsValues: `${BASE_URL}/${housekeeping}/enums/values`,
+    assign: (id) => `${BASE_URL}/${housekeeping}/${id}/assign`,
+    start: (id) => `${BASE_URL}/${housekeeping}/${id}/start`,
+    complete: (id) => `${BASE_URL}/${housekeeping}/${id}/complete`,
+    cancel: (id) => `${BASE_URL}/${housekeeping}/${id}/cancel`,
   },
 };

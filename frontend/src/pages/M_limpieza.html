@@ -3,58 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión - Limpieza | Hotel Hodelpa</title>
+    <title>Mantenimiento y Limpieza | Hotel Hodelpa</title>
     <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/recepcion.css">
+    <link rel="stylesheet" href="../styles/housekeeping.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
 </head>
 <body>
     <div class="dashboard-page">
             <div class="dashboard-container">
                 <div class="main-content">
                     <div class="user-info">
-                        <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                        <div id="logoutButton" class="profile-card" role="button" tabindex="0">
+                            <i class="fas fa-user"></i>
+                            <span class="profile-name">Admin</span>
+                            <i class="fas profile-role-icon"></i>
+                            <i class="fas fa-chevron-down profile-chevron"></i>
+                        </div>
                     </div>
-                    <h2>Habitaciones en Limpieza</h2>
-                    <hr>
+                    <div class="page-title-card">
+                        <h2>Mantenimiento y Limpieza</h2>
+                    </div>
 
-                    <div class="rooms-container">
-                        <label>Seleccionar Piso</label>
-                        <select class="floor-selector">
-                            <option value="Todos">Todos</option>
-                            <option value="PRIMER">PRIMER</option>
-                            <option value="SEGUNDO">SEGUNDO</option>
-                            <option value="TERCER">TERCER</option>
-                            <option value="CUARTO">CUARTO</option>
-                            <option value="QUINTO">QUINTO</option>
-                        </select>
+                    <div class="hk-panel">
+                        <div class="hk-toolbar">
+                            <div class="form-group">
+                                <label>Piso</label>
+                                <select id="hkFloorFilter">
+                                    <option value="Todos">Todos</option>
+                                    <option value="PRIMER">PRIMER</option>
+                                    <option value="SEGUNDO">SEGUNDO</option>
+                                    <option value="TERCER">TERCER</option>
+                                    <option value="CUARTO">CUARTO</option>
+                                    <option value="QUINTO">QUINTO</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo</label>
+                                <select id="hkTypeFilter">
+                                    <option value="Todos">Todos</option>
+                                    <option value="LIMPIEZA">Limpieza</option>
+                                    <option value="MANTENIMIENTO">Mantenimiento</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Prioridad</label>
+                                <select id="hkPriorityFilter">
+                                    <option value="Todos">Todas</option>
+                                    <option value="ALTA">Alta</option>
+                                    <option value="MEDIA">Media</option>
+                                    <option value="BAJA">Baja</option>
+                                </select>
+                            </div>
+                            <button class="hk-report-btn" id="openReportModal">
+                                <i class="fas fa-triangle-exclamation"></i> Reportar incidencia
+                            </button>
+                        </div>
+                    </div>
 
-                        <div class="rooms-grid">
-                            <!--Se llenara automatico-->
+                    <div class="hk-panel">
+                        <div class="hk-board">
+                            <div class="hk-column">
+                                <div class="hk-column-title">
+                                    Pendiente <span class="hk-column-count" id="countPendiente">0</span>
+                                </div>
+                                <div class="hk-column-body" id="columnPendiente"></div>
+                            </div>
+                            <div class="hk-column">
+                                <div class="hk-column-title">
+                                    En proceso <span class="hk-column-count" id="countEnProceso">0</span>
+                                </div>
+                                <div class="hk-column-body" id="columnEnProceso"></div>
+                            </div>
+                            <div class="hk-column">
+                                <div class="hk-column-title">
+                                    Completadas hoy <span class="hk-column-count" id="countCompletada">0</span>
+                                </div>
+                                <div class="hk-column-body" id="columnCompletada"></div>
+                            </div>
+                        </div>
+
+                        <button class="hk-history-toggle" id="toggleHistory">
+                            <i class="fas fa-clock-rotate-left"></i> Ver historial completo
+                        </button>
+                        <div id="historySection" style="display:none;">
+                            <table class="hk-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Habitación</th>
+                                        <th>Tipo</th>
+                                        <th>Prioridad</th>
+                                        <th>Estado</th>
+                                        <th>Asignado a</th>
+                                        <th>Descripción</th>
+                                        <th>Creada</th>
+                                        <th>Completada</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
     </div>
 
-     <!-- Nuevo Modal de Limpieza -->
-     <div class="modal" id="limpiezaModal">
+    <!-- Modal: Reportar incidencia -->
+    <div class="modal" id="reportModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h5>¿Confirmar finalización de limpieza?</h5>
-                <span class="close-button" id="closeLimpiezaModal">&times;</span>
+                <h5>Reportar incidencia</h5>
+                <span class="close-button" id="closeReportModal">&times;</span>
             </div>
             <div class="modal-body">
-                ¿Está seguro que desea dar por terminada la limpieza de la habitación?
+                <div class="form-group">
+                    <label>Habitación</label>
+                    <select id="reportRoomSelect"></select>
+                </div>
+                <div class="form-group">
+                    <label>Prioridad</label>
+                    <select id="reportPrioritySelect">
+                        <option value="BAJA">Baja</option>
+                        <option value="MEDIA" selected>Media</option>
+                        <option value="ALTA">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descripción del problema</label>
+                    <textarea id="reportDescription" rows="3" style="width: 100%; resize: vertical;" placeholder="Ej. Aire acondicionado no enfría"></textarea>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn cancel" id="cancelLimpieza">Cancelar</button>
-                <button class="btn confirm" id="confirmarLimpieza">Confirmar limpieza</button>
+                <button class="btn cancel" id="cancelReport">Cancelar</button>
+                <button class="btn confirm" id="confirmReport">Reportar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Asignar tarea -->
+    <div class="modal" id="assignModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Asignar tarea</h5>
+                <span class="close-button" id="closeAssignModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Personal de mantenimiento</label>
+                    <select id="assignUserSelect"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel" id="cancelAssign">Cancelar</button>
+                <button class="btn confirm" id="confirmAssign">Asignar</button>
             </div>
         </div>
     </div>
@@ -75,12 +180,12 @@
             </div>
         </div>
     </div>
-   
+
     <script type="module" src="../scripts/CosasComunes.js"></script>
 
     <script type="module">
-        import { initializeCleaningRooms } from '../scripts/habitacion.js';
-        document.addEventListener('DOMContentLoaded', initializeCleaningRooms);
+        import { initializeHousekeepingBoard } from '../scripts/housekeeping.js';
+        document.addEventListener('DOMContentLoaded', initializeHousekeepingBoard);
     </script>
 </body>
 </html>

@@ -4,7 +4,13 @@ import { getAllBookings } from '../integrations/booking.integration.js';
 import { generateConsumptionsReportPDF, generateBookingsByRoomReportPDF, generateTopConsumptionsReportPDF  } from '../integrations/reports.integration.js';
 import { getAllRooms } from '../integrations/room.integration.js';
 
-const { jsPDF } = window.jspdf;
+// Acceso perezoso a jsPDF: si se leyera en el nivel superior del módulo y
+// el script de jsPDF (cargado con `defer`) aún no estuviera listo, esta línea
+// lanzaría una excepción que abortaría TODO el módulo, incluyendo el listener
+// del botón de búsqueda de habitaciones más abajo.
+function getJsPDF() {
+    return window.jspdf.jsPDF;
+}
 
 // Variable para evitar múltiples ejecuciones
 let isGeneratingReport = false;
@@ -54,7 +60,7 @@ window.downloadProductsReportPDF = async function (status, category) {
             return matchStatus && matchCategory;
         });
 
-        const doc = new jsPDF();
+        const doc = new (getJsPDF())();
 
         doc.setFontSize(18);
         doc.text('Reporte de Productos/Servicios', 14, 22);
@@ -115,27 +121,21 @@ window.downloadProductsReportPDF = async function (status, category) {
     }
 };
 
-// Integrar la función de descarga en el HTML
-document.querySelector('.downloadproduct-btn').addEventListener('click', async () => {
-    const status = document.getElementById('status').value;
-    const category = document.getElementById('category').value;
+// Nota: la descarga de productos/servicios se dispara directamente desde el
+// botón en el HTML vía onclick="downloadProductsReportPDF(...)", así que no
+// se necesita un listener aparte aquí. (Antes había uno enganchado a
+// `.downloadproduct-btn`, una clase que ya no existe en el HTML rediseñado;
+// eso hacía que `querySelector(...)` devolviera `null` y el
+// `.addEventListener` sobre `null` abortara la carga de TODO este módulo,
+// incluyendo la exposición de `showRoomSelectionAlert`/
+// `openReservationSearchModal` más abajo — esa era la causa real de que los
+// botones de búsqueda no hicieran nada.)
 
-    if (!status || !category) {
-        await Swal.fire({
-            icon: 'warning',
-            title: 'Parámetros requeridos',
-            text: 'Por favor, selecciona el estado y la categoría antes de continuar.',
-            heightAuto: false,
-            customClass: {
-                container: 'swal-container',
-            },
-        });
-        return;
-    }
 
-    await downloadProductsReportPDF(status, category);
-});
-
+// Cache de reservas CHECKED_OUT para que el botón de búsqueda pueda abrir
+// la alerta directamente vía onclick, sin depender de que un addEventListener
+// se haya registrado a tiempo (más robusto que engancharlo solo una vez).
+let cachedCheckedOutBookings = [];
 
 /**
  * Carga los IDs de las reservas con estado CHECKED_OUT en el `<select>` de reservas.
@@ -146,6 +146,7 @@ export async function loadReservationIDs() {
     try {
         const bookings = await getAllBookings();
         const checkedOutBookings = bookings.filter(booking => booking.status === 'CHECKED_OUT');
+        cachedCheckedOutBookings = checkedOutBookings;
 
         // Limpiar el select antes de llenarlo
         select.innerHTML = '<option value="">Seleccione una reserva</option>';
@@ -157,9 +158,6 @@ export async function loadReservationIDs() {
             option.textContent = `Reserva ${booking.id}`;
             select.appendChild(option);
         });
-
-        // Configurar botón para abrir la alerta
-        setupSearchButton(checkedOutBookings);
     } catch (error) {
         console.error('Error al cargar las reservas:', error);
         await Swal.fire({
@@ -169,26 +167,24 @@ export async function loadReservationIDs() {
         });
     }
 }
+
 /**
- * Configura el botón de búsqueda para abrir la alerta con la lista de reservas.
- * @param {Array} bookings - Lista de reservas en estado CHECKED_OUT.
+ * Abre la alerta de selección de reserva. Expuesta globalmente y enganchada
+ * vía `onclick` en el HTML para no depender del orden/momento en que se
+ * ejecutan los módulos.
  */
-function setupSearchButton(bookings) {
-    const searchButton = document.getElementById('open-reservation-modal');
+window.openReservationSearchModal = async function () {
+    if (cachedCheckedOutBookings.length === 0) {
+        await Swal.fire({
+            icon: 'info',
+            title: 'No hay reservas',
+            text: 'Actualmente no hay reservas en estado CHECKED_OUT.',
+        });
+        return;
+    }
 
-    searchButton.addEventListener('click', async () => {
-        if (bookings.length === 0) {
-            await Swal.fire({
-                icon: 'info',
-                title: 'No hay reservas',
-                text: 'Actualmente no hay reservas en estado CHECKED_OUT.',
-            });
-            return;
-        }
-
-        await showReservationSelectionAlert(bookings);
-    });
-}
+    await showReservationSelectionAlert(cachedCheckedOutBookings);
+};
 
 /**
  * Muestra una alerta con todas las reservas en CHECKED_OUT.
@@ -197,40 +193,60 @@ function setupSearchButton(bookings) {
  */
 async function showReservationSelectionAlert(bookings) {
     const reservationList = bookings
-        .map(
-            booking =>
-                `<li style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 10px 20px;
-                background-color: #28a745;
-                color: white;
-                margin-bottom: 10px;
-                font-weight: bold;
-                font-size: 12px; 
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                width: 100%;
-                height: 100%;
-                max-height: 50px;
-                max-width: 120px;
-                align-self: flex-end; " 
-                 onclick="selectReservation(${booking.id})">
-                 Reserva ${booking.id} - ${booking.customer?.name || 'Sin nombre'}
-                 </li>`
-        )
+        .map(booking => {
+            const customerName = booking.customer?.name || 'Sin nombre';
+            const roomNumber = booking.room?.number ?? '—';
+            const checkIn = booking.checkInDate
+                ? new Date(booking.checkInDate).toLocaleDateString('es-ES')
+                : '';
+            const searchTerms = `${customerName} ${booking.id} ${roomNumber}`.toLowerCase();
+
+            return `<div class="reservation-item" data-search="${searchTerms}" onclick="selectReservation(${booking.id})">
+                    <div class="reservation-item-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="reservation-item-body">
+                        <span class="reservation-item-title">Reserva ${booking.id} · Hab. ${roomNumber}</span>
+                        <span class="reservation-item-subtitle">${customerName}${checkIn ? ' · ' + checkIn : ''}</span>
+                    </div>
+                    <i class="fas fa-chevron-right reservation-item-arrow"></i>
+                </div>`;
+        })
         .join('');
 
     await Swal.fire({
         title: 'Selecciona una reserva',
-        html: `<ul style="text-align: left; list-style: none; padding: 0;">${reservationList}</ul>`,
+        html: `
+            <div class="reservation-search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="reservationSearchInput" placeholder="Buscar por cliente, habitación o # de reserva..." autocomplete="off">
+            </div>
+            <div class="reservation-list" id="reservationListContainer">${reservationList}</div>
+            <p class="reservation-empty-msg" id="reservationEmptyMsg" style="display: none;">No se encontraron reservas.</p>
+        `,
         showConfirmButton: false, // No mostrar botón de confirmar
         heightAuto: false,
-            customClass: {
-                container: 'swal-container',
-            },
+        customClass: {
+            container: 'swal-container',
+            popup: 'swal-popup',
+        },
+        didOpen: () => {
+            const input = document.getElementById('reservationSearchInput');
+            const items = Array.from(document.querySelectorAll('#reservationListContainer .reservation-item'));
+            const emptyMsg = document.getElementById('reservationEmptyMsg');
+
+            input.focus();
+            input.addEventListener('input', () => {
+                const term = input.value.trim().toLowerCase();
+                let visibleCount = 0;
+
+                items.forEach(item => {
+                    const matches = item.dataset.search.includes(term);
+                    item.style.display = matches ? '' : 'none';
+                    if (matches) visibleCount++;
+                });
+
+                emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+            });
+        },
     });
 }
 
@@ -286,54 +302,33 @@ export function setupExportButtons() {
     });
 
     // Descargar reporte de productos/servicios ofrecidos
-    downloadProductsButton.addEventListener('click', async () => {
-        try {
-            await generateProductsOfferedReportPDF(true, 'Todos'); // Ajusta los parámetros según tus necesidades
-            await Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'El reporte de productos/servicios se descargó correctamente.',
-                timer: 2000,
-                showConfirmButton: false,
-            });
-        } catch (error) {
-            console.error('Error al generar el reporte de productos/servicios:', error);
-            await Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'No se pudo descargar el reporte de productos/servicios. Intenta nuevamente.',
-            });
-        }
-    });
+    // (id legado que ya no existe en la página; se protege para no romper
+    // el resto de la configuración de botones si falta en el DOM)
+    if (downloadProductsButton) {
+        downloadProductsButton.addEventListener('click', async () => {
+            try {
+                await generateProductsOfferedReportPDF(true, 'Todos'); // Ajusta los parámetros según tus necesidades
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'El reporte de productos/servicios se descargó correctamente.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            } catch (error) {
+                console.error('Error al generar el reporte de productos/servicios:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo descargar el reporte de productos/servicios. Intenta nuevamente.',
+                });
+            }
+        });
+    }
 }
-const styles = `
-.search-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 0px;
-    
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 12px;
-    box-sizing: border-box;
-}
-.search-button i {
-    font-size: 1.2rem;
-    color: #28a745;
-}
-.search-button:hover i {
-    color: rgb(6, 82, 6);
-}
-    
-`;
-
-// Inyectar el CSS en el documento
-const styleSheet = document.createElement('style');
-styleSheet.type = 'text/css';
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
+// El botón de búsqueda ahora usa la clase .panel-icon-btn definida en
+// recepcion.css (compartida con el resto del sitio), en vez de un estilo
+// inyectado aquí.
 
 //
 // Exportacion de habitacion reservadas
@@ -397,14 +392,14 @@ export async function showRoomSelectionAlert() {
             return;
         }
 
-        // Generar las habitaciones en un diseño de cuadrícula (3 columnas)
+        // Generar las habitaciones en una cuadrícula responsiva
         const roomList = rooms
             .map(
                 room =>
-                    `<div 
-                        class="room-item" 
+                    `<div
+                        class="room-item"
                         onclick="selectRoom(${room.id}, '${room.number}')">
-                        Habitación ${room.number}
+                        <i class="fas fa-door-closed"></i> Habitación ${room.number}
                     </div>`
             )
             .join('');
@@ -432,6 +427,11 @@ export async function showRoomSelectionAlert() {
         });
     }
 }
+
+// Expuesta globalmente y enganchada vía `onclick` en el HTML: más robusta
+// que un addEventListener que depende del orden/momento de ejecución de los
+// módulos.
+window.showRoomSelectionAlert = showRoomSelectionAlert;
 
 // Función para seleccionar una habitación y actualizar los campos correspondientes
 window.selectRoom = function (id, number) {
@@ -527,63 +527,9 @@ window.generateRoomReport = async function () {
         });
     }
 };
-// CSS dinámico para estilizar las habitaciones en la alerta
-const roomAlertStyles = `
-/* Estilo para la cuadrícula de habitaciones */
-.room-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columnas */
-    gap: 10px;
-    padding: 20px;
-    justify-items: center;
-}
-
-/* Estilo para cada elemento de la habitación */
-.room-item {
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    font-weight: normal;
-    font-size: 12px; /* Tamaño de fuente más pequeño */
-    border-radius: 5px;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.room-item:hover {
-    background-color: rgb(6, 82, 6);
-}
-
-/* Botón para mostrar habitaciones */
-#show-rooms-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 0px;
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 12px;
-    box-sizing: border-box;
-}
-#show-rooms-btn i {
-    font-size: 1.2rem;
-    color: #28a745;
-}
-#show-rooms-btn:hover i {
-    color: rgb(6, 82, 6);
-}
-`;
-
-// Inyectar el CSS en el documento
-const roomAlertStyleSheet = document.createElement('style');
-roomAlertStyleSheet.type = 'text/css';
-roomAlertStyleSheet.innerText = roomAlertStyles;
-document.head.appendChild(roomAlertStyleSheet);
-
-// Configurar el botón para mostrar la alerta de habitaciones
-document.getElementById('show-rooms-btn').addEventListener('click', showRoomSelectionAlert);
+// El estilo de `.room-grid` / `.room-item` (y del resto de los modales de
+// búsqueda) vive en recepcion.css para que respete el tema claro/oscuro del
+// sitio, en vez de inyectarse aquí como CSS plano.
 
 // Función para generar el reporte usando el ID de la habitación seleccionada
 window.generateRoomReport = function () {

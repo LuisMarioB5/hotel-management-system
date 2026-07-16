@@ -8,6 +8,7 @@ import { BookingsController } from './bookings.controller';
 import { CustomerEntity } from 'src/customers/customer.entity';
 import { RoomEntity } from 'src/rooms/room.entity';
 import { MailerModule } from '@nestjs-modules/mailer'; // Añadimos MailerModule
+import { HousekeepingModule } from 'src/housekeeping/housekeeping.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MailerModule } from '@nestjs-modules/mailer'; // Añadimos MailerModule
     CustomersModule,
     RoomsModule,
     MailerModule, // Importamos MailerModule
+    HousekeepingModule,
   ],
   providers: [BookingsService],
   controllers: [BookingsController],

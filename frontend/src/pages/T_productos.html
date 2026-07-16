@@ -5,30 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mantenimiento - Productos | Hotel Hodelpa</title>
   <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles/dashboard.css">
   <link rel="stylesheet" href="../styles/usuarios.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-<script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
 </head>
 <body>
     <div class="dashboard-page">
         <div class="dashboard-container">
             <div class="main-content">
                 <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                    <div id="logoutButton" class="profile-card" role="button" tabindex="0">
+                        <i class="fas fa-user"></i>
+                        <span class="profile-name">Admin</span>
+                        <i class="fas profile-role-icon"></i>
+                        <i class="fas fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
-                <div class="user-list-header">
+                <div class="user-list-header page-title-card">
                     <h2>Lista de Productos</h2>
+                    <p>Administra los productos y servicios del hotel</p>
                 </div>
-                <div class="contenido"> 
+
+                <div class="contenido">
                     <!-- Botón "Crear Nuevo" y opciones de visualización -->
                     <div class="user-actions">
                         <button class="create-button" data-toggle="modal" data-target="#createUserModal">
-                            <i class="fas fa-cart-plus"></i>  Nuevo
+                            <i class="fas fa-cart-plus"></i> Nuevo Producto
                         </button>
-                        
+
                         <div class="table-controls">
                             <label for="recordsPerPage">Mostrar:</label>
                             <select id="recordsPerPage">
@@ -36,8 +45,16 @@
                                 <option value="5">5</option>
                                 <option value="10">10</option>
                             </select>
-                            <label>Registros:</label>
-                            <input type="text" id="searchUser" placeholder="Buscar producto">
+                            <label for="statusFilter">Estado:</label>
+                            <select id="statusFilter">
+                                <option value="all">Todos</option>
+                                <option value="active">Activos</option>
+                                <option value="inactive">Inactivos</option>
+                            </select>
+                            <div class="search-wrap">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchUser" placeholder="Buscar producto...">
+                            </div>
                         </div>
                     </div>
 
@@ -56,7 +73,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
                             </tbody>
                         </table>
                         <!-- Div de paginación y conteo de registros -->
@@ -66,50 +83,99 @@
                                     <button class="pagination-btn">&lt;</button>
                                     <button class="pagination-btn">&gt;</button>
                                 </div>
-                        </div>          
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Modal para Crear Producto -->
+
+    <!-- Modal para Crear/Editar Producto -->
     <div id="createUserModal" class="modalusu">
-        <div class="modalusu-content">
-            <div class="modalusu-header">
-                <h2>Producto</h2>
-                <span class="close-buttonusu" onclick="closeModal()">&times;</span>
+        <div class="modal-premium">
+            <div class="modal-premium-aside">
+                <div class="modal-premium-aside-icon"><i class="fas fa-box"></i></div>
+                <h2 class="modal-premium-aside-title" id="modalAsideTitle">Crear<br>Producto</h2>
+                <p class="modal-premium-aside-text" id="modalAsideText">Completa la información para registrar un nuevo producto o servicio.</p>
+                <div class="modal-premium-aside-card">
+                    <div class="modal-premium-aside-card-icon"><i class="fas fa-boxes-stacked"></i></div>
+                    <div>
+                        <div class="modal-premium-aside-card-title">Control de inventario</div>
+                        <div class="modal-premium-aside-card-text">La cantidad se descuenta automáticamente al vender.</div>
+                    </div>
+                </div>
             </div>
-            <div class="modalusu-body">
+            <div class="modal-premium-main">
+                <div class="modalusu-header">
+                    <div class="modal-premium-header-icon"><i class="fas fa-box"></i></div>
+                    <h2>Producto</h2>
+                    <span class="close-buttonusu" onclick="closeModal()">&times;</span>
+                </div>
+                <div class="modal-premium-divider"></div>
+                <div class="modal-premium-body">
+                    <div class="modal-premium-field">
+                        <label for="nombre">Nombre</label>
+                        <div class="modal-premium-input-wrap">
+                            <i class="fas fa-tag modal-premium-input-icon"></i>
+                            <input type="text" id="nombre" required>
+                        </div>
+                    </div>
 
-                <label for="nombre">Nombre</label>
-                <input type="text" id="nombre" required>
+                    <div class="modal-premium-field">
+                        <label for="detalle">Detalle</label>
+                        <div class="modal-premium-input-wrap">
+                            <i class="fas fa-align-left modal-premium-input-icon"></i>
+                            <input type="text" id="detalle" required>
+                        </div>
+                    </div>
 
-                <label for="detalle">Detalle</label>
-                <input type="text" id="detalle" required>
+                    <div class="modal-premium-row">
+                        <div class="modal-premium-field">
+                            <label for="categoria">Categoria</label>
+                            <div class="modal-premium-input-wrap">
+                                <i class="fas fa-th-large modal-premium-input-icon"></i>
+                                <select id="categoria">
+                                    <option value="SERVICIO">Servicio</option>
+                                    <option value="PRODUCTO">Producto</option>
+                                </select>
+                                <i class="fas fa-chevron-down modal-premium-select-arrow"></i>
+                            </div>
+                        </div>
+                        <div class="modal-premium-field">
+                            <label for="precio">Precio</label>
+                            <div class="modal-premium-input-wrap">
+                                <i class="fas fa-dollar-sign modal-premium-input-icon"></i>
+                                <input type="text" id="precio" required>
+                            </div>
+                        </div>
+                    </div>
 
-                <label for="categoria">Categoria</label>
-                <select id="categoria">
-                    <option value="SERVICIO">Servicio</option>
-                    <option value="PRODUCTO">Producto</option>
-                </select>
+                    <div class="modal-premium-row">
+                        <div class="modal-premium-field">
+                            <label for="cantidad">Cantidad</label>
+                            <div class="modal-premium-input-wrap">
+                                <i class="fas fa-cubes modal-premium-input-icon"></i>
+                                <input type="text" id="cantidad" required>
+                            </div>
+                        </div>
+                        <div class="modal-premium-field">
+                            <label for="estado">Estado</label>
+                            <div class="modal-premium-input-wrap">
+                                <span class="modal-premium-status-dot"></span>
+                                <select id="estado">
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                </select>
+                                <i class="fas fa-chevron-down modal-premium-select-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <label for="precio">Precio</label>
-                <input type="text" id="precio" required>
-
-                <label for="cantidad">Cantidad</label>
-                <input type="text" id="cantidad" required>
-
-                <label for="estado">Estado</label>
-                <select id="estado">
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
-                </select>
-            </div>
-
-            <div class="modalusu-footer">
-                <button class="btn_cancelusu" onclick="closeModal()">Cerrar</button>
-                <button class="btn_saveusu" onclick="guardarProducto()">Guardar</button>
+                <div class="modal-premium-footer">
+                    <button class="btn_cancelusu" onclick="closeModal()">Cancelar</button>
+                    <button class="btn_saveusu" onclick="guardarProducto()"><i class="fas fa-save"></i> Guardar Producto</button>
+                </div>
             </div>
         </div>
     </div>
@@ -130,7 +196,7 @@
             </div>
         </div>
     </div>
-    
+
     <script src="../scripts/CosasComunes.js" type="module"></script>
     <script src="../scripts/producto.js" type="module"></script>
 </body>

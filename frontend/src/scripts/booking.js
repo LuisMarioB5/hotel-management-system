@@ -85,10 +85,14 @@ async function handleBookingProcess(event) {
                 title: 'Reserva no disponible',
                 html: `La habitación ya tiene reservas en las fechas seleccionadas.<br><br>
                        Fechas ocupadas:<br>
-                       ${bookingResult.overlappingBookings.map(booking => 
+                       ${bookingResult.overlappingBookings.map(booking =>
                            `${new Date(booking.checkInDate).toLocaleDateString()} - ${new Date(booking.checkOutDate).toLocaleDateString()}`
                        ).join('<br>')}`,
-                confirmButtonText: 'Entendido'
+                confirmButtonText: 'Entendido',
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
             });
         } else if (bookingResult) {
             await handleBookingConfirmation(bookingResult);
@@ -98,7 +102,11 @@ async function handleBookingProcess(event) {
                 icon: 'error',
                 title: 'Error',
                 text: 'Hubo un problema inesperado al crear la reserva. Por favor, intente nuevamente.',
-                confirmButtonText: 'Entendido'
+                confirmButtonText: 'Entendido',
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
             });
         }
     } catch (error) {
@@ -107,7 +115,11 @@ async function handleBookingProcess(event) {
             icon: 'error',
             title: 'Error',
             text: 'Hubo un problema al procesar la reserva.',
-            confirmButtonText: 'Entendido'
+            confirmButtonText: 'Entendido',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
         });
     }
 }
@@ -375,7 +387,11 @@ async function handleBookingConfirmation(booking) {
             showCancelButton: true,
             confirmButtonText: 'Sí, confirmar',
             cancelButtonText: 'No',
-            allowOutsideClick: false
+            allowOutsideClick: false,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
         });
 
         if (confirmResult.isConfirmed) {
@@ -391,7 +407,11 @@ async function handleBookingConfirmation(booking) {
                 showCancelButton: true,
                 confirmButtonText: 'Sí, iniciar hospedaje',
                 cancelButtonText: 'No, regresar a recepción',
-                allowOutsideClick: false
+                allowOutsideClick: false,
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
             });
 
             if (hospedajeResult.isConfirmed) {
@@ -404,7 +424,11 @@ async function handleBookingConfirmation(booking) {
                 icon: 'info',
                 title: 'Reserva Pendiente',
                 text: 'La reserva se mantendrá como pendiente.',
-                confirmButtonText: 'Aceptar'
+                confirmButtonText: 'Aceptar',
+                heightAuto: false,
+                customClass: {
+                    container: 'swal-container',
+                },
             });
         }
     } catch (error) {
@@ -413,7 +437,11 @@ async function handleBookingConfirmation(booking) {
             icon: 'error',
             title: 'Error',
             text: 'Hubo un problema al confirmar la reserva. Intente nuevamente.',
-            confirmButtonText: 'Entendido'
+            confirmButtonText: 'Entendido',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
         });
     }
 }
@@ -425,7 +453,11 @@ function showAlert(icon, title, text, timer = null) {
         text,
         timer,
         timerProgressBar: true,
-        allowOutsideClick: false
+        allowOutsideClick: false,
+        heightAuto: false,
+        customClass: {
+            container: 'swal-container',
+        },
     });
 }
 
@@ -598,7 +630,11 @@ export async function renderSalesChart() {
         const sortedMonths = Object.keys(combinedSalesByMonth).sort(); // Etiquetas (meses ordenados)
         const salesData = sortedMonths.map(month => combinedSalesByMonth[month]); // Datos (ventas por mes)
 
-        // Configurar el gráfico
+        // Configurar el gráfico (con colores según el tema activo)
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const textColor = isDark ? '#c8cad8' : '#333';
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.1)';
+
         const ctx = document.getElementById('salesChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -621,35 +657,40 @@ export async function renderSalesChart() {
                         title: {
                             display: true,
                             text: 'Meses',
-                            color: '#333',
+                            color: textColor,
                             font: {
                                 size: 14,
                                 weight: 'bold',
                             },
-                        }
+                        },
+                        ticks: { color: textColor },
+                        grid: { color: gridColor },
                     },
                     y: {
                         beginAtZero: true,
                         title: {
                             display: true,
                             text: 'Ventas (RD$)',
-                            color: '#333',
+                            color: textColor,
                             font: {
                                 size: 14,
                                 weight: 'bold',
                             },
                         },
                         ticks: {
+                            color: textColor,
                             callback: function(value) {
                                 return 'RD$' + value.toLocaleString();
                             }
-                        }
+                        },
+                        grid: { color: gridColor },
                     }
                 },
                 plugins: {
                     legend: {
                         display: true, // Mostrar la leyenda del gráfico
                         labels: {
+                            color: textColor,
                             font: {
                                 size: 12,
                                 weight: 'bold',

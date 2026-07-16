@@ -35,10 +35,70 @@ body, html {
     align-items: center;
     height: 100%;
     width: 100%;
-    background: linear-gradient(135deg, #488ada, #ab2497);
+    overflow: hidden;
+    background-color: #dfe2ea;
+    background-image: linear-gradient(rgba(223, 226, 234, 0.78), rgba(223, 226, 234, 0.78)), url('../../public/assets/Bckgrd_Mode_Claro.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    transition: background-image 0.3s ease;
 }
 
+[data-theme="dark"] #root {
+    background-color: #0d0e14;
+    background-image: linear-gradient(rgba(13, 14, 20, 0.88), rgba(13, 14, 20, 0.88)), url('../../public/assets/Bckgrd_Mode_Oscuro.png');
+}
+
+/* Burbujas / partículas flotantes de fondo */
+.bubbles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.bubble {
+    position: absolute;
+    bottom: -160px;
+    border-radius: 50%;
+    opacity: 0;
+    filter: blur(0.5px);
+    animation: bubbleRise linear infinite;
+}
+
+@keyframes bubbleRise {
+    0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.35;
+    }
+    90% {
+        opacity: 0.25;
+    }
+    100% {
+        transform: translateY(-115vh) translateX(30px) scale(1.15);
+        opacity: 0;
+    }
+}
+
+.bubble:nth-child(1)  { left: 5%;  width: 60px;  height: 60px;  background: #2F6BFF; animation-duration: 16s; animation-delay: 0s; }
+.bubble:nth-child(2)  { left: 15%; width: 30px;  height: 30px;  background: #8A4DFF; animation-duration: 12s; animation-delay: 2s; }
+.bubble:nth-child(3)  { left: 27%; width: 90px;  height: 90px;  background: #1EB1C3; animation-duration: 22s; animation-delay: 1s; }
+.bubble:nth-child(4)  { left: 40%; width: 45px;  height: 45px;  background: #E5951E; animation-duration: 14s; animation-delay: 5s; }
+.bubble:nth-child(5)  { left: 52%; width: 70px;  height: 70px;  background: #2F6BFF; animation-duration: 19s; animation-delay: 3s; }
+.bubble:nth-child(6)  { left: 63%; width: 25px;  height: 25px;  background: #8A4DFF; animation-duration: 11s; animation-delay: 7s; }
+.bubble:nth-child(7)  { left: 72%; width: 55px;  height: 55px;  background: #1EB1C3; animation-duration: 17s; animation-delay: 4s; }
+.bubble:nth-child(8)  { left: 82%; width: 35px;  height: 35px;  background: #E5951E; animation-duration: 13s; animation-delay: 6s; }
+.bubble:nth-child(9)  { left: 90%; width: 80px;  height: 80px;  background: #8A4DFF; animation-duration: 20s; animation-delay: 0.5s; }
+.bubble:nth-child(10) { left: 95%; width: 20px;  height: 20px;  background: #2F6BFF; animation-duration: 10s; animation-delay: 8s; }
+
 .login-container {
+    position: relative;
+    z-index: 1;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -46,6 +106,27 @@ body, html {
     overflow: hidden;
     width: 700px;
     max-width: 90%;
+    transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] .login-container {
+    background-color: var(--dark-surface, #1a1c26);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .login-h1 {
+    color: var(--dark-text, #f0f0f0);
+}
+
+[data-theme="dark"] .login-form-section p {
+    color: var(--dark-text-muted, #9a9db0);
+}
+
+[data-theme="dark"] .login-form-section input[type="text"],
+[data-theme="dark"] .login-form-section input[type="password"] {
+    background-color: #232633;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: var(--dark-text, #f0f0f0);
 }
 
 .login-hotel-img-section {

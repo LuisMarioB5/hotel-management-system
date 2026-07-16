@@ -78,10 +78,3 @@ function parseJwt(token) {
         return null;
     }
 }
-
-export function setLogoutButton(user) {
-    const btn = document.getElementById('logoutButton');
-    if(btn) {
-        btn.innerHTML = `${user.username} <i class="fas fa-user"></i>`;
-    }
-}

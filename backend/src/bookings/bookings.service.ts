@@ -10,6 +10,7 @@ import { RoomEntity, RoomStatus } from 'src/rooms/room.entity';
 import { getEnumValues } from 'src/utils/showEnum.values';
 import { MailerService } from '@nestjs-modules/mailer';
 import { join } from 'path';
+import { HousekeepingService } from 'src/housekeeping/housekeeping.service';
 
 @Injectable()
 export class BookingsService {
@@ -19,6 +20,7 @@ export class BookingsService {
         private readonly customersService: CustomersService,
         private readonly roomsService: RoomsService,
         private readonly mailerService: MailerService,
+        private readonly housekeepingService: HousekeepingService,
     ) {}
 
     async create(b: CreateBookingDTO): Promise<BookingEntity> {
@@ -292,6 +294,8 @@ export class BookingsService {
         booking.room.status = RoomStatus.LIMPIEZA;
         booking.actualCheckOutDate = new Date();
         booking.status = BookingStatus.CHECKED_OUT;
+
+        await this.housekeepingService.createCleaningTask(booking.room.id);
 
         return this.repository.save(booking);
     }

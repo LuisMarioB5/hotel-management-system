@@ -6,11 +6,11 @@
     <title>Gestión - Reservar | Hotel Hodelpa</title>
     <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-    <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script type="module" src="../scripts/booking.js"></script>
 </head>
 <body>
@@ -18,128 +18,204 @@
         <div class="dashboard-container">
             <div class="main-content">
                 <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                    <div id="logoutButton" class="profile-card" role="button" tabindex="0">
+                        <i class="fas fa-user"></i>
+                        <span class="profile-name">Admin</span>
+                        <i class="fas profile-role-icon"></i>
+                        <i class="fas fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
+                <div class="page-title-card">
+                    <h2>Detalles de la Reservación</h2>
+                    <nav class="page-breadcrumb">
+                        <a href="../pages/G_recepcion.html">Reservas</a>
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Nueva reservación</span>
+                    </nav>
+                </div>
+                <div class="reserva-form">
                  <!-- Detalles de la Habitación -->
-                <div class="info-card">
-                    <h2><i class="fas fa-bed"></i> Detalles de la Habitación</h2>
-                    <div class="info-grid">
-                        <input type="hidden" id="roomId" name="roomId">
-                        <input type="hidden" id="roomPrice" name="roomPrice">
-                        <input type="hidden" id="priceAdjustment" name="priceAdjustment">
-                        <div class="info-group">
-                            <label><i class="fas fa-hashtag"></i> Número:</label>
-                            <input type="text" id="roomNumber" readonly>
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3 class="panel-card-title">Detalles de la Habitación</h3>
+                    </div>
+                    <input type="hidden" id="roomId" name="roomId">
+                    <input type="hidden" id="roomPrice" name="roomPrice">
+                    <input type="hidden" id="priceAdjustment" name="priceAdjustment">
+                    <div class="panel-stats-row">
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-hashtag"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomNumber" class="panel-stat-label">Número</label>
+                                <input type="text" id="roomNumber" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-list"></i> Detalles:</label>
-                            <input type="text" id="roomDetails" readonly>
-                        </div>        
-                        <div class="info-group">
-                            <label><i class="fas fa-tag"></i> Categoría:</label>
-                            <input type="text" id="roomCategory" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-list"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomDetails" class="panel-stat-label">Detalles</label>
+                                <input type="text" id="roomDetails" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-building"></i> Piso:</label>
-                            <input type="text" id="roomFloor" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-tag"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomCategory" class="panel-stat-label">Categoría</label>
+                                <input type="text" id="roomCategory" class="panel-stat-value" readonly>
+                            </div>
+                        </div>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-building"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomFloor" class="panel-stat-label">Piso</label>
+                                <input type="text" id="roomFloor" class="panel-stat-value" readonly>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Detalles Cliente y Reservación -->
-                <div class="reservation-details-card">
-                    <div class="client-details">
-                        <h2><i class="fas fa-user-circle"></i> Detalle Cliente</h2>
-                        <div class="form-group">
-                            <label><i class="fas fa-id-card"></i> ID cliente:</label>
-                            <div class="search-container">
-                                <input type="text" id="cliente-id" readonly>
-                                <button class="search-btn" data-toggle="modal" data-target="#createUserModal" ><i class="fas fa-search"></i> Buscar</button>
+                <div class="panel-grid-2col">
+                    <div class="panel-card">
+                        <div class="panel-card-header">
+                            <h3 class="panel-card-title">Detalle Cliente</h3>
+                        </div>
+                        <div class="panel-field-list">
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-id-card"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="cliente-id">ID Cliente</label>
+                                    <div class="panel-field-inline">
+                                        <input type="text" id="cliente-id" readonly placeholder="Buscar por ID de cliente">
+                                        <button type="button" class="panel-btn-gradient panel-btn-sm search-btn" data-toggle="modal" data-target="#createUserModal"><i class="fas fa-search"></i> Buscar</button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
-                            <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
-                        </div>
-                        <div class="form-group">
-                            <label for="tipo"><i class="fas fa-file-alt"></i> Tipo Documento:</label>
-                            <select id="tipo">
-                                <option value="CEDULA">Cedula</option>
-                                <option value="DNI">DNI</option>
-                                <option value="PASAPORTE">Pasaporte</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-user"></i> Nombre:</label>
-                            <input type="text" id="nombre" placeholder="Ingrese nombre">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-user"></i> Apellido:</label>
-                            <input type="text" id="apellido" placeholder="Ingrese apellido">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-phone"></i> Telefono:</label>
-                            <input type="text" id="telefono" placeholder="Ingrese telefono">
-                        </div>
-                        <div class="form-group">
-                            <label for="sexo"><i class="fas fa-venus-mars"></i> Sexo</label>
-                            <select id="sexo">
-                                <option value="MASCULINO">Masculino</option>
-                                <option value="FEMENINO">Femenino</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-envelope"></i> Correo:</label>
-                            <input type="email" id="correo" placeholder="Ingrese correo electrónico">
-                        </div>
-                    </div>
-
-                    <div class="reservation-details">
-                        <h2><i class="fas fa-calendar-alt"></i> Detalle Reservación</h2>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
-                                <input type="date" id="fechaEntrada" readonly>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-id-card"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="nroDocumento">Nro Documento</label>
+                                    <input type="text" id="nroDocumento" placeholder="Ingrese # de documento">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-calendar-minus"></i> Fecha Salida:</label>
-                                <div class="date-container">
-                                    <input class="icon-date" type="date" id="fechaSalida" required>
-                                    <button type="button" class="availability-btn" id="showCalendarBtn">
-                                        <i class="fas fa-calendar-check"></i> Ver disponibilidad
-                                    </button>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-file-alt"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="tipo">Tipo Documento</label>
+                                    <select id="tipo">
+                                        <option value="CEDULA">Cedula</option>
+                                        <option value="DNI">DNI</option>
+                                        <option value="PASAPORTE">Pasaporte</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row"> 
-                            <div class="form-group"> 
-                                <label><i class="fas fa-hand-holding-usd"></i> Tarifa:</label> 
-                                <select id="tarifa"> 
-                                    <option value="ESTANDAR">Tarifa Estándar</option> 
-                                    <option value="ANTICIPADA">Reserva Anticipada</option> 
-                                    <option value="ALTA">Tarifa Alta</option> 
-                                </select> 
+
+                        <div class="panel-form-grid panel-form-grid-tight">
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-user"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="nombre">Nombre</label>
+                                    <input type="text" id="nombre" placeholder="Ingrese nombre">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label><i class="fas fa-dollar-sign"></i> Precio:</label>
-                                <input type="number" id="precio" readonly>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-user"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="apellido">Apellido</label>
+                                    <input type="text" id="apellido" placeholder="Ingrese apellido">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-money-bill-wave"></i> Adelanto:</label>
-                                <input id="adelanto" class="cant" type="number" value="0" min="0" oninput="this.value = Math.max(0, this.value)">
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-phone"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="telefono">Teléfono</label>
+                                    <input type="text" id="telefono" placeholder="Ingrese teléfono">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-comment-alt"></i> Observación:</label>
-                            <textarea id="observacion" rows="3" placeholder="Ingrese observaciones"></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button id="registrarBtn" class="register-btn"><i class="fas fa-save"></i> Reservar</button>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-venus-mars"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="sexo">Sexo</label>
+                                    <select id="sexo">
+                                        <option value="MASCULINO">Masculino</option>
+                                        <option value="FEMENINO">Femenino</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-envelope"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="correo">Correo</label>
+                                    <input type="email" id="correo" placeholder="Ingrese correo electrónico">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>    
+
+                    <div class="panel-card">
+                        <div class="panel-card-header">
+                            <h3 class="panel-card-title">Detalle Reservación</h3>
+                        </div>
+                        <div class="panel-form-grid">
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-calendar-plus"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="fechaEntrada">Fecha Entrada</label>
+                                    <input type="date" id="fechaEntrada" readonly>
+                                </div>
+                            </div>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-calendar-minus"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="fechaSalida">Fecha Salida</label>
+                                    <div class="panel-field-inline">
+                                        <input class="icon-date" type="date" id="fechaSalida" required>
+                                        <button type="button" class="panel-btn-gradient panel-btn-sm" id="showCalendarBtn">
+                                            <i class="fas fa-calendar-check"></i> Ver disponibilidad
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-hand-holding-usd"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="tarifa">Tarifa</label>
+                                    <select id="tarifa">
+                                        <option value="ESTANDAR">Tarifa Estándar</option>
+                                        <option value="ANTICIPADA">Reserva Anticipada</option>
+                                        <option value="ALTA">Tarifa Alta</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-dollar-sign"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="precio">Precio</label>
+                                    <input type="number" id="precio" readonly>
+                                </div>
+                            </div>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-money-bill-wave"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="adelanto">Adelanto</label>
+                                    <input id="adelanto" class="cant" type="number" value="0" min="0" oninput="this.value = Math.max(0, this.value)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-field panel-field-full">
+                            <div class="panel-icon-box"><i class="fas fa-comment-alt"></i></div>
+                            <div class="panel-field-body">
+                                <label for="observacion">Observación</label>
+                                <textarea id="observacion" rows="3" placeholder="Ingrese observaciones"></textarea>
+                            </div>
+                        </div>
+                        <div class="panel-form-actions">
+                            <button id="registrarBtn" class="panel-btn-gradient"><i class="fas fa-save"></i> Reservar</button>
+                        </div>
+                    </div>
+                </div>
+                </div>
             </div>
         </div>
     </div>

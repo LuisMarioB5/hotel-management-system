@@ -1,8 +1,9 @@
 /* Contenedor principal de habitaciones/ tambien se usa para R_recepcion y R_Productos*/
-.rooms-container { 
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.rooms-container {
+    background: #fff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 22px rgba(20, 20, 40, 0.1);
     padding: 15px;
     margin-bottom: 20px;
     animation: fadeIn 0.5s ease-out;
@@ -232,4 +233,1058 @@
 
 .button_show_question:hover, .download-btn:hover, .reservar-btn:hover, .downloadproduct-btn:hover  {
     background-color: #1e7c32;
+}
+
+/* ============================================================
+   Paneles tipo "Generador de Ofertas" — reutilizable en Ofertas,
+   Reportes y Cuestionario.
+   ============================================================ */
+.panel-page-header {
+    margin-bottom: 18px;
+}
+
+.panel-page-subtitle {
+    margin: 4px 0 0;
+    font-size: 13.5px;
+    color: #8a8f9c;
+}
+
+.panel-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 22px rgba(20, 20, 40, 0.08);
+    padding: 26px 28px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.panel-card-title {
+    margin: 0 0 22px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+.panel-icon-box {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: #F1E9FF;
+    color: #8A4DFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.panel-btn-gradient {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2F6BFF 0%, #8A4DFF 100%);
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(47, 107, 255, 0.28);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+
+.panel-btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 26px rgba(47, 107, 255, 0.34);
+}
+
+.panel-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid #2F6BFF;
+    border-radius: 10px;
+    background: #fff;
+    color: #2F6BFF;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.panel-btn-outline:hover {
+    background-color: #F1F5FF;
+}
+
+/* Card "callout" (cuestionario) */
+.panel-callout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.panel-callout-info {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.panel-callout-text h4 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+.panel-callout-text p {
+    margin: 0;
+    font-size: 13px;
+    color: #8a8f9c;
+}
+
+.panel-divider-vert {
+    width: 1px;
+    align-self: stretch;
+    background: #E5E7EB;
+}
+
+/* Grid de campos del formulario de generación */
+.panel-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 40px;
+}
+
+/* Variante para columnas más angostas (p. ej. dentro de .panel-grid-2col) */
+.panel-form-grid-tight {
+    gap: 20px 24px;
+    margin-top: 20px;
+}
+
+/* Distribuye varias .panel-card en 2 columnas (Reportes, etc.) */
+.panel-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.panel-grid-2col .panel-card {
+    margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+    .panel-grid-2col {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panel-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.panel-field .panel-icon-box {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 12px;
+}
+
+.panel-field-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.panel-field-body label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+.panel-field-body select,
+.panel-field-body input,
+.panel-field-body textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 13.5px;
+    color: #333;
+    font-family: 'Inter', Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+.panel-field-body textarea {
+    resize: vertical;
+}
+
+.panel-field-body select:focus,
+.panel-field-body input:focus,
+.panel-field-body textarea:focus {
+    outline: none;
+    border-color: #2F6BFF;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.12);
+}
+
+.panel-field-body input:read-only {
+    background: #F8F9FA;
+    color: #6c757d;
+    cursor: default;
+}
+
+/* Fila completa dentro de un .panel-form-grid (p. ej. Observación) */
+.panel-field-full {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+}
+
+/* Input + botón en una misma fila dentro de un campo (buscar, disponibilidad) */
+.panel-field-inline {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.panel-field-inline input {
+    flex: 1;
+    min-width: 0;
+}
+
+.panel-btn-gradient.panel-btn-sm {
+    padding: 10px 16px;
+    font-size: 12.5px;
+    white-space: nowrap;
+}
+
+/* Encabezado de tarjeta con caja de ícono + título */
+.panel-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 4px;
+}
+
+.panel-card-header .panel-card-title {
+    margin: 0;
+}
+
+/* Fila de datos de solo lectura (p. ej. detalles de habitación) */
+.panel-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.panel-stat {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.panel-stat-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 12px;
+}
+
+.panel-stat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.panel-stat-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8a8f9c;
+}
+
+.panel-stat-value {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+    font-family: 'Inter', Arial, sans-serif;
+    cursor: default;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Lista vertical de campos (p. ej. Detalle Cliente) */
+.panel-field-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (max-width: 900px) {
+    .panel-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .panel-stats-row {
+        grid-template-columns: 1fr;
+    }
+    .panel-field-inline {
+        flex-wrap: wrap;
+    }
+}
+
+/* ============================================================
+   Páginas de flujo de habitación (G_registroReserva,
+   T_ventaHabitacion, cuestionario, G_salidaHabitacion) — sin
+   íconos en los títulos de tarjeta, y campos/íconos más pequeños
+   y compactos para aprovechar el espacio (esto NO afecta a
+   Ofertas/Reportes, que usan las mismas clases .panel-* fuera de
+   estos contenedores).
+   ============================================================ */
+.reserva-form .panel-card,
+.venta-form .panel-card,
+.cuestionario-form .panel-card,
+.salida-form .panel-card {
+    padding: 22px 26px;
+}
+
+.reserva-form .panel-card-title,
+.venta-form .panel-card-title,
+.cuestionario-form .panel-card-title,
+.salida-form .panel-card-title {
+    margin-bottom: 16px;
+}
+
+.reserva-form .panel-field,
+.reserva-form .panel-stat,
+.venta-form .panel-field,
+.venta-form .panel-stat,
+.cuestionario-form .panel-field,
+.cuestionario-form .panel-stat,
+.salida-form .panel-field,
+.salida-form .panel-stat {
+    gap: 10px;
+}
+
+.reserva-form .panel-field .panel-icon-box,
+.reserva-form .panel-stat-icon,
+.venta-form .panel-field .panel-icon-box,
+.venta-form .panel-stat-icon,
+.cuestionario-form .panel-field .panel-icon-box,
+.cuestionario-form .panel-stat-icon,
+.salida-form .panel-field .panel-icon-box,
+.salida-form .panel-stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    border-radius: 9px;
+}
+
+.reserva-form .panel-stats-row,
+.venta-form .panel-stats-row,
+.cuestionario-form .panel-stats-row,
+.salida-form .panel-stats-row {
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.reserva-form .panel-field-list,
+.venta-form .panel-field-list,
+.cuestionario-form .panel-field-list,
+.salida-form .panel-field-list {
+    gap: 16px;
+}
+
+.reserva-form .panel-form-grid-tight,
+.venta-form .panel-form-grid-tight,
+.cuestionario-form .panel-form-grid-tight,
+.salida-form .panel-form-grid-tight {
+    gap: 16px 20px;
+    margin-top: 16px;
+}
+
+.reserva-form .panel-form-grid,
+.venta-form .panel-form-grid,
+.cuestionario-form .panel-form-grid,
+.salida-form .panel-form-grid {
+    gap: 18px 28px;
+}
+
+.reserva-form .panel-field-body label,
+.venta-form .panel-field-body label,
+.cuestionario-form .panel-field-body label,
+.salida-form .panel-field-body label {
+    margin-bottom: 6px;
+    font-size: 12.5px;
+}
+
+.reserva-form .panel-field-body select,
+.reserva-form .panel-field-body input,
+.reserva-form .panel-field-body textarea,
+.venta-form .panel-field-body select,
+.venta-form .panel-field-body input,
+.venta-form .panel-field-body textarea,
+.cuestionario-form .panel-field-body select,
+.cuestionario-form .panel-field-body input,
+.cuestionario-form .panel-field-body textarea,
+.salida-form .panel-field-body select,
+.salida-form .panel-field-body input,
+.salida-form .panel-field-body textarea {
+    padding: 9px 12px;
+    font-size: 13px;
+}
+
+.cuestionario-form .panel-form-actions,
+.salida-form .panel-form-actions {
+    margin-top: 16px;
+}
+
+/* Preferencias de habitación (cuestionario): checkboxes de amenidades */
+.cuestionario-form .suboption.cuestionario-weight {
+    display: block;
+}
+
+.cuestionario-form .suboption.cuestionario-weight > label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+[data-theme="dark"] .cuestionario-form .suboption.cuestionario-weight > label {
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .amenities-container {
+    background: #14151d;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .amenity-category {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .amenity-category h3 {
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .amenity-option {
+    background-color: #1b1e2a;
+}
+
+[data-theme="dark"] .amenity-option:hover {
+    background-color: #232633;
+}
+
+[data-theme="dark"] .amenity-option .option-label,
+[data-theme="dark"] .suboption label {
+    color: var(--dark-text-muted);
+}
+
+.venta-form .panel-form-actions {
+    margin-top: 16px;
+}
+
+/* Tabla "Detalle de venta" — mismo formato que las tablas de
+   Usuarios/Ofertas/climodal (encabezado lavanda claro). */
+.venta-table-wrap {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.venta-form .service-table,
+.salida-form .service-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.venta-form .service-table th,
+.salida-form .service-table th {
+    padding: 12px 14px;
+    text-align: left;
+    background-color: #DDE2F3;
+    color: #333;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #C6CCE8;
+}
+
+.venta-form .service-table th:first-child,
+.salida-form .service-table th:first-child { border-top-left-radius: 12px; }
+.venta-form .service-table th:last-child,
+.salida-form .service-table th:last-child { border-top-right-radius: 12px; }
+
+.venta-form .service-table td,
+.salida-form .service-table td {
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid #E1E4EF;
+    background-color: #fff;
+    font-size: 13px;
+    color: #333;
+}
+
+.venta-form .service-table tbody tr:hover td,
+.salida-form .service-table tbody tr:hover td {
+    background-color: #FAFBFF;
+    color: #333;
+}
+
+.venta-form .service-table label,
+.salida-form .service-table label {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+}
+
+.venta-form .total-section,
+.salida-form .total-section {
+    background: none;
+    border-top: 1px solid #EFEFF2;
+    padding: 16px 0 0;
+    margin-top: 4px;
+    gap: 14px;
+}
+
+.venta-form .total-label,
+.salida-form .total-label {
+    background: linear-gradient(135deg, #2F6BFF 0%, #8A4DFF 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12.5px;
+    padding: 8px 16px;
+    border-radius: 999px;
+}
+
+.venta-form .total-amount,
+.salida-form .total-amount {
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    background: #fff;
+    color: #1a1a2e;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 8px 14px;
+}
+
+.venta-form .sale-actions {
+    background: none;
+    border-top: 1px solid #EFEFF2;
+    padding: 16px 0 0;
+}
+
+.venta-form .sale-status select {
+    border-radius: 999px;
+    border: 1px solid #E5E7EB;
+    padding: 9px 16px;
+    font-size: 13px;
+    background: #fff;
+    min-width: 150px;
+}
+
+.venta-form .sale-status select:focus {
+    outline: none;
+    border-color: #2F6BFF;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.12);
+}
+
+.panel-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+/* Botón cuadrado de búsqueda (abre modal de selección) junto a un select */
+.panel-icon-btn {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    background: #fff;
+    color: #2F6BFF;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.panel-icon-btn:hover {
+    background: #F1F5FF;
+    border-color: #2F6BFF;
+    transform: translateY(-1px);
+}
+
+.panel-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 46px 20px;
+    text-align: center;
+}
+
+.panel-empty-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    background: #F1E9FF;
+    color: #8A4DFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.panel-empty-state h4 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+.panel-empty-state p {
+    margin: 0;
+    font-size: 13px;
+    color: #8a8f9c;
+}
+
+.panel-empty-row td {
+    border-bottom: none !important;
+}
+
+.panel-empty-row:hover td {
+    background-color: #fff !important;
+}
+
+[data-theme="dark"] .panel-empty-row:hover td {
+    background-color: var(--dark-surface) !important;
+}
+
+.panel-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+@media (max-width: 720px) {
+    .panel-form-grid {
+        grid-template-columns: 1fr;
+    }
+    .panel-callout {
+        align-items: flex-start;
+    }
+    .panel-divider-vert {
+        display: none;
+    }
+}
+
+/* ============================================================
+   Modales SweetAlert de selección (habitación / reserva) que
+   abren los botones .panel-icon-btn — mismo lenguaje visual que
+   el resto del sitio en vez de los botones verdes por defecto.
+   ============================================================ */
+.swal-popup {
+    border-radius: 20px !important;
+    padding: 30px 26px !important;
+    font-family: 'Inter', Arial, sans-serif;
+}
+
+.swal-popup .swal2-title {
+    color: #1a1a2e;
+    font-size: 21px !important;
+    font-weight: 700 !important;
+}
+
+.room-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+    padding: 6px 2px 2px;
+}
+
+.room-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    background: #F1F5FF;
+    color: #2F6BFF;
+    font-weight: 600;
+    font-size: 13px;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.room-item:hover {
+    background: linear-gradient(135deg, #2F6BFF 0%, #8A4DFF 100%);
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(47, 107, 255, 0.3);
+}
+
+.reservation-search-wrap {
+    position: relative;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+.reservation-search-wrap i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9AA1B1;
+    font-size: 13px;
+}
+
+.reservation-search-wrap input {
+    width: 100%;
+    padding: 11px 14px 11px 38px;
+    border: 1px solid #E5E7EB;
+    border-radius: 999px;
+    font-size: 13.5px;
+    color: #333;
+    font-family: 'Inter', Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+.reservation-search-wrap input:focus {
+    outline: none;
+    border-color: #2F6BFF;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.12);
+}
+
+.reservation-empty-msg {
+    text-align: center;
+    color: #8a8f9c;
+    font-size: 13px;
+    padding: 20px 0 4px;
+}
+
+.reservation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 6px 2px 2px;
+    text-align: left;
+}
+
+.reservation-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #F8F9FC;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reservation-item:hover {
+    background: linear-gradient(135deg, #2F6BFF 0%, #8A4DFF 100%);
+    border-color: transparent;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(47, 107, 255, 0.28);
+}
+
+.reservation-item-icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #F1E9FF;
+    color: #8A4DFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+}
+
+.reservation-item-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.reservation-item-title {
+    font-weight: 700;
+    font-size: 13.5px;
+    color: #1a1a2e;
+}
+
+.reservation-item-subtitle {
+    font-size: 12px;
+    color: #8a8f9c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reservation-item-arrow {
+    color: #c7cbe0;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.reservation-item:hover .reservation-item-title,
+.reservation-item:hover .reservation-item-subtitle,
+.reservation-item:hover .reservation-item-arrow {
+    color: #fff;
+}
+
+/* ============================================================
+   Tema oscuro — usado en Ofertas, Reportes, Recepción, etc.
+   ============================================================ */
+[data-theme="dark"] .rooms-container {
+    background: var(--dark-surface);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .rooms-container label,
+[data-theme="dark"] .form-group label {
+    color: var(--dark-text-muted);
+}
+
+/* Los campos necesitan contraste real contra la tarjeta, si no todo se ve
+   "negro sobre negro" — fondo más claro que la tarjeta + borde visible. */
+[data-theme="dark"] .rooms-container input,
+[data-theme="dark"] .rooms-container select,
+[data-theme="dark"] .rooms-container .date-picker {
+    background-color: #232633;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .rooms-container input:focus,
+[data-theme="dark"] .rooms-container select:focus {
+    border-color: #5b8cff;
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.25);
+}
+
+[data-theme="dark"] .search-container {
+    background: transparent;
+}
+
+/* Paneles tipo "Generador de Ofertas" en modo oscuro */
+[data-theme="dark"] .panel-page-subtitle {
+    color: var(--dark-text-muted);
+}
+
+[data-theme="dark"] .panel-card {
+    background: var(--dark-surface);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .panel-card-title {
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .panel-icon-box {
+    background: rgba(138, 77, 255, 0.18);
+    color: #b98cff;
+}
+
+[data-theme="dark"] .panel-callout-text h4 {
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .panel-callout-text p {
+    color: var(--dark-text-muted);
+}
+
+[data-theme="dark"] .panel-divider-vert {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .panel-field-body label {
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .panel-field-body select,
+[data-theme="dark"] .panel-field-body input,
+[data-theme="dark"] .panel-field-body textarea {
+    background-color: #232633;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .panel-field-body select:focus,
+[data-theme="dark"] .panel-field-body input:focus,
+[data-theme="dark"] .panel-field-body textarea:focus {
+    border-color: #5b8cff;
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.25);
+}
+
+[data-theme="dark"] .panel-field-body input:read-only {
+    background-color: #14151d;
+    color: var(--dark-text-muted);
+}
+
+[data-theme="dark"] .panel-stat-label {
+    color: var(--dark-text-muted);
+}
+
+[data-theme="dark"] .panel-stat-value {
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .panel-btn-outline {
+    background: transparent;
+    border-color: #5b8cff;
+    color: #8fb4ff;
+}
+
+[data-theme="dark"] .panel-btn-outline:hover {
+    background: rgba(91, 140, 255, 0.12);
+}
+
+[data-theme="dark"] .panel-icon-btn {
+    background: #232633;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #8fb4ff;
+}
+
+[data-theme="dark"] .panel-icon-btn:hover {
+    background: rgba(91, 140, 255, 0.15);
+    border-color: #5b8cff;
+}
+
+[data-theme="dark"] .panel-empty-icon {
+    background: rgba(138, 77, 255, 0.18);
+    color: #b98cff;
+}
+
+[data-theme="dark"] .panel-empty-state h4 {
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .panel-empty-state p {
+    color: var(--dark-text-muted);
+}
+
+[data-theme="dark"] .swal-popup {
+    background: var(--dark-surface) !important;
+}
+
+[data-theme="dark"] .swal-popup .swal2-title {
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .room-item {
+    background: #232633;
+    color: #8fb4ff;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .reservation-item {
+    background: #232633;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .reservation-item-icon {
+    background: rgba(138, 77, 255, 0.18);
+    color: #b98cff;
+}
+
+[data-theme="dark"] .reservation-item-title {
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .reservation-item-subtitle {
+    color: var(--dark-text-muted);
+}
+
+[data-theme="dark"] .reservation-search-wrap input {
+    background-color: #232633;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .reservation-search-wrap i {
+    color: #8a8fa8;
+}
+
+[data-theme="dark"] .reservation-empty-msg {
+    color: var(--dark-text-muted);
+}
+
+/* T_ventaHabitacion / G_salidaHabitacion en modo oscuro */
+[data-theme="dark"] .venta-form .service-table th,
+[data-theme="dark"] .salida-form .service-table th {
+    background-color: var(--dark-surface-alt);
+    color: var(--dark-text-muted);
+    border-bottom-color: var(--dark-border);
+}
+
+[data-theme="dark"] .venta-form .service-table td,
+[data-theme="dark"] .salida-form .service-table td {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+    border-bottom-color: var(--dark-border);
+}
+
+[data-theme="dark"] .venta-form .service-table tbody tr:hover td,
+[data-theme="dark"] .salida-form .service-table tbody tr:hover td {
+    background-color: var(--dark-surface-alt);
+}
+
+[data-theme="dark"] .venta-form .total-section,
+[data-theme="dark"] .venta-form .sale-actions,
+[data-theme="dark"] .salida-form .total-section {
+    border-top-color: var(--dark-border);
+}
+
+[data-theme="dark"] .venta-form .total-amount,
+[data-theme="dark"] .salida-form .total-amount {
+    background-color: #232633;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .venta-form .sale-status select {
+    background-color: #232633;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: var(--dark-text);
+}
+
+[data-theme="dark"] .venta-form .sale-status label {
+    color: var(--dark-text-muted);
 }

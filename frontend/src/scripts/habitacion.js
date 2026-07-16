@@ -24,13 +24,20 @@ async function loadRooms() {
 
 function filterAndRenderRooms() {
     const searchTerm = document.getElementById('searchUser').value.toLowerCase();
-    let filteredRooms = allRooms.filter(room => 
+    const statusFilter = document.getElementById('statusFilter').value;
+    let filteredRooms = allRooms.filter(room =>
         room.number.toString().toLowerCase().includes(searchTerm) ||
         room.floor.toLowerCase().includes(searchTerm) ||
         room.type.toLowerCase().includes(searchTerm) ||
         room.status.toLowerCase().includes(searchTerm) ||
         (room.isAvailable ? 'active' : 'inactive').includes(searchTerm)
     );
+
+    if (statusFilter === 'active') {
+        filteredRooms = filteredRooms.filter(room => room.isAvailable);
+    } else if (statusFilter === 'inactive') {
+        filteredRooms = filteredRooms.filter(room => !room.isAvailable);
+    }
 
     if (recordsPerPage !== 'All') {
         const startIndex = (currentPage - 1) * parseInt(recordsPerPage);
@@ -58,6 +65,10 @@ function renderRooms(rooms) {
                 <td>RD$${room.price}</td>
                 <td><span class="status ${room.isAvailable ? 'active' : 'inactive'}">${room.isAvailable ? 'Active' : 'Inactive'}</span></td>
                 <td>
+                    <label class="status-toggle" title="${room.isAvailable ? 'Desactivar' : 'Activar'}">
+                        <input type="checkbox" class="status-toggle-input" data-id="${room.id}" ${room.isAvailable ? 'checked' : ''}>
+                        <span class="status-toggle-slider"></span>
+                    </label>
                     <button class="edit-btn" data-id="${room.id}"><i class="fas fa-edit"></i></button>
                 </td>
             </tr>
@@ -99,8 +110,13 @@ function updatePaginationInfo(totalFilteredRecords) {
 
 function setupEventListeners() {
     document.querySelector('#roomTable').addEventListener('click', handleTableActions);
+    document.querySelector('#roomTable').addEventListener('change', handleStatusToggle);
     document.querySelector('.btn_saveusu').addEventListener('click', handleSaveRoom);
     document.getElementById('searchUser').addEventListener('input', filterAndRenderRooms);
+    document.getElementById('statusFilter').addEventListener('change', () => {
+        currentPage = 1;
+        filterAndRenderRooms();
+    });
     document.getElementById('recordsPerPage').addEventListener('change', handleRecordsPerPageChange);
     document.querySelector('.pagination-buttons').addEventListener('click', handlePaginationClick);
 }
@@ -130,6 +146,41 @@ function handleTableActions(event) {
     const roomId = target.getAttribute('data-id');
     if (target.classList.contains('edit-btn')) {
         handleEdit(roomId);
+    }
+}
+
+async function handleStatusToggle(event) {
+    if (!event.target.classList.contains('status-toggle-input')) return;
+
+    const checkbox = event.target;
+    const id = checkbox.getAttribute('data-id');
+    const newState = checkbox.checked;
+
+    checkbox.disabled = true;
+    const result = await updateRoom({ id, isAvailable: newState });
+    checkbox.disabled = false;
+
+    if (result) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: newState ? 'Habitación activada' : 'Habitación desactivada',
+            showConfirmButton: false,
+            timer: 1800,
+            timerProgressBar: true,
+        });
+        loadRooms();
+    } else {
+        checkbox.checked = !newState;
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'No se pudo actualizar el estado',
+            showConfirmButton: false,
+            timer: 2000,
+        });
     }
 }
 
@@ -294,126 +345,6 @@ document.addEventListener('DOMContentLoaded', updateRoomCounts);
 
 
 //----------------------------------------------------------------------------//
-             ////ESTA PARTE ES PARA LA PAGINA DE HABITACION LIMPIEZA///
-//----------------------------------------------------------------------------//
-export function initializeCleaningRooms() {
-    const roomsGrid = document.querySelector('.rooms-grid');
-    const floorSelector = document.querySelector('.floor-selector');
-    let selectedRoomId = null;
-    let selectedRoomNumber = null;
-
-    async function loadCleaningRooms(floor = 'Todos') {
-        try {
-            const allRooms = await getAllRooms();
-            const roomsInCleaning = allRooms.filter(room => 
-                room.status.toLowerCase() === 'limpieza' && 
-                (floor === 'Todos' || room.floor.toUpperCase() === floor)
-            );
-            renderRoomsInCleaning(roomsInCleaning);
-        } catch (error) {
-            console.error('Error loading cleaning rooms:', error);
-            showAlert('error', 'Error', 'Hubo un problema al cargar las habitaciones en limpieza.', 1500);
-        }
-    }
-
-    function renderRoomsInCleaning(rooms) {
-        roomsGrid.innerHTML = '';
-        rooms.forEach(room => {
-            const roomCard = `
-                <div class="room-card limpieza">
-                    <div class="room-header">
-                        <span class="room-number">NRO: ${room.number}</span>
-                        <i class="fas fa-broom room-icon"></i>
-                    </div>
-                    <div class="room-category">CATEGORIA: ${room.type}</div>
-                    <div class="room-status limpieza" data-id="${room.id}" data-number="${room.number}">
-                        LIMPIEZA
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
-            `;
-            roomsGrid.insertAdjacentHTML('beforeend', roomCard);
-        });
-
-        document.querySelectorAll('.room-status.limpieza').forEach(btn => {
-            btn.addEventListener('click', openLimpiezaModal);
-        });
-    }
-
-    async function openLimpiezaModal(event) {
-        event.preventDefault();
-        const roomElement = event.target.closest('.room-status');
-        selectedRoomId = roomElement.getAttribute('data-id');
-        selectedRoomNumber = roomElement.getAttribute('data-number'); // Guardamos el número de la habitación
-        
-        // Mostrar alerta con opción de confirmar o cancelar, y permitir clic fuera para cerrarla
-        const result = await Swal.fire({
-            icon: 'question',
-            title: 'Confirmar Limpieza',
-            text: `¿Está seguro de que desea confirmar la limpieza de la habitación ${selectedRoomNumber}?`,
-            showConfirmButton: true,
-            confirmButtonText: 'Sí, confirmar',
-            showCancelButton: true,
-            cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            allowOutsideClick: true,  // Permitir que se cierre al hacer clic fuera
-            backdrop: true,
-            heightAuto: false,
-            customClass: {
-                container: 'swal-container',
-            },
-        });
-    
-        // Si el usuario confirma, se procede con la limpieza
-        if (result.isConfirmed) {
-            confirmCleaning();
-        }
-    }
-    
-    async function confirmCleaning() {
-        if (selectedRoomId) {
-            try {
-                await updateRoom({ id: selectedRoomId, status: 'DISPONIBLE', isAvailable: true });
-                showAlert('success', `Limpieza terminada en la habitación ${selectedRoomNumber}`, 'La habitación está lista para ser usada.', 1500);
-                loadCleaningRooms(floorSelector.value);
-            } catch (error) {
-                console.error('Error updating room status:', error);
-                showAlert('error', 'Error', 'Hubo un problema al actualizar el estado de la habitación.', 1500);
-            }
-        }
-    }
-
-
-    function showAlert(icon, title, text, timer = null, showConfirmButton = false) {
-        return Swal.fire({
-            icon,
-            title,
-            text,
-            showConfirmButton,
-            showCancelButton: showConfirmButton,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, confirmar',
-            cancelButtonText: 'Cancelar',
-            allowOutsideClick: false,
-            heightAuto: false,
-            customClass: {
-                container: 'swal-container',
-            },
-            backdrop: true,
-            timer: timer,
-            timerProgressBar: timer !== null,
-        });
-    }
-
-    floorSelector.addEventListener('change', () => loadCleaningRooms(floorSelector.value));
-
-    loadCleaningRooms();
-}
-
-
-//----------------------------------------------------------------------------//
              ////ESTA PARTE ES PARA LA PAGINA  DE HABITACION RECEPCION///
 //----------------------------------------------------------------------------//
 
@@ -472,6 +403,9 @@ export function initializeAllRooms() {
                 break;
             case 'ocupado':
                 window.location.href = '../pages/G_salida.html';
+                break;
+            case 'limpieza':
+                window.location.href = '../pages/M_limpieza.html';
                 break;
         }
     };

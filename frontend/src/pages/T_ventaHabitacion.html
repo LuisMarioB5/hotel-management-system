@@ -6,97 +6,140 @@
     <title>Tienda - Venta a Habitación | Hotel Hodelpa</title>
     <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css"> <!--Aqui tambien estaran los estilos de esta pagina-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
-    <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
 </head>
 <body>
     <div class="dashboard-page">
         <div class="dashboard-container">
             <div class="main-content">
                 <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                    <div id="logoutButton" class="profile-card" role="button" tabindex="0">
+                        <i class="fas fa-user"></i>
+                        <span class="profile-name">Admin</span>
+                        <i class="fas profile-role-icon"></i>
+                        <i class="fas fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
-                
+
+                <div class="venta-form">
                 <!-- Resumen de la Habitación -->
-                <div class="info-card">
-                    <h2><i class="fas fa-bed"></i> Resumen de la Habitación</h2>
-                    <div class="info-grid">
-                        <div class="info-group">
-                            <label><i class="fas fa-hashtag"></i> Habitacion:</label>
-                            <input type="text" id="roomNumber" readonly>
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3 class="panel-card-title">Resumen de la Habitación</h3>
+                    </div>
+                    <div class="panel-stats-row">
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-hashtag"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomNumber" class="panel-stat-label">Habitación</label>
+                                <input type="text" id="roomNumber" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-list"></i> Detalles:</label>
-                            <input type="text" id="roomDetails" readonly>
-                        </div>        
-                        <div class="info-group">
-                            <label><i class="fas fa-tag"></i> Categoría:</label>
-                            <input type="text" id="roomCategory" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-list"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomDetails" class="panel-stat-label">Detalles</label>
+                                <input type="text" id="roomDetails" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-building"></i> Piso:</label>
-                            <input type="text" id="roomFloor" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-tag"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomCategory" class="panel-stat-label">Categoría</label>
+                                <input type="text" id="roomCategory" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-user"></i> Cliente:</label>
-                            <input type="text" id="clientName" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-building"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomFloor" class="panel-stat-label">Piso</label>
+                                <input type="text" id="roomFloor" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
-                            <input type="text" id="nroDocumento" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-user"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="clientName" class="panel-stat-label">Cliente</label>
+                                <input type="text" id="clientName" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-envelope"></i> Correo:</label>
-                            <input type="email" id="correo" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-id-card"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="nroDocumento" class="panel-stat-label">Nro Documento</label>
+                                <input type="text" id="nroDocumento" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
-                            <input type="date" id="fechaEntrada" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-envelope"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="correo" class="panel-stat-label">Correo</label>
+                                <input type="email" id="correo" class="panel-stat-value" readonly>
+                            </div>
+                        </div>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-calendar-plus"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="fechaEntrada" class="panel-stat-label">Fecha Entrada</label>
+                                <input type="date" id="fechaEntrada" class="panel-stat-value" readonly>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Detalle de venta -->
-                <div class="info-card">
-                    <h2><i class="fas fa-cart-arrow-down"></i> Detalle de venta</h2>
-                    <div class="info-grid" style="margin-bottom: 10px;">
-                        <input type="hidden" id="idproduct" name="idproduct">
-                        <input type="hidden" id="stock" name="stock">
-                        <input type="hidden" id="category" name="category">
-                        <div class="info-group">
-                            <label for="productSearch"><i class="fas fa-utensils"></i> Producto/Servicio:</label>
-                            <input  id="productSearch" class="search-btn" data-toggle="modal" data-target="#createUserModal"  type="text" readonly style='cursor: pointer;' placeholder="Presione para buscar">
-                        </div>    
-                        <div class="info-group">
-                            <label><i class="fas fa-dollar-sign"></i> Precio:</label>
-                            <input type="text" id="UnitPrice" readonly placeholder="RD$0.00">
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3 class="panel-card-title">Detalle de Venta</h3>
+                    </div>
+                    <input type="hidden" id="idproduct" name="idproduct">
+                    <input type="hidden" id="stock" name="stock">
+                    <input type="hidden" id="category" name="category">
+                    <div class="panel-form-grid panel-form-grid-tight">
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-utensils"></i></div>
+                            <div class="panel-field-body">
+                                <label for="productSearch">Producto/Servicio</label>
+                                <input id="productSearch" class="search-btn" data-toggle="modal" data-target="#createUserModal" type="text" readonly style="cursor: pointer;" placeholder="Presione para buscar">
                             </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-th-list"></i> Cantidad:</label>
-                            <input id="cantidad" class="cant" type="number" value="1" min="1" oninput="this.value = Math.max(1, this.value)">
                         </div>
-                        <div class="">
-                            <label class="info-group">‎</label>
-                            <button id="add-btn" class="add-btn">Agregar</button>                            
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-dollar-sign"></i></div>
+                            <div class="panel-field-body">
+                                <label for="UnitPrice">Precio</label>
+                                <input type="text" id="UnitPrice" readonly placeholder="RD$0.00">
+                            </div>
+                        </div>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-th-list"></i></div>
+                            <div class="panel-field-body">
+                                <label for="cantidad">Cantidad</label>
+                                <input id="cantidad" class="cant" type="number" value="1" min="1" oninput="this.value = Math.max(1, this.value)">
+                            </div>
                         </div>
                     </div>
-                        <div class="table-container">
-                            <table id="bodyProductTable" class="service-table">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>Producto/Servicio</th>
-                                        <th>Cantidad</th>
-                                        <th>Precio Unitario</th>
-                                        <th>Sub Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablabody"></tbody>
-                            </table>
-                        </div>
+                    <div class="panel-form-actions">
+                        <button id="add-btn" class="panel-btn-gradient panel-btn-sm"><i class="fas fa-plus"></i> Agregar</button>
+                    </div>
+
+                    <div class="venta-table-wrap">
+                        <table id="bodyProductTable" class="service-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Producto/Servicio</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Sub Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablabody"></tbody>
+                        </table>
+                    </div>
                     <div class="total-section">
                         <div class="total-label">Total Pagar</div>
                         <input class="total-amount" style="width: 60px;" readonly></input>
@@ -109,8 +152,9 @@
                                 <option id="PAGADO">Pagado</option>
                             </select>
                         </div>
-                        <button id="finalize-sale-btn" class="finish-sale-btn"><i class="fas fa-check-circle"></i> Finalizar Venta</button>
+                        <button id="finalize-sale-btn" class="finish-sale-btn panel-btn-gradient"><i class="fas fa-check-circle"></i> Finalizar Venta</button>
                     </div>
+                </div>
                 </div>
             </div>
         </div>

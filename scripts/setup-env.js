@@ -77,9 +77,46 @@ async function ensureDatabase(env) {
   await connection.end();
 }
 
+const SEED_PATH = path.join(__dirname, '..', 'backend', 'seed', 'hotel_management_db.sql');
+
+async function seedDatabaseIfEmpty(env) {
+  const host = env.DB_HOST || DEFAULTS.DB_HOST;
+  const port = parseInt(env.DB_PORT || DEFAULTS.DB_PORT, 10);
+  const user = env.DB_USER || DEFAULTS.DB_USER;
+  const password = env.DB_PWD || '';
+  const database = env.DB_NAME || DEFAULTS.DB_NAME;
+
+  if (!fs.existsSync(SEED_PATH)) {
+    return;
+  }
+
+  const connection = await mysql.createConnection({
+    host,
+    port,
+    user,
+    password,
+    database,
+    multipleStatements: true,
+  });
+
+  const [tables] = await connection.query('SHOW TABLES');
+  if (tables.length > 0) {
+    console.log('[setup] La base de datos ya tiene datos, se omite la carga de datos de ejemplo.');
+    await connection.end();
+    return;
+  }
+
+  console.log('[setup] Base de datos vacía: cargando datos de ejemplo (backend/seed/hotel_management_db.sql)...');
+  const sql = fs.readFileSync(SEED_PATH, 'utf8');
+  await connection.query(sql);
+  console.log('[setup] Datos de ejemplo cargados correctamente.');
+  await connection.end();
+}
+
 async function main() {
   const env = ensureEnvFile();
   await ensureDatabase(env);
+  await seedDatabaseIfEmpty(env);
   console.log('[setup] Todo listo. Iniciando backend y frontend...\n');
 }
 

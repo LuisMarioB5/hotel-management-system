@@ -1,4 +1,4 @@
-import { validateJwt, setLogoutButton } from "./utils.auth.js";
+import { validateJwt } from "./utils.auth.js";
 
 // Mapa de permisos por página
 const pagePermissions = {
@@ -35,10 +35,7 @@ export const validateAccess = async () => {
     const user = await validateJwt(); // Obtener el usuario actual desde el JWT
     const currentPage = getCurrentPage(); // Obtener la página actual
     const allowedRoles = pagePermissions[currentPage] || []; // Obtener los roles permitidos
-    
-    // Configurar el botón de logout
-    setLogoutButton(user);
-    
+
     // Validar si el usuario tiene acceso
     if (!allowedRoles.includes(user.role)) {
         document.querySelector('body').innerHTML = '';

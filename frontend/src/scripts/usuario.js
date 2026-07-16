@@ -7,7 +7,21 @@ let recordsPerPage = 'All';
 document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
     setupEventListeners();
+    setupPasswordToggles();
 });
+
+function setupPasswordToggles() {
+    document.querySelectorAll('.modal-premium-input-toggle').forEach(icon => {
+        icon.addEventListener('click', () => {
+            const input = document.getElementById(icon.getAttribute('data-target'));
+            if (!input) return;
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', isHidden);
+            icon.classList.toggle('fa-eye-slash', !isHidden);
+        });
+    });
+}
 
 async function loadUsers() {
     try {
@@ -20,12 +34,19 @@ async function loadUsers() {
 
 function filterAndRenderUsers() {
     const searchTerm = document.getElementById('searchUser').value.toLowerCase();
-    let filteredUsers = allUsers.filter(user => 
+    const statusFilter = document.getElementById('statusFilter').value;
+    let filteredUsers = allUsers.filter(user =>
         user.id.toString().toLowerCase().includes(searchTerm) ||
         user.username.toLowerCase().includes(searchTerm) ||
         user.role.toLowerCase().includes(searchTerm) ||
         (user.isActive ? 'activo' : 'inactivo').includes(searchTerm)
     );
+
+    if (statusFilter === 'active') {
+        filteredUsers = filteredUsers.filter(user => user.isActive);
+    } else if (statusFilter === 'inactive') {
+        filteredUsers = filteredUsers.filter(user => !user.isActive);
+    }
 
     const totalFilteredRecords = filteredUsers.length;
 
@@ -39,18 +60,36 @@ function filterAndRenderUsers() {
     updatePaginationInfo(totalFilteredRecords);
 }
 
+const ROLE_META = {
+    ADMINISTRADOR: { icon: 'fa-crown', className: 'role-admin' },
+    RECEPCIONISTA: { icon: 'fa-user', className: 'role-recepcion' },
+    GERENTE: { icon: 'fa-briefcase', className: 'role-gerente' },
+    MANTENIMIENTO: { icon: 'fa-wrench', className: 'role-mantenimiento' },
+};
+
 function renderUsers(users) {
     const tableBody = document.querySelector('#userTable tbody');
     tableBody.innerHTML = '';
 
     users.forEach(user => {
+        const meta = ROLE_META[user.role] || { icon: 'fa-user', className: 'role-default' };
+        const initial = user.username.charAt(0).toUpperCase();
         const row = `
             <tr>
                 <td>${user.id}</td>
-                <td>${user.username}</td>
-                <td>${user.role}</td>
+                <td>
+                    <div class="user-cell">
+                        <div class="user-avatar ${meta.className}">${initial}</div>
+                        <span>${user.username}</span>
+                    </div>
+                </td>
+                <td><span class="role-badge ${meta.className}"><i class="fas ${meta.icon}"></i> ${user.role}</span></td>
                 <td><span class="status ${user.isActive ? 'active' : 'inactive'}">${user.isActive ? 'Activo' : 'Inactivo'}</span></td>
                 <td>
+                    <label class="status-toggle" title="${user.isActive ? 'Desactivar' : 'Activar'}">
+                        <input type="checkbox" class="status-toggle-input" data-id="${user.id}" ${user.isActive ? 'checked' : ''}>
+                        <span class="status-toggle-slider"></span>
+                    </label>
                     <button class="edit-btn" data-id="${user.id}"><i class="fas fa-edit"></i></button>
                     <button class="delete-btn" data-id="${user.id}"><i class="fas fa-trash-alt"></i></button>
                 </td>
@@ -82,9 +121,16 @@ function setupEventListeners() {
     saveButton.addEventListener('click', handleSaveUser);
 
     document.querySelector('#userTable').addEventListener('click', handleTableActions);
+    document.querySelector('#userTable').addEventListener('change', handleStatusToggle);
 
     const searchInput = document.getElementById('searchUser');
     searchInput.addEventListener('input', filterAndRenderUsers);
+
+    const statusFilter = document.getElementById('statusFilter');
+    statusFilter.addEventListener('change', () => {
+        currentPage = 1;
+        filterAndRenderUsers();
+    });
 
     const recordsPerPageSelect = document.getElementById('recordsPerPage');
     recordsPerPageSelect.addEventListener('change', handleRecordsPerPageChange);
@@ -120,14 +166,20 @@ function handlePaginationClick(event) {
 function openModal(userData = null) {
     const modal = document.getElementById('createUserModal');
     const modalTitle = modal.querySelector('.modalusu-header h2');
+    const asideTitle = document.getElementById('modalAsideTitle');
+    const asideText = document.getElementById('modalAsideText');
     const saveButton = modal.querySelector('.btn_saveusu');
 
     if (userData) {
         modalTitle.textContent = 'Editar Usuario';
+        asideTitle.innerHTML = 'Editar<br>Usuario';
+        asideText.textContent = 'Actualiza la información del usuario seleccionado.';
         fillModalWithUserData(userData);
         saveButton.setAttribute('data-id', userData.id);
     } else {
         modalTitle.textContent = 'Crear Usuario';
+        asideTitle.innerHTML = 'Crear<br>Usuario';
+        asideText.textContent = 'Completa la información para crear un nuevo usuario en el sistema.';
         document.getElementById('username').value = '';
         document.getElementById('contrasena').value = '';
         document.getElementById('confirmarContrasena').value = '';
@@ -135,6 +187,13 @@ function openModal(userData = null) {
         document.getElementById('estado').value = 'Activo';
         saveButton.removeAttribute('data-id');
     }
+
+    modal.querySelectorAll('.modal-premium-input-toggle').forEach(icon => {
+        const input = document.getElementById(icon.getAttribute('data-target'));
+        if (input) input.type = 'password';
+        icon.classList.add('fa-eye-slash');
+        icon.classList.remove('fa-eye');
+    });
 
     modal.style.display = 'flex';
 }
@@ -195,6 +254,41 @@ function handleTableActions(event) {
         handleEdit(userId);
     } else if (target.classList.contains('delete-btn')) {
         handleDelete(userId);
+    }
+}
+
+async function handleStatusToggle(event) {
+    if (!event.target.classList.contains('status-toggle-input')) return;
+
+    const checkbox = event.target;
+    const id = checkbox.getAttribute('data-id');
+    const newState = checkbox.checked;
+
+    checkbox.disabled = true;
+    const result = await updateUser({ id, isActive: newState });
+    checkbox.disabled = false;
+
+    if (result) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: newState ? 'Usuario activado' : 'Usuario desactivado',
+            showConfirmButton: false,
+            timer: 1800,
+            timerProgressBar: true,
+        });
+        loadUsers();
+    } else {
+        checkbox.checked = !newState;
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'No se pudo actualizar el estado',
+            showConfirmButton: false,
+            timer: 2000,
+        });
     }
 }
 

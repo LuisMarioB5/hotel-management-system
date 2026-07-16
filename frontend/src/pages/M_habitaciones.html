@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mantenimiento - Habitaciones | Hotel Hodelpa</title>
   <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles/dashboard.css">
   <link rel="stylesheet" href="../styles/usuarios.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="../auth/pages/maintenance.auth.js"></script>
 </head>
 <body>
@@ -20,14 +20,20 @@
         <div class="dashboard-container">
             <div class="main-content">
                 <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
-                </div>
-                <div class="contenido">
-                    <div class="user-list-header">
-                        <h2>Lista de Habitaciones</h2>
+                    <div id="logoutButton" class="profile-card" role="button" tabindex="0">
+                        <i class="fas fa-user"></i>
+                        <span class="profile-name">Admin</span>
+                        <i class="fas profile-role-icon"></i>
+                        <i class="fas fa-chevron-down profile-chevron"></i>
                     </div>
-                 
-                    <!-- Botón "Crear Nuevo" y opciones de visualización -->
+                </div>
+                <div class="user-list-header page-title-card">
+                    <h2>Lista de Habitaciones</h2>
+                    <p>Administra las habitaciones del hotel</p>
+                </div>
+
+                <div class="contenido">
+                    <!-- Opciones de visualización -->
                     <div class="user-actions">
                         <div class="table-controls">
                             <label for="recordsPerPage">Mostrar:</label>
@@ -36,8 +42,16 @@
                                 <option value="5">5</option>
                                 <option value="10">10</option>
                             </select>
-                            <label>Registros: </label>
-                            <input type="text" id="searchUser" placeholder="Buscar habitacion">
+                            <label for="statusFilter">Estado:</label>
+                            <select id="statusFilter">
+                                <option value="all">Todos</option>
+                                <option value="active">Activas</option>
+                                <option value="inactive">Inactivas</option>
+                            </select>
+                            <div class="search-wrap">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchUser" placeholder="Buscar habitación...">
+                            </div>
                         </div>
                     </div>
 
@@ -74,61 +88,119 @@
         </div>
     </div>
 
-    <!-- Modal para modificar Usuario -->
+    <!-- Modal para editar Habitación -->
     <div id="createUserModal" class="modalusu">
-        <div class="modalusu-content">
-            <div class="modalusu-header">   
-                <h2>Editar Habitacion</h2>
-                <span class="close-buttonusu" onclick="closeModal()">&times;</span>
+        <div class="modal-premium">
+            <div class="modal-premium-aside">
+                <div class="modal-premium-aside-icon"><i class="fas fa-bed"></i></div>
+                <h2 class="modal-premium-aside-title">Editar<br>Habitación</h2>
+                <p class="modal-premium-aside-text">Actualiza los datos y disponibilidad de la habitación.</p>
+                <div class="modal-premium-aside-card">
+                    <div class="modal-premium-aside-card-icon"><i class="fas fa-hotel"></i></div>
+                    <div>
+                        <div class="modal-premium-aside-card-title">Disponibilidad</div>
+                        <div class="modal-premium-aside-card-text">El estado afecta la visibilidad en reservas.</div>
+                    </div>
+                </div>
             </div>
-            <div class="modalusu-body">
-                <label for="numero">Numero</label>
-                <input type="text" id="numero" required>
+            <div class="modal-premium-main">
+                <div class="modalusu-header">
+                    <div class="modal-premium-header-icon"><i class="fas fa-bed"></i></div>
+                    <h2>Editar Habitacion</h2>
+                    <span class="close-buttonusu" onclick="closeModal()">&times;</span>
+                </div>
+                <div class="modal-premium-divider"></div>
+                <div class="modal-premium-body">
+                    <div class="modal-premium-row">
+                        <div class="modal-premium-field">
+                            <label for="numero">Numero</label>
+                            <div class="modal-premium-input-wrap">
+                                <i class="fas fa-hashtag modal-premium-input-icon"></i>
+                                <input type="text" id="numero" required>
+                            </div>
+                        </div>
+                        <div class="modal-premium-field">
+                            <label for="precio">Precio</label>
+                            <div class="modal-premium-input-wrap">
+                                <i class="fas fa-dollar-sign modal-premium-input-icon"></i>
+                                <input type="text" id="precio" required>
+                            </div>
+                        </div>
+                    </div>
 
-                <label for="detalle">Detalle</label>
-                <input type="text" id="detalle" required>
+                    <div class="modal-premium-field">
+                        <label for="detalle">Detalle</label>
+                        <div class="modal-premium-input-wrap">
+                            <i class="fas fa-align-left modal-premium-input-icon"></i>
+                            <input type="text" id="detalle" required>
+                        </div>
+                    </div>
 
-                <label for="piso">Piso</label>
-                <select id="piso">
-                    <option value="PRIMER">PRIMER</option>
-                    <option value="SEGUNDO">SEGUNDO</option>
-                    <option value="TERCER">TERCER</option>
-                    <option value="CUARTO">CUARTO</option>
-                    <option value="QUINTO">QUINTO</option>
-                </select>
+                    <div class="modal-premium-row">
+                        <div class="modal-premium-field">
+                            <label for="piso">Piso</label>
+                            <div class="modal-premium-input-wrap">
+                                <i class="fas fa-building modal-premium-input-icon"></i>
+                                <select id="piso">
+                                    <option value="PRIMER">PRIMER</option>
+                                    <option value="SEGUNDO">SEGUNDO</option>
+                                    <option value="TERCER">TERCER</option>
+                                    <option value="CUARTO">CUARTO</option>
+                                    <option value="QUINTO">QUINTO</option>
+                                </select>
+                                <i class="fas fa-chevron-down modal-premium-select-arrow"></i>
+                            </div>
+                        </div>
+                        <div class="modal-premium-field">
+                            <label for="categoria">Categoria</label>
+                            <div class="modal-premium-input-wrap">
+                                <i class="fas fa-th-large modal-premium-input-icon"></i>
+                                <select id="categoria">
+                                    <option value="INDIVIDUAL">INDIVIDUAL</option>
+                                    <option value="DOBLE">DOBLE</option>
+                                    <option value="TRIPLE">TRIPLE</option>
+                                    <option value="MATRIMONIAL">MATRIMONIAL</option>
+                                </select>
+                                <i class="fas fa-chevron-down modal-premium-select-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
 
-                <label for="categoria">Categoria</label>
-                <select id="categoria">
-                    <option value="INDIVIDUAL">INDIVIDUAL</option>
-                    <option value="DOBLE">DOBLE</option>
-                    <option value="TRIPLE">TRIPLE</option>
-                    <option value="MATRIMONIAL">MATRIMONIAL</option>
-                </select>
-                
-                <label for="Disponibilidad">Disponibilidad</label>
-                <select id="Disponibilidad">
-                    <option value="DISPONIBLE">DISPONIBLE</option>
-                    <option value="FUERA_DE_SERVICIO">FUERA DE SERVICIO</option>
-                    <option value="OCUPADA">OCUPADA</option>
-                    <option value="LIMPIEZA">LIMPIEZA</option>
-                </select>
-
-                <label for="precio">Precio</label>
-                <input type="text" id="precio" required>
-
-                <label for="estado">Estado</label>
-                <select id="estado">
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
-                </select>
-            </div>
-            <div class="modalusu-footer">
-                <button class="btn_cancelusu" onclick="closeModal()">Cerrar</button>
-                <button class="btn_saveusu" onclick="guardarHabitacion()">Guardar</button>
+                    <div class="modal-premium-row">
+                        <div class="modal-premium-field">
+                            <label for="Disponibilidad">Disponibilidad</label>
+                            <div class="modal-premium-input-wrap">
+                                <i class="fas fa-door-open modal-premium-input-icon"></i>
+                                <select id="Disponibilidad">
+                                    <option value="DISPONIBLE">DISPONIBLE</option>
+                                    <option value="FUERA_DE_SERVICIO">FUERA DE SERVICIO</option>
+                                    <option value="OCUPADA">OCUPADA</option>
+                                    <option value="LIMPIEZA">LIMPIEZA</option>
+                                </select>
+                                <i class="fas fa-chevron-down modal-premium-select-arrow"></i>
+                            </div>
+                        </div>
+                        <div class="modal-premium-field">
+                            <label for="estado">Estado</label>
+                            <div class="modal-premium-input-wrap">
+                                <span class="modal-premium-status-dot"></span>
+                                <select id="estado">
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                </select>
+                                <i class="fas fa-chevron-down modal-premium-select-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-premium-footer">
+                    <button class="btn_cancelusu" onclick="closeModal()">Cancelar</button>
+                    <button class="btn_saveusu" onclick="guardarHabitacion()"><i class="fas fa-save"></i> Guardar Habitación</button>
+                </div>
             </div>
         </div>
     </div>
-    
+
      <!-- Modal de Logout -->
      <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -145,69 +217,6 @@
             </div>
         </div>
     </div>
-
-<script>
-     // Abrir modal
-    document.querySelector('.edit-btn').addEventListener('click', function() {
-        document.getElementById('createUserModal').style.display = 'flex';
-    });
-
-    // Cerrar modal y limpiar campos
-    function closeModal() {
-        document.getElementById('createUserModal').style.display = 'none';
-        limpiarCampos();
-    }
-
-    // Función para limpiar los campos del modal
-    function limpiarCampos() {
-        document.getElementById('numero').value = '';
-        document.getElementById('detalle').value = '';
-        document.getElementById('precio').value = '';
-        document.getElementById('categoria').selectedIndex = 0;
-        document.getElementById('piso').selectedIndex = 0;
-        document.getElementById('estado').selectedIndex = 0;
-    }
-
-    function guardarHabitacion() {
-        // Obtener los valores de los campos
-        const numero = document.getElementById('numero').value.trim();
-        const detalle = document.getElementById('detalle').value.trim();
-        const precio = document.getElementById('precio').value.trim();
-        const categoria = document.getElementById('categoria').value;
-        const piso = document.getElementById('piso').value;
-        const estado = document.getElementById('estado').value;
-    
-        // Validar los campos
-        let mensajeError = '';
-    
-        if (!numero) {
-            mensajeError += 'El campo Número es obligatorio.\n';
-        } else if (!/^\d+$/.test(numero)) {
-            mensajeError += 'El Número debe contener solo números.\n';
-        }
-    
-        if (!detalle) {
-            mensajeError += 'El campo Detalle es obligatorio.\n';
-        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(detalle)) {
-            mensajeError += 'El Detalle solo debe contener letras.\n';
-        }
-    
-        if (!precio) {
-            mensajeError += 'El campo Precio es obligatorio.\n';
-        } else if (!/^\d+(\.\d{1,2})?$/.test(precio) || parseFloat(precio) <= 0) {
-            mensajeError += 'El Precio debe ser un número positivo con hasta dos decimales.\n';
-        }
-    
-        // Si hay errores, mostrar el mensaje de error
-        if (mensajeError) {
-            alert(mensajeError);
-        } else {
-            // Si todos los campos son válidos, guardar la habitación
-            alert("Habitación guardada con éxito.");
-            closeModal();
-        }
-    }
-</script>
 
 <script src="../scripts/CosasComunes.js" type="module"></script>
 <script src="../scripts/habitacion.js" type="module"></script>

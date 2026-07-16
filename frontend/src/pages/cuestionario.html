@@ -6,12 +6,12 @@
     <title>Ofertas - Cuestionario | Hotel Hodelpa</title>
     <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="../styles/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-    <script defer src="https://kit.fontawesome.com/a076d05399.js"> </script>
     
 </head>
 <body>
@@ -19,10 +19,16 @@
         <div class="dashboard-container">
             <div class="main-content">
                 <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                    <div id="logoutButton" class="profile-card" role="button" tabindex="0">
+                        <i class="fas fa-user"></i>
+                        <span class="profile-name">Admin</span>
+                        <i class="fas profile-role-icon"></i>
+                        <i class="fas fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
-                <!-- Detalles de la Habitación -->
-                <div class="info-card">
+                <div class="cuestionario-form">
+                <!-- Detalle Cliente -->
+                <div class="panel-card">
                     <input type="hidden" id="cliente-id" name="cliente-id">
                     <input type="hidden" id="nroDocumento" name="nroDocumento">
                     <select id="tipo" style="display: none;">
@@ -34,76 +40,94 @@
                         <option value="MASCULINO">Masculino</option>
                         <option value="FEMENINO">Femenino</option>
                     </select>
-                    <h2><i class="fas fa-id-card"></i> Detalle Cliente</h2>                       
-                    <div class="info-grid">
-                        <div class="info-group">
-                            <label><i class="fas fa-user"></i> Nombre:</label>
-                            <input type="text" id="nombre" readonly>
+                    <div class="panel-card-header">
+                        <h3 class="panel-card-title">Detalle Cliente</h3>
+                    </div>
+                    <div class="panel-form-grid panel-form-grid-tight">
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-user"></i></div>
+                            <div class="panel-field-body">
+                                <label for="nombre">Nombre</label>
+                                <input type="text" id="nombre" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-users"></i> Apellido:</label>
-                            <input type="text" id="apellido" readonly>
-                        </div>        
-                        <div class="info-group">
-                            <label><i class="fas fa-phone"></i> Telefono:</label>
-                            <input type="text" id="telefono" readonly>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-users"></i></div>
+                            <div class="panel-field-body">
+                                <label for="apellido">Apellido</label>
+                                <input type="text" id="apellido" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-envelope"></i> Correo:</label>
-                            <input type="email" id="correo" readonly>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-phone"></i></div>
+                            <div class="panel-field-body">
+                                <label for="telefono">Teléfono</label>
+                                <input type="text" id="telefono" readonly>
+                            </div>
                         </div>
-                        <div class="search-container"> 
-                            <button class="search-btn" data-toggle="modal" data-target="#createUserModal"><i class="fas fa-search"></i> Buscar</button>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-envelope"></i></div>
+                            <div class="panel-field-body">
+                                <label for="correo">Correo</label>
+                                <input type="email" id="correo" readonly>
+                            </div>
                         </div>
+                    </div>
+                    <div class="panel-form-actions">
+                        <button type="button" class="panel-btn-gradient panel-btn-sm search-btn" data-toggle="modal" data-target="#createUserModal"><i class="fas fa-search"></i> Buscar</button>
                     </div>
                 </div>
 
                 <!-- Preferencias de Habitación -->
-                <div class="info-card">
-                    <div class="reservation-card">
-                        <h2><i class="fas fa-bed"></i> Preferencias de Habitación</h2>
-                        <div class="form-group">
-                            <label><i class="fas fa-hand-holding-usd"></i> Rango de Precio por Noche</label>
-                            <div style="display: flex; gap: 10px;">
-                                <div style="flex: 1;">
-                                    <label for="min_price">Precio Mínimo:</label>
-                                    <select id="min_price" name="min_price">
-                                        <!-- Las opciones se cargarán dinámicamente -->
-                                    </select>
-                                </div>
-                                <div style="flex: 1;">
-                                    <label for="max_price">Precio Máximo:</label>
-                                    <select id="max_price" name="max_price">
-                                        <!-- Las opciones se cargarán dinámicamente -->
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="suboption" style="margin-top: 10px;">
-                                <label>¿Qué tan importante es el rango de precios? (1-5)</label>
-                                <div class="preference-level-checkboxes">
-                                    <input type="checkbox" id="price_weight_1" name="price_weight_level" value="1">
-                                    <label for="price_weight_1">1</label>
-                                    <input type="checkbox" id="price_weight_2" name="price_weight_level" value="2">
-                                    <label for="price_weight_2">2</label>
-                                    <input type="checkbox" id="price_weight_3" name="price_weight_level" value="3">
-                                    <label for="price_weight_3">3</label>
-                                    <input type="checkbox" id="price_weight_4" name="price_weight_level" value="4">
-                                    <label for="price_weight_4">4</label>
-                                    <input type="checkbox" id="price_weight_5" name="price_weight_level" value="5">
-                                    <label for="price_weight_5">5</label>
-                                </div>
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3 class="panel-card-title">Preferencias de Habitación</h3>
+                    </div>
+                    <div class="panel-form-grid panel-form-grid-tight">
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-hand-holding-usd"></i></div>
+                            <div class="panel-field-body">
+                                <label for="min_price">Precio Mínimo</label>
+                                <select id="min_price" name="min_price">
+                                    <!-- Las opciones se cargarán dinámicamente -->
+                                </select>
                             </div>
                         </div>
-
-                        <!-- Sección de Amenidades (Checkboxes Dinámicos) -->
-                        <div class="amenities-container" id="amenities-container">
-                            <!-- Las amenidades se cargarán aquí dinámicamente -->
-                        </div>
-
-                        <div class="form-actions">
-                            <button id="registrarBtn" class="register-btn"><i class="fas fa-save"></i> Guardar</button>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-hand-holding-usd"></i></div>
+                            <div class="panel-field-body">
+                                <label for="max_price">Precio Máximo</label>
+                                <select id="max_price" name="max_price">
+                                    <!-- Las opciones se cargarán dinámicamente -->
+                                </select>
+                            </div>
                         </div>
                     </div>
+                    <div class="suboption cuestionario-weight" style="margin-top: 16px;">
+                        <label>¿Qué tan importante es el rango de precios? (1-5)</label>
+                        <div class="preference-level-checkboxes">
+                            <input type="checkbox" id="price_weight_1" name="price_weight_level" value="1">
+                            <label for="price_weight_1">1</label>
+                            <input type="checkbox" id="price_weight_2" name="price_weight_level" value="2">
+                            <label for="price_weight_2">2</label>
+                            <input type="checkbox" id="price_weight_3" name="price_weight_level" value="3">
+                            <label for="price_weight_3">3</label>
+                            <input type="checkbox" id="price_weight_4" name="price_weight_level" value="4">
+                            <label for="price_weight_4">4</label>
+                            <input type="checkbox" id="price_weight_5" name="price_weight_level" value="5">
+                            <label for="price_weight_5">5</label>
+                        </div>
+                    </div>
+
+                    <!-- Sección de Amenidades (Checkboxes Dinámicos) -->
+                    <div class="amenities-container" id="amenities-container">
+                        <!-- Las amenidades se cargarán aquí dinámicamente -->
+                    </div>
+
+                    <div class="panel-form-actions">
+                        <button id="registrarBtn" class="panel-btn-gradient"><i class="fas fa-save"></i> Guardar</button>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>

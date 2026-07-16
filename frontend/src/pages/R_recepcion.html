@@ -23,118 +23,147 @@
                 <div class="main-content">
 
                 <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                    <div id="logoutButton" class="profile-card" role="button" tabindex="0">
+                        <i class="fas fa-user"></i>
+                        <span class="profile-name">Admin</span>
+                        <i class="fas profile-role-icon"></i>
+                        <i class="fas fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
-                    <h2>Exportar Reportes</h2>
-                    <hr>
-                    <div class="rooms-container">
-                        <h3 style="color:#007bff">Exportacion de habitacion reservadas</h3>
-                        <div class="form-row">
-                            <input type="hidden" id="room-id-hidden" value="">
-                            <div class="form-group">
-                                <label for="room-number"><i class="fas fa-hashtag" style="color: green;"></i> Número Habitación:</label>
-                                <select id="room-number">
-                                    <option value="all">Todos</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>    
-                                </select>
+                    <div class="page-title-card">
+                        <h2>Exportar Reportes</h2>
+                    </div>
+                    <div class="panel-grid-2col">
+                    <div class="panel-card">
+                        <h3 class="panel-card-title">Exportación de Habitación Reservada</h3>
+                        <input type="hidden" id="room-id-hidden" value="">
+                        <div class="panel-form-grid">
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-hashtag"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="room-number">Número de Habitación</label>
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <select id="room-number" style="flex: 1;">
+                                            <option value="all">Todos</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                        </select>
+                                        <button type="button" id="show-rooms-btn" class="panel-icon-btn" onclick="showRoomSelectionAlert()"><i class="fas fa-search"></i></button>
+                                    </div>
+                                </div>
                             </div>
-                            <button id="show-rooms-btn" class="btn btn-primary">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <div class="form-group">
-                                <label for="start-date"><i class="fas fa-calendar-plus" style="color: green;"></i> Fecha Inicio:</label>
-                                <input type="date" id="fechaEntrada" class="date-picker" placeholder="dd/mm/yyyy">
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-calendar-plus"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="fechaEntrada">Fecha Inicio</label>
+                                    <input type="date" id="fechaEntrada" class="date-picker" placeholder="dd/mm/yyyy">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="end-date"><i class="fas fa-calendar-minus " style="color: red;"></i> Fecha Fin:</label>
-                                <input type="date" id="fechaSalida" class="date-picker" placeholder="dd/mm/yyyy">
-                            </div>
-                            <div class="form-group">
-                                <button class="download-btn" onclick="generateRoomReport()">
-                                    <i class="fas fa-cloud-download-alt" ></i> Descargar
-                                </button>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-calendar-minus"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="fechaSalida">Fecha Fin</label>
+                                    <input type="date" id="fechaSalida" class="date-picker" placeholder="dd/mm/yyyy">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="rooms-container">
-                        <h3 style="color: #007bff;">Exportación de Productos/Servicios Ofrecidos</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="status"><i class="fas fa-check-circle" style="color: green;"></i> Estado:</label>
-                                <select id="status">
-                                    <option value="all">Todos</option>
-                                    <option value="activo">Activo</option>
-                                    <option value="inactivo">Inactivo</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="category"><i class="fas fa-box" style="color: green;"></i> Categoría:</label>
-                                <select id="category">
-                                    <option value="all">Todos</option>
-                                    <option value="PRODUCTO">Producto</option>
-                                    <option value="SERVICIO">Servicio</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <button class="downloadproduct-btn" onclick="downloadProductsReportPDF(document.getElementById('status').value, document.getElementById('category').value)">
-                                    <i class="fas fa-cloud-download-alt"></i> Descargar
-                                </button>
-                            </div>
+                        <div class="panel-form-actions">
+                            <button class="panel-btn-gradient" onclick="generateRoomReport()">
+                                <i class="fas fa-cloud-download-alt"></i> Descargar
+                            </button>
                         </div>
                     </div>
 
-                    <div class="rooms-container">
-                        <h3 style="color: #007bff;">Reporte para ver consumos de una reserva.</h3>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="status"><i class="fas fa-calendar-check" style="color: green;"></i> Reserva:</label>
-                                <select id="reservation-select">
-                                    <option value="all">Todos</option>
-                                    <option value="activo">1</option>
-                                    <option value="inactivo">2</option>
-                                </select>
-                                
+                    <div class="panel-card">
+                        <h3 class="panel-card-title">Exportación de Productos/Servicios Ofrecidos</h3>
+                        <div class="panel-form-grid">
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-check-circle"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="status">Estado</label>
+                                    <select id="status">
+                                        <option value="all">Todos</option>
+                                        <option value="activo">Activo</option>
+                                        <option value="inactivo">Inactivo</option>
+                                    </select>
+                                </div>
                             </div>
-                            <button id="open-reservation-modal" class="search-button">
-                                <i class="fas fa-search"></i>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-box"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="category">Categoría</label>
+                                    <select id="category">
+                                        <option value="all">Todos</option>
+                                        <option value="PRODUCTO">Producto</option>
+                                        <option value="SERVICIO">Servicio</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-form-actions">
+                            <button class="panel-btn-gradient" onclick="downloadProductsReportPDF(document.getElementById('status').value, document.getElementById('category').value)">
+                                <i class="fas fa-cloud-download-alt"></i> Descargar
                             </button>
-                            <div class="form-group">
-                                <button class="downloadproduct-btn" id="download-consumptions-report">
-                                    <i class="fas fa-cloud-download-alt"></i> Descargar
-                                </button>
-                            </div>
                         </div>
                     </div>
 
-                    <div class="rooms-container">
-                        <h3 style="color: #007bff;">Reporte de Productos/Servicios mas utilizados.</h3>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="topProSer"><i class="fas fa-hashtag" style="color: green;"></i> Top:</label>
-                                <select id="topProSer">
-                                    <option value=5>5</option>
-                                    <option value=10>10</option>
-                                    <option value=10>15</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="topcategory"><i class="fas fa-box" style="color: green;"></i> Categoria:</label>
-                                <select id="topcategory">
-                                    <option value="Todos">Todos</option>
-                                    <option value="PRODUCTO">Producto</option>
-                                    <option value="SERVICIO">Servicio</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <button class="downloadproduct-btn" id="topservicios">
-                                    <i class="fas fa-cloud-download-alt"></i> Descargar
-                                </button>
+                    <div class="panel-card">
+                        <h3 class="panel-card-title">Reporte de Consumos de una Reserva</h3>
+                        <div class="panel-form-grid">
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-calendar-check"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="reservation-select">Reserva</label>
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <select id="reservation-select" style="flex: 1;">
+                                            <option value="all">Todos</option>
+                                            <option value="activo">1</option>
+                                            <option value="inactivo">2</option>
+                                        </select>
+                                        <button type="button" id="open-reservation-modal" class="panel-icon-btn" onclick="openReservationSearchModal()"><i class="fas fa-search"></i></button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        <div class="panel-form-actions">
+                            <button class="panel-btn-gradient" id="download-consumptions-report">
+                                <i class="fas fa-cloud-download-alt"></i> Descargar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <h3 class="panel-card-title">Reporte de Productos/Servicios Más Utilizados</h3>
+                        <div class="panel-form-grid">
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-hashtag"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="topProSer">Top</label>
+                                    <select id="topProSer">
+                                        <option value=5>5</option>
+                                        <option value=10>10</option>
+                                        <option value=10>15</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="panel-field">
+                                <div class="panel-icon-box"><i class="fas fa-box"></i></div>
+                                <div class="panel-field-body">
+                                    <label for="topcategory">Categoría</label>
+                                    <select id="topcategory">
+                                        <option value="Todos">Todos</option>
+                                        <option value="PRODUCTO">Producto</option>
+                                        <option value="SERVICIO">Servicio</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-form-actions">
+                            <button class="panel-btn-gradient" id="topservicios">
+                                <i class="fas fa-cloud-download-alt"></i> Descargar
+                            </button>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>

@@ -6,92 +6,146 @@
     <title>Gestión - Fin Hospedaje | Hotel Hodelpa</title>
     <link rel="shortcut icon" href="../../public/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/recepcion.css">
     <link rel="stylesheet" href="../styles/G_recepcion_ocup_dispo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-    <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
 </head>
 <body>
     <div class="dashboard-page">
         <div class="dashboard-container">
             <div class="main-content">
                 <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                    <div id="logoutButton" class="profile-card" role="button" tabindex="0">
+                        <i class="fas fa-user"></i>
+                        <span class="profile-name">Admin</span>
+                        <i class="fas profile-role-icon"></i>
+                        <i class="fas fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
+                <div class="salida-form">
                 <!-- Resumen de la Habitación -->
-                <div class="info-card">
-                    <h2><i class="fas fa-bed"></i> Resumen de la Habitación</h2>
-                    <div class="info-grid">
-                        <div class="info-group">
-                            <label><i class="fas fa-hashtag"></i> Habitacion:</label>
-                            <input type="text" id="roomNumber" readonly>
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3 class="panel-card-title">Resumen de la Habitación</h3>
+                    </div>
+                    <div class="panel-stats-row">
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-hashtag"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomNumber" class="panel-stat-label">Habitación</label>
+                                <input type="text" id="roomNumber" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-list"></i> Detalles:</label>
-                            <input type="text" id="roomDetails" readonly>
-                        </div>        
-                        <div class="info-group">
-                            <label><i class="fas fa-tag"></i> Categoría:</label>
-                            <input type="text" id="roomCategory" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-list"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomDetails" class="panel-stat-label">Detalles</label>
+                                <input type="text" id="roomDetails" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-building"></i> Piso:</label>
-                            <input type="text" id="roomFloor" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-tag"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomCategory" class="panel-stat-label">Categoría</label>
+                                <input type="text" id="roomCategory" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-user"></i> Cliente:</label>
-                            <input type="text" id="clientName" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-building"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="roomFloor" class="panel-stat-label">Piso</label>
+                                <input type="text" id="roomFloor" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-id-card"></i> Nro Documento:</label>
-                            <input type="text" id="nroDocumento" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-user"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="clientName" class="panel-stat-label">Cliente</label>
+                                <input type="text" id="clientName" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-envelope"></i> Correo:</label>
-                            <input type="email" id="correo" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-id-card"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="nroDocumento" class="panel-stat-label">Nro Documento</label>
+                                <input type="text" id="nroDocumento" class="panel-stat-value" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
-                            <input type="date" id="fechaEntrada" readonly>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-envelope"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="correo" class="panel-stat-label">Correo</label>
+                                <input type="email" id="correo" class="panel-stat-value" readonly>
+                            </div>
+                        </div>
+                        <div class="panel-stat">
+                            <div class="panel-icon-box panel-stat-icon"><i class="fas fa-calendar-plus"></i></div>
+                            <div class="panel-stat-body">
+                                <label for="fechaEntrada" class="panel-stat-label">Fecha Entrada</label>
+                                <input type="date" id="fechaEntrada" class="panel-stat-value" readonly>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Detalle de Hospedaje -->
-                <div class="info-card">
-                    <h2><i class="fas fa-concierge-bell"></i> Detalle de Hospedaje</h2>
-                    <div class="info-grid">
-                        <div class="info-group">
-                            <label><i class="fas fa-dollar-sign"></i> Costo Total Habitacion:</label>
-                            <input type="text" id="roomCost" readonly>
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3 class="panel-card-title">Detalle de Hospedaje</h3>
+                    </div>
+                    <div class="panel-form-grid panel-form-grid-tight">
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-dollar-sign"></i></div>
+                            <div class="panel-field-body">
+                                <label for="roomCost">Costo Total Habitación</label>
+                                <input type="text" id="roomCost" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-money-bill-wave"></i> Cantidad Adelanto:</label>
-                            <input type="text" id="cashAdvance" readonly>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-money-bill-wave"></i></div>
+                            <div class="panel-field-body">
+                                <label for="cashAdvance">Cantidad Adelanto</label>
+                                <input type="text" id="cashAdvance" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-money-bill"></i> Cantidad Restante:</label>
-                            <input type="text" id="remainingAmount" readonly>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-money-bill"></i></div>
+                            <div class="panel-field-body">
+                                <label for="remainingAmount">Cantidad Restante</label>
+                                <input type="text" id="remainingAmount" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-list"></i> Detalles:</label>
-                            <input type="text" id="bookingDetails" readonly>
-                        </div> 
-                        <div class="info-group">
-                            <label><i class="fas fa-exclamation-circle"></i> Costo por penalidad:</label>
-                            <input id="penalty" class="cant" type="number" value="0" min="0" oninput="this.value = Math.max(0, this.value)">
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-list"></i></div>
+                            <div class="panel-field-body">
+                                <label for="bookingDetails">Detalles</label>
+                                <input type="text" id="bookingDetails" readonly>
+                            </div>
                         </div>
-                        <div class="info-group">
-                            <label><i class="fas fa-exclamation-circle"></i> Descripcion de la penalidad:</label>
-                            <input id="infoPenality" class="cant" type="text" placeholder="Escriba razon de Penalidad Aqui..." style="cursor: text;">
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-exclamation-circle"></i></div>
+                            <div class="panel-field-body">
+                                <label for="penalty">Costo por Penalidad</label>
+                                <input id="penalty" class="cant" type="number" value="0" min="0" oninput="this.value = Math.max(0, this.value)">
+                            </div>
+                        </div>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-exclamation-circle"></i></div>
+                            <div class="panel-field-body">
+                                <label for="infoPenality">Descripción de la Penalidad</label>
+                                <input id="infoPenality" class="cant" type="text" placeholder="Escriba razón de penalidad aquí..." style="cursor: text;">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Servicio a la Habitación -->
-                <div class="info-card">
-                    <h2><i class="fas fa-bell"></i> Servicio a la Habitación</h2>
-                    <div class="table-container">
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3 class="panel-card-title">Servicio a la Habitación</h3>
+                    </div>
+                    <div class="venta-table-wrap">
                         <table class="service-table">
                             <thead>
                                 <tr>
@@ -103,15 +157,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                              
+
                             </tbody>
                         </table>
-                        <div class="total-section">
-                            <div class="total-label">Total Pagar</div>
-                            <div class="total-amount" style="text-align: left;"></div>
-                            <button class="finish-sale-btn">Finalizar Hospedaje</button>
-                        </div>
                     </div>
+                    <div class="total-section">
+                        <div class="total-label">Total Pagar</div>
+                        <div class="total-amount" style="text-align: left;"></div>
+                        <button class="finish-sale-btn panel-btn-gradient">Finalizar Hospedaje</button>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>

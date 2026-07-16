@@ -20,11 +20,18 @@ async function loadClients() {
 
 function filterAndRenderClients() {
     const searchTerm = document.getElementById('searchUser').value.toLowerCase();
-    let filteredClients = allClients.filter(client => 
-        Object.values(client).some(value => 
+    const statusFilter = document.getElementById('statusFilter').value;
+    let filteredClients = allClients.filter(client =>
+        Object.values(client).some(value =>
             value && value.toString().toLowerCase().includes(searchTerm)
         )
     );
+
+    if (statusFilter === 'active') {
+        filteredClients = filteredClients.filter(client => client.isActive);
+    } else if (statusFilter === 'inactive') {
+        filteredClients = filteredClients.filter(client => !client.isActive);
+    }
 
     const totalFilteredRecords = filteredClients.length;
 
@@ -54,6 +61,10 @@ function renderClients(clients) {
                 <td>${client.email || 'N/A'}</td>
                 <td><span class="status ${client.isActive ? 'active' : 'inactive'}">${client.isActive ? 'Activo' : 'Inactivo'}</span></td>
                 <td>
+                    <label class="status-toggle" title="${client.isActive ? 'Desactivar' : 'Activar'}">
+                        <input type="checkbox" class="status-toggle-input" data-id="${client.id}" ${client.isActive ? 'checked' : ''}>
+                        <span class="status-toggle-slider"></span>
+                    </label>
                     <button class="edit-btn" data-id="${client.id}"><i class="fas fa-edit"></i></button>
                 </td>
             </tr>
@@ -84,9 +95,16 @@ function setupEventListeners() {
     saveButton.addEventListener('click', handleSaveClient);
 
     document.querySelector('table').addEventListener('click', handleTableActions);
+    document.querySelector('table').addEventListener('change', handleStatusToggle);
 
     const searchInput = document.getElementById('searchUser');
     searchInput.addEventListener('input', filterAndRenderClients);
+
+    const statusFilter = document.getElementById('statusFilter');
+    statusFilter.addEventListener('change', () => {
+        currentPage = 1;
+        filterAndRenderClients();
+    });
 
     const recordsPerPageSelect = document.getElementById('recordsPerPage');
     recordsPerPageSelect.addEventListener('change', handleRecordsPerPageChange);
@@ -121,15 +139,21 @@ function handlePaginationClick(event) {
 function openModal(clientData = null) {
     const modal = document.getElementById('createUserModal');
     const modalTitle = modal.querySelector('.modalusu-header h2');
+    const asideTitle = document.getElementById('modalAsideTitle');
+    const asideText = document.getElementById('modalAsideText');
     const saveButton = modal.querySelector('.btn_saveusu');
 
     if (clientData) {
         modalTitle.textContent = 'Editar Cliente';
+        if (asideTitle) asideTitle.innerHTML = 'Editar<br>Cliente';
+        if (asideText) asideText.textContent = 'Actualiza la información del cliente seleccionado.';
         fillModalWithClientData(clientData);
         saveButton.setAttribute('data-id', clientData.id);
     } else {
         modalTitle.textContent = 'Crear Cliente';
-        document.getElementById('tipo').value = 'Cedula';
+        if (asideTitle) asideTitle.innerHTML = 'Crear<br>Cliente';
+        if (asideText) asideText.textContent = 'Completa la información para registrar un nuevo cliente.';
+        document.getElementById('tipo').value = 'CEDULA';
         document.getElementById('documento').value = '';
         document.getElementById('nombre').value = '';
         document.getElementById('apellido').value = '';
@@ -266,6 +290,41 @@ function handleTableActions(event) {
     const clientId = target.getAttribute('data-id');
     if (target.classList.contains('edit-btn')) {
         handleEdit(clientId);
+    }
+}
+
+async function handleStatusToggle(event) {
+    if (!event.target.classList.contains('status-toggle-input')) return;
+
+    const checkbox = event.target;
+    const id = checkbox.getAttribute('data-id');
+    const newState = checkbox.checked;
+
+    checkbox.disabled = true;
+    const result = await updateCustomer({ id, isActive: newState });
+    checkbox.disabled = false;
+
+    if (result) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: newState ? 'Cliente activado' : 'Cliente desactivado',
+            showConfirmButton: false,
+            timer: 1800,
+            timerProgressBar: true,
+        });
+        loadClients();
+    } else {
+        checkbox.checked = !newState;
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'No se pudo actualizar el estado',
+            showConfirmButton: false,
+            timer: 2000,
+        });
     }
 }
 

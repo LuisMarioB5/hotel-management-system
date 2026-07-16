@@ -54,111 +54,136 @@
         <div class="dashboard-container">
             <div class="main-content">
                 <div class="user-info">
-                    <button id="logoutButton">Admin <i class="fas fa-user"></i></button>
+                    <div id="logoutButton" class="profile-card" role="button" tabindex="0">
+                        <i class="fas fa-user"></i>
+                        <span class="profile-name">Admin</span>
+                        <i class="fas profile-role-icon"></i>
+                        <i class="fas fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
-                <h2>Generador de Ofertas</h2>
-                <hr>
-                                   
-                <div class="rooms-container">
-                    <h3 style="color: #007bff;">Cuestionario a realizar al cliente</h3>
-                    <hr>
-                        <div class="form-group">
-                            <button class="button_show_question" onclick="window.location.href='../pages/cuestionario.html'"><i class="fas fa-eye"></i> Pulse para ver cuestionario</button>
-                        </div>  
+                <div class="panel-page-header page-title-card">
+                    <h2>Generador de Ofertas</h2>
+                    <p class="panel-page-subtitle">Crea y administra ofertas personalizadas para tus clientes de manera rápida y sencilla.</p>
                 </div>
 
-                <div class="rooms-container">
-                    <h3 style="color: #007bff;">Generar ofertas a clientes</h3>
-                    <hr>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="topProSer"><i class="fas fa-hashtag" style="color: green;"></i> Cantidad Clientes</label>
-                            <select id="topProSer">
-                                <option value=5>5</option>
-                                <option value=10>10</option>
-                                <option value=15>15</option>
-                                <option value=20>20</option>
-                            </select>
+                <div class="panel-card panel-callout">
+                    <div class="panel-callout-info">
+                        <div class="panel-icon-box"><i class="fas fa-clipboard-list"></i></div>
+                        <div class="panel-callout-text">
+                            <h4>Cuestionario a realizar al cliente</h4>
+                            <p>Responde algunas preguntas clave para generar ofertas más acertadas y personalizadas.</p>
                         </div>
-                        <div class="form-group">
-                            <label for="topcategory"><i class="fas fa-box" style="color: green;"></i> Frecuencia:</label>
-                            <select id="topcategory">
-                                <option value="">Seleccione</option>
-                                <option value="HABITUAL">Frecuente</option>
-                                <option value="SERVICIO">Habitual</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="roomType"><i class="fas fa-tag" style="color: green;"></i>Tipo de Habitación:</label>
-                            <select id="roomType" name="roomType">
-                                <option value="">Seleccione un tipo</option>
-                                <option value="MATRIMONIAL">Matrimonial</option>
-                                <option value="INDIVIDUAL">Individual</option>
-                                <option value="DOBLE">Doble</option>
-                                <option value="TRIPLE">Triple</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="minStayDuration"><i class="fas fa-clock" style="color: green;"></i>Duración Mínima de Estancias:</label>
-                            <input type="number" id="minStayDuration" name="minStayDuration" min="1" value="1">
-                        </div>
-                        <div class="form-group">
-                            <label for="seasonName"><i class="fas fa-snowflake" style="color: green;"></i>Temporada:</label>
-                            <select id="seasonName" name="seasonName">
-                                <option value="">Seleccione una temporada</option>
-                                <option value="Alta">Temporada Alta</option>
-                                <option value="Media">Temporada Media</option>
-                                <option value="Baja">Temporada Baja</option>
-                            </select>
-                        </div>
-                        
                     </div>
-                    <div class="form-group">
-                        <button class="downloadproduct-btn" id="topservicios">
-                            <i class="fas fa-gears"></i> Generar
+                    <div class="panel-divider-vert"></div>
+                    <button class="panel-btn-gradient" onclick="window.location.href='../pages/cuestionario.html'"><i class="fas fa-eye"></i> Ver cuestionario</button>
+                </div>
+
+                <div class="panel-card">
+                    <h3 class="panel-card-title">Generar ofertas a clientes</h3>
+                    <div class="panel-form-grid">
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-users"></i></div>
+                            <div class="panel-field-body">
+                                <label for="topProSer">Cantidad de Clientes</label>
+                                <select id="topProSer">
+                                    <option value=5>5</option>
+                                    <option value=10>10</option>
+                                    <option value=15>15</option>
+                                    <option value=20>20</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-calendar-alt"></i></div>
+                            <div class="panel-field-body">
+                                <label for="topcategory">Frecuencia</label>
+                                <select id="topcategory">
+                                    <option value="">Seleccione</option>
+                                    <option value="HABITUAL">Frecuente</option>
+                                    <option value="SERVICIO">Habitual</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-bed"></i></div>
+                            <div class="panel-field-body">
+                                <label for="roomType">Tipo de Habitación</label>
+                                <select id="roomType" name="roomType">
+                                    <option value="">Seleccione un tipo</option>
+                                    <option value="MATRIMONIAL">Matrimonial</option>
+                                    <option value="INDIVIDUAL">Individual</option>
+                                    <option value="DOBLE">Doble</option>
+                                    <option value="TRIPLE">Triple</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-clock"></i></div>
+                            <div class="panel-field-body">
+                                <label for="minStayDuration">Duración Mínima de Estancias</label>
+                                <input type="number" id="minStayDuration" name="minStayDuration" min="1" value="1">
+                            </div>
+                        </div>
+                        <div class="panel-field">
+                            <div class="panel-icon-box"><i class="fas fa-sun"></i></div>
+                            <div class="panel-field-body">
+                                <label for="seasonName">Temporada</label>
+                                <select id="seasonName" name="seasonName">
+                                    <option value="">Seleccione una temporada</option>
+                                    <option value="Alta">Temporada Alta</option>
+                                    <option value="Media">Temporada Media</option>
+                                    <option value="Baja">Temporada Baja</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-form-actions">
+                        <button class="panel-btn-gradient" id="topservicios">
+                            <i class="fas fa-gears"></i> Generar ofertas
                         </button>
                     </div>
                 </div>
 
-                <div class="rooms-container">
-                    <h3 style="color: #007bff;">Administrador de ofertas</h3>
-                    <hr>
-                    <div class="form-group">
-                        <div class="contenido">
-                            <div class="user-table">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Nombre</th>
-                                            <th>Correo</th>
-                                            <th>Habitacion</th>
-                                            <th>Detalles</th>
-                                            <th>Precio Oferta</th>
-                                            <th>Fecha</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Se llena solo -->
-                                    </tbody>
-                                </table>
-                                <!-- Div de paginación y conteo de registros -->
-                                <div class="pagination-info">
-                                    <label></label>
-                                    <div class="pagination-buttons">
-                                        <button class="pagination-btn"><</button>
-                                        <button class="pagination-btn">></button>
-                                    </div>
-                                </div>
+                <div class="panel-card">
+                    <h3 class="panel-card-title">Administrador de ofertas</h3>
+                    <div class="user-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Habitacion</th>
+                                    <th>Detalles</th>
+                                    <th>Precio Oferta</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="panel-empty-row">
+                                    <td colspan="7">
+                                        <div class="panel-empty-state">
+                                            <div class="panel-empty-icon"><i class="fas fa-envelope-open-text"></i></div>
+                                            <h4>Aún no hay ofertas generadas</h4>
+                                            <p>Genera ofertas para ver los resultados aquí.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- Div de paginación y conteo de registros -->
+                        <div class="pagination-info">
+                            <label></label>
+                            <div class="pagination-buttons">
+                                <button class="pagination-btn"><</button>
+                                <button class="pagination-btn">></button>
                             </div>
-                        </div>    
-                        <div class="search-container">
-                            <button class="search-btn" id="viewAllOffersBtn"><i class="fas fa-gift"></i> Ver Todas las Ofertas</button>
                         </div>
-                        <br>
-                        <button class="downloadproduct-btn" id="enviarreportes">
-                            <i class="fas fa-tag"></i> Enviar ofertas
+                    </div>
+                    <div class="panel-table-footer">
+                        <button class="panel-btn-outline" id="viewAllOffersBtn"><i class="fas fa-list"></i> Ver todas las ofertas</button>
+                        <button class="panel-btn-gradient" id="enviarreportes">
+                            <i class="fas fa-paper-plane"></i> Enviar ofertas
                         </button>
                     </div>
                 </div>

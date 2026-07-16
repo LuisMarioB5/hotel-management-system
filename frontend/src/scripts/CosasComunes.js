@@ -1,6 +1,10 @@
 import { validateJwt } from "../auth/utils.auth.js";
 import { validateAccess } from '../auth/guard.auth.js';
 
+// Aplicar el tema guardado lo antes posible
+const savedTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Validar que el usuario tiene permisos para acceder a la pagina
     validateAccess();
@@ -8,6 +12,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Obtener el rol del usuario
     const user = await validateJwt();
     const role = user?.role || null; // Obtener el rol del usuario o null si no está definido
+
+    // Rellenar la tarjeta de perfil del topbar (si la página la tiene)
+    const profileName = document.querySelector('.profile-name');
+    if (profileName) profileName.textContent = user?.username || 'Usuario';
+
+    const roleIconMeta = {
+        ADMINISTRADOR: { icon: 'fa-crown', color: '#8A4DFF' },
+        RECEPCIONISTA: { icon: 'fa-bell', color: '#2F6BFF' },
+        GERENTE: { icon: 'fa-briefcase', color: '#E5951E' },
+        MANTENIMIENTO: { icon: 'fa-wrench', color: '#1EB1C3' },
+    };
+    const profileRoleIcon = document.querySelector('.profile-role-icon');
+    if (profileRoleIcon) {
+        const meta = roleIconMeta[role];
+        if (meta) {
+            profileRoleIcon.classList.add(meta.icon);
+            profileRoleIcon.style.backgroundColor = meta.color;
+            profileRoleIcon.title = role.charAt(0) + role.slice(1).toLowerCase();
+        } else {
+            profileRoleIcon.style.display = 'none';
+        }
+    }
 
     // Definir permisos por rol (basado en la matriz de acceso)
     const permissions = {
@@ -50,13 +76,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Determinar las secciones permitidas para el rol actual
     const allowedSections = permissions[role] || {};
 
+    // Página actual, para marcar el link activo del sidebar
+    const currentPage = window.location.pathname.split('/').pop();
+    const isActive = (page) => (currentPage === page ? 'active' : '');
+
+    const panelLabels = {
+        ADMINISTRADOR: 'Panel de Administración',
+        RECEPCIONISTA: 'Panel de Recepción',
+        GERENTE: 'Panel de Gerencia',
+        MANTENIMIENTO: 'Panel de Mantenimiento',
+    };
+    const panelLabel = panelLabels[role] || 'Panel de Control';
+
     // Crear el HTML dinámico del sidebar
     const sidebarHTML = `
         <div class="sidebar">
-            <h2>HODELPA</h2>
-            <br><br>
+            <div class="sidebar-brand">
+                <img src="../../public/assets/login-img.jpg" alt="Hotel Hodelpa" class="sidebar-brand-img">
+                <h2 class="sidebar-brand-title">HODELPA</h2>
+                <p class="sidebar-brand-subtitle">${panelLabel}</p>
+            </div>
             <ul>
-                ${allowedSections.dashboard ? `<li><a href="../pages/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>` : ''}
+                ${allowedSections.dashboard ? `<li><a href="../pages/dashboard.html" class="${isActive('dashboard.html')}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>` : ''}
                 ${allowedSections.gestion?.length ? `
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-hotel"></i> Gestion <i class="fas fa-chevron-down"></i></a>
@@ -84,9 +125,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ${allowedSections.mantenimiento.includes('productos') ? `<a href="../pages/T_productos.html"><i class="fas fa-box"></i> Productos</a>` : ''}
                     </div>
                 </li>` : ''}
-                ${allowedSections.reportes ? `<li><a href="../pages/R_recepcion.html"><i class="fas fa-chart-bar"></i> Reportes</a></li>` : ''}
-                ${allowedSections.ofertas ? `<li><a href="../pages/ofertas.html"><i class="fas fa-gift"></i> Ofertas</a></li>` : ''}
+                ${allowedSections.reportes ? `<li><a href="../pages/R_recepcion.html" class="${isActive('R_recepcion.html')}"><i class="fas fa-chart-bar"></i> Reportes</a></li>` : ''}
+                ${allowedSections.ofertas ? `<li><a href="../pages/ofertas.html" class="${isActive('ofertas.html')}"><i class="fas fa-gift"></i> Ofertas</a></li>` : ''}
             </ul>
+            <div class="sidebar-theme-toggle">
+                <span><i class="fas fa-moon"></i> Modo oscuro</span>
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeToggleInput">
+                    <span class="theme-switch-slider"></span>
+                </label>
+            </div>
+            <button type="button" class="sidebar-logout">
+                <i class="fas fa-arrow-right-from-bracket"></i> Cerrar sesión
+            </button>
         </div>
     `;
 
@@ -95,6 +146,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (dashboardContainer) {
         dashboardContainer.insertAdjacentHTML('afterbegin', sidebarHTML);
         dashboardContainer.classList.add('loaded');
+
+        const sidebarLogout = dashboardContainer.querySelector('.sidebar-logout');
+        if (sidebarLogout) {
+            sidebarLogout.addEventListener('click', () => {
+                document.getElementById('logoutModal').style.display = 'block';
+            });
+        }
+
+        const themeToggleInput = dashboardContainer.querySelector('#themeToggleInput');
+        if (themeToggleInput) {
+            themeToggleInput.checked = savedTheme === 'dark';
+            themeToggleInput.addEventListener('change', () => {
+                const theme = themeToggleInput.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            });
+        }
     }
 });
 
