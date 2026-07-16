@@ -1313,80 +1313,131 @@ export async function initializeCheckInPage() {
             const customer = booking.customer;
             const room = booking.room;
 
-            // Crea un div para cada info-card
+            // Agrupa las dos tarjetas de esta reserva (resumen + hospedaje)
+            // para poder resaltarlas juntas y para que el conteo de
+            // "reserva anterior" siga siendo uno por reserva.
             const reservationDetailsDiv = document.createElement('div');
-            reservationDetailsDiv.classList.add('info-card');
+            reservationDetailsDiv.classList.add('checkin-booking');
 
             // Inserta la información de la reserva en el nuevo div
             reservationDetailsDiv.innerHTML = `
-                <h2><i class="fas fa-bed"></i> Resumen de la Reserva: ${booking.id}</h2>
-                <div class="info-grid">
-                    <div class="info-group">
-                        <label><i class="fas fa-hashtag"></i> Habitación:</label>
-                        <input type="text" value="${room.number}" readonly>
+                <div class="panel-card">
+                <div class="panel-card-header">
+                    <h3 class="panel-card-title">Resumen de la Reserva #${booking.id}</h3>
+                </div>
+                <div class="panel-stats-row">
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-hashtag"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Habitación</span>
+                            <span class="panel-stat-value">${room.number}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-list"></i> Detalles:</label>
-                        <input type="text" value="${room.details}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-list"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Detalles</span>
+                            <span class="panel-stat-value">${room.details}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-tag"></i> Categoría:</label>
-                        <input type="text" value="${room.type}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-tag"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Categoría</span>
+                            <span class="panel-stat-value">${room.type}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-building"></i> Piso:</label>
-                        <input type="text" value="${room.floor}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-building"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Piso</span>
+                            <span class="panel-stat-value">${room.floor}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-user"></i> Cliente:</label>
-                        <input type="text" value="${customer.name} ${customer.lastName}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-user"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Cliente</span>
+                            <span class="panel-stat-value">${customer.name} ${customer.lastName}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-id-card"></i> Nro Documento:</label>
-                        <input type="text" value="${customer.documentNumber}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-id-card"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Nro Documento</span>
+                            <span class="panel-stat-value">${customer.documentNumber}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-envelope"></i> Correo:</label>
-                        <input type="text" value="${customer.email}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Correo</span>
+                            <span class="panel-stat-value">${customer.email}</span>
+                        </div>
                     </div>
-                     <div class="info-group">
-                        <label><i class="fas fa-calendar-plus"></i> Fecha Entrada:</label>
-                        <input type="text" value="${formatDate(booking.checkInDate)}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-calendar-plus"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Fecha Entrada</span>
+                            <span class="panel-stat-value">${formatDate(booking.checkInDate)}</span>
+                        </div>
                     </div>
                 </div>
-                <br>
-                <h2><i class="fas fa-concierge-bell"></i> Detalle de Hospedaje</h2>
-                <div class="info-grid">
-                    <div class="info-group">
-                        <label><i class="fas fa-dollar-sign"></i> Precio Total:</label>
-                        <input type="text" value="RD$${room.price * booking.totalStayDays}" readonly>
+                </div>
+
+                <div class="panel-card">
+                <div class="panel-card-header">
+                    <h3 class="panel-card-title">Detalle de Hospedaje</h3>
+                </div>
+                <div class="panel-stats-row">
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Precio Total</span>
+                            <span class="panel-stat-value">RD$${room.price * booking.totalStayDays}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-money-bill-wave"></i> Cantidad Adelanto:</label>
-                        <input type="text" value="RD$${booking.cashAdvance}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Cantidad Adelanto</span>
+                            <span class="panel-stat-value">RD$${booking.cashAdvance}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-money-bill"></i> Cantidad Restante:</label>
-                        <input type="text" value="RD$${booking.totalCost }" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-money-bill"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Cantidad Restante</span>
+                            <span class="panel-stat-value">RD$${booking.totalCost}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-calendar-minus"></i> Fecha Salida:</label>
-                        <input type="text" value="${formatDate(booking.checkOutDate)}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-calendar-minus"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Fecha Salida</span>
+                            <span class="panel-stat-value">${formatDate(booking.checkOutDate)}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-dollar-sign"></i> Precio Habitacion:</label>
-                        <input type="text" value="RD$${room.price}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Precio Habitación</span>
+                            <span class="panel-stat-value">RD$${room.price}</span>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label><i class="fas fa-info"></i> Detalle:</label>
-                        <input type="text" value="${booking.details}" readonly>
+                    <div class="panel-stat">
+                        <div class="panel-icon-box panel-stat-icon"><i class="fas fa-info"></i></div>
+                        <div class="panel-stat-body">
+                            <span class="panel-stat-label">Detalle</span>
+                            <span class="panel-stat-value">${booking.details}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="form-actions">
-                    <button id="cancelarBtn_${booking.id}" class="cancelar-btn"><i class="fas fa-times-circle"></i> Cancelar</button>
-                    <button id="registrarBtn_${booking.id}" class="register-btn"><i class="fas fa-save"></i> Confirmar Hospedaje</button>
+                <div class="panel-form-actions">
+                    <button id="cancelarBtn_${booking.id}" class="panel-btn-outline panel-btn-danger"><i class="fas fa-times-circle"></i> Cancelar</button>
+                    <button id="registrarBtn_${booking.id}" class="panel-btn-gradient"><i class="fas fa-save"></i> Confirmar Hospedaje</button>
                 </div>
-            <div>
+                </div>
             `;
 
             // Agrega el nuevo div al contenedor principal
@@ -1438,7 +1489,7 @@ export async function initializeCheckInPage() {
                     const previousBooking = confirmedBookings.find(b => new Date(b.checkInDate) < new Date(booking.checkInDate));
 
                     if (previousBooking) {
-                        const previousDiv = document.querySelector(`#reservationDetailsContainer .info-card:nth-child(${confirmedBookings.indexOf(previousBooking) + 1})`);
+                        const previousDiv = document.querySelector(`#reservationDetailsContainer .checkin-booking:nth-child(${confirmedBookings.indexOf(previousBooking) + 1})`);
                         if (previousDiv) {
                             previousDiv.classList.add('highlight');
                             setTimeout(() => {

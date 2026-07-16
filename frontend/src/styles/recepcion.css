@@ -321,6 +321,54 @@
     background-color: #F1F5FF;
 }
 
+/* Variante roja para acciones destructivas (cancelar, etc.) */
+.panel-btn-outline.panel-btn-danger {
+    border-color: #ca4754;
+    color: #ca4754;
+}
+
+.panel-btn-outline.panel-btn-danger:hover {
+    background-color: #fdecee;
+}
+
+/* Segundo encabezado dentro de una misma tarjeta (p. ej. "Detalle de
+   Hospedaje" debajo de "Resumen de la Reserva") */
+.panel-card-subheader {
+    margin-top: 26px;
+}
+
+/* Resalta brevemente una tarjeta que necesita atención (p. ej. una
+   reserva anterior que debe confirmarse o cancelarse primero). Puede
+   aplicarse directamente a .panel-card o a un grupo que contenga varias. */
+.panel-card.highlight,
+.highlight .panel-card {
+    animation: panelCardHighlight 3s ease;
+}
+
+@keyframes panelCardHighlight {
+    0%, 100% { box-shadow: 0 10px 22px rgba(20, 20, 40, 0.08); }
+    15%, 45% { box-shadow: 0 0 0 3px #ca4754, 0 10px 22px rgba(202, 71, 84, 0.25); }
+}
+
+[data-theme="dark"] .panel-btn-outline.panel-btn-danger {
+    border-color: #ff8a93;
+    color: #ff8a93;
+}
+
+[data-theme="dark"] .panel-btn-outline.panel-btn-danger:hover {
+    background-color: rgba(202, 71, 84, 0.15);
+}
+
+[data-theme="dark"] .panel-card.highlight,
+[data-theme="dark"] .highlight .panel-card {
+    animation-name: panelCardHighlightDark;
+}
+
+@keyframes panelCardHighlightDark {
+    0%, 100% { box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5); }
+    15%, 45% { box-shadow: 0 0 0 3px #ff8a93, 0 10px 26px rgba(202, 71, 84, 0.35); }
+}
+
 /* Card "callout" (cuestionario) */
 .panel-callout {
     display: flex;
@@ -489,10 +537,42 @@
 }
 
 .panel-stat {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 14px;
     min-width: 0;
+}
+
+/* Línea divisoria entre columnas de una fila de datos, para que no se
+   sienta tan vacía cuando los valores son cortos. */
+.panel-stats-row .panel-stat:not(:nth-child(4n+1))::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 4px;
+    bottom: 4px;
+    width: 1px;
+    background: #E5E7EB;
+}
+
+[data-theme="dark"] .panel-stats-row .panel-stat:not(:nth-child(4n+1))::before {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 900px) {
+    .panel-stats-row .panel-stat::before {
+        display: none;
+    }
+    .panel-stats-row .panel-stat:not(:nth-child(2n+1))::before {
+        display: block;
+    }
+}
+
+@media (max-width: 560px) {
+    .panel-stats-row .panel-stat::before {
+        display: none;
+    }
 }
 
 .panel-stat-icon {
@@ -563,6 +643,7 @@
 .reserva-form .panel-card,
 .venta-form .panel-card,
 .cuestionario-form .panel-card,
+.checkin-form .panel-card,
 .salida-form .panel-card {
     padding: 22px 26px;
 }
@@ -570,6 +651,7 @@
 .reserva-form .panel-card-title,
 .venta-form .panel-card-title,
 .cuestionario-form .panel-card-title,
+.checkin-form .panel-card-title,
 .salida-form .panel-card-title {
     margin-bottom: 16px;
 }
@@ -581,6 +663,8 @@
 .cuestionario-form .panel-field,
 .cuestionario-form .panel-stat,
 .salida-form .panel-field,
+.checkin-form .panel-field,
+.checkin-form .panel-stat,
 .salida-form .panel-stat {
     gap: 10px;
 }
@@ -592,6 +676,8 @@
 .cuestionario-form .panel-field .panel-icon-box,
 .cuestionario-form .panel-stat-icon,
 .salida-form .panel-field .panel-icon-box,
+.checkin-form .panel-field .panel-icon-box,
+.checkin-form .panel-stat-icon,
 .salida-form .panel-stat-icon {
     width: 32px;
     height: 32px;
@@ -602,14 +688,24 @@
 .reserva-form .panel-stats-row,
 .venta-form .panel-stats-row,
 .cuestionario-form .panel-stats-row,
+.checkin-form .panel-stats-row,
 .salida-form .panel-stats-row {
     gap: 18px;
     margin-top: 18px;
 }
 
+.reserva-form .panel-stats-row .panel-stat:not(:nth-child(4n+1))::before,
+.venta-form .panel-stats-row .panel-stat:not(:nth-child(4n+1))::before,
+.cuestionario-form .panel-stats-row .panel-stat:not(:nth-child(4n+1))::before,
+.checkin-form .panel-stats-row .panel-stat:not(:nth-child(4n+1))::before,
+.salida-form .panel-stats-row .panel-stat:not(:nth-child(4n+1))::before {
+    left: -9px;
+}
+
 .reserva-form .panel-field-list,
 .venta-form .panel-field-list,
 .cuestionario-form .panel-field-list,
+.checkin-form .panel-field-list,
 .salida-form .panel-field-list {
     gap: 16px;
 }
@@ -617,6 +713,7 @@
 .reserva-form .panel-form-grid-tight,
 .venta-form .panel-form-grid-tight,
 .cuestionario-form .panel-form-grid-tight,
+.checkin-form .panel-form-grid-tight,
 .salida-form .panel-form-grid-tight {
     gap: 16px 20px;
     margin-top: 16px;
@@ -625,6 +722,7 @@
 .reserva-form .panel-form-grid,
 .venta-form .panel-form-grid,
 .cuestionario-form .panel-form-grid,
+.checkin-form .panel-form-grid,
 .salida-form .panel-form-grid {
     gap: 18px 28px;
 }
@@ -632,6 +730,7 @@
 .reserva-form .panel-field-body label,
 .venta-form .panel-field-body label,
 .cuestionario-form .panel-field-body label,
+.checkin-form .panel-field-body label,
 .salida-form .panel-field-body label {
     margin-bottom: 6px;
     font-size: 12.5px;
@@ -648,6 +747,9 @@
 .cuestionario-form .panel-field-body textarea,
 .salida-form .panel-field-body select,
 .salida-form .panel-field-body input,
+.checkin-form .panel-field-body select,
+.checkin-form .panel-field-body input,
+.checkin-form .panel-field-body textarea,
 .salida-form .panel-field-body textarea {
     padding: 9px 12px;
     font-size: 13px;
