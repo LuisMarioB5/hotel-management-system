@@ -1,8 +1,8 @@
 /* CSSS para USUARIOS/CLIENTES/T_PRODUCTOS*/
 .contenido {
     background: linear-gradient(#fff, #fff) padding-box,
-                linear-gradient(135deg, #2F6BFF 0%, #8A4DFF 100%) border-box;
-    border: 2px solid transparent;
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
+    border: 1.5px solid transparent;
     border-radius: 20px;
     padding: 28px 30px;
     box-shadow: 0 10px 30px rgba(20, 20, 40, 0.08);
@@ -911,7 +911,7 @@
    ============================================================ */
 [data-theme="dark"] .contenido {
     background: linear-gradient(var(--dark-surface), var(--dark-surface)) padding-box,
-                linear-gradient(135deg, #2F6BFF 0%, #8A4DFF 100%) border-box;
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 

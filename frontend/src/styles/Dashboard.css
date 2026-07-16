@@ -360,8 +360,9 @@ body, html {
 
 /* Tarjetas del Dashboard */
 .dashboard-cards {
-    background: #fff;
-    border: none;
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
+    border: 1.5px solid transparent;
     border-radius: 16px;
     box-shadow: 0 10px 22px rgba(20, 20, 40, 0.1);
     padding: 20px;
@@ -880,8 +881,9 @@ body, html {
 }
 
 .sales-chart-container {
-    background: #fff;
-    border: none;
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
+    border: 1.5px solid transparent;
     border-radius: 16px;
     padding: 5px;
     margin: 20px 0;
@@ -917,8 +919,9 @@ body, html {
 /*ULTIMAS RESERVAS ETC*/
 .latest-sections-container {
     display: flex;
-    background: #fff;
-    border: none;
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
+    border: 1.5px solid transparent;
     border-radius: 16px;
     box-shadow: 0 10px 22px rgba(20, 20, 40, 0.1);
     padding: 20px;
@@ -1221,7 +1224,8 @@ body, html {
 [data-theme="dark"] .dashboard-cards,
 [data-theme="dark"] .sales-chart-container,
 [data-theme="dark"] .latest-sections-container {
-    background: var(--dark-surface);
+    background: linear-gradient(var(--dark-surface), var(--dark-surface)) padding-box,
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
     box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
 }
 

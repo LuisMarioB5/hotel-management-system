@@ -628,6 +628,10 @@ async function finishCheckOut(reservationId) {
             cancelButtonText: 'Cancelar',
             allowOutsideClick: false,
             backdrop: true,
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
         });
 
         if (result.isConfirmed) {
@@ -675,7 +679,15 @@ async function finishCheckOut(reservationId) {
                 const invoiceId = result.id;  // Obtener el ID de la factura
                 console.log("Respuesta del backend:", result);
 
-                await Swal.fire("Éxito", "Factura creada correctamente", "success");
+                await Swal.fire({
+                    title: 'Éxito',
+                    text: 'Factura creada correctamente',
+                    icon: 'success',
+                    heightAuto: false,
+                    customClass: {
+                        container: 'swal-container',
+                    },
+                });
 
                 // Continuar con el flujo original
                 await checkOutBooking(reservationId);
@@ -694,6 +706,10 @@ async function finishCheckOut(reservationId) {
                     showCancelButton: true,
                     confirmButtonText: 'Imprimir',
                     cancelButtonText: 'No',
+                    heightAuto: false,
+                    customClass: {
+                        container: 'swal-container',
+                    },
                 });
 
                 if (printResult.isConfirmed) {
@@ -706,11 +722,27 @@ async function finishCheckOut(reservationId) {
             } else {
                 const errorText = await response.text();
                 console.error("Error en la respuesta del backend:", errorText);
-                await Swal.fire("Error", "Hubo un problema al enviar la factura. Verifica los logs.", "error");
+                await Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al enviar la factura. Verifica los logs.',
+                    icon: 'error',
+                    heightAuto: false,
+                    customClass: {
+                        container: 'swal-container',
+                    },
+                });
             }
         }
     } catch (error) {
         console.error('Error during check-out:', error);
-        Swal.fire('Error', 'Ocurrió un problema al finalizar el hospedaje.', 'error');
+        Swal.fire({
+            title: 'Error',
+            text: 'Ocurrió un problema al finalizar el hospedaje.',
+            icon: 'error',
+            heightAuto: false,
+            customClass: {
+                container: 'swal-container',
+            },
+        });
     }
 }

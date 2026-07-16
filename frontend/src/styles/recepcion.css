@@ -1,7 +1,8 @@
 /* Contenedor principal de habitaciones/ tambien se usa para R_recepcion y R_Productos*/
 .rooms-container {
-    background: #fff;
-    border: none;
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
+    border: 1.5px solid transparent;
     border-radius: 16px;
     box-shadow: 0 10px 22px rgba(20, 20, 40, 0.1);
     padding: 15px;
@@ -250,7 +251,9 @@
 }
 
 .panel-card {
-    background: #fff;
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
+    border: 1.5px solid transparent;
     border-radius: 16px;
     box-shadow: 0 10px 22px rgba(20, 20, 40, 0.08);
     padding: 26px 28px;
@@ -1176,7 +1179,8 @@
    Tema oscuro — usado en Ofertas, Reportes, Recepción, etc.
    ============================================================ */
 [data-theme="dark"] .rooms-container {
-    background: var(--dark-surface);
+    background: linear-gradient(var(--dark-surface), var(--dark-surface)) padding-box,
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
     box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
 }
 
@@ -1211,7 +1215,8 @@
 }
 
 [data-theme="dark"] .panel-card {
-    background: var(--dark-surface);
+    background: linear-gradient(var(--dark-surface), var(--dark-surface)) padding-box,
+                linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
     box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
 }
 

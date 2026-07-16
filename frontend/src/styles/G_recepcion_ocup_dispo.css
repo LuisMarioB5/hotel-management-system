@@ -2,12 +2,26 @@
 
 /*ESTILOS PARA GENERALES PARA TODO */
     .info-card, .reservation-details-card {
-        background: white;
+        background: linear-gradient(#fff, #fff) padding-box,
+                    linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
+        border: 1.5px solid transparent;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         padding: 20px;
         margin-bottom: 20px;
         animation: fadeIn 0.5s ease-out;
+    }
+
+    [data-theme="dark"] .info-card,
+    [data-theme="dark"] .reservation-details-card {
+        background: linear-gradient(var(--dark-surface), var(--dark-surface)) padding-box,
+                    linear-gradient(135deg, rgba(47, 107, 255, 0.32) 0%, rgba(138, 77, 255, 0.32) 100%) border-box;
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="dark"] .info-card h2,
+    [data-theme="dark"] .reservation-details-card h2 {
+        color: var(--dark-text);
     }
 
     .info-card h2, .reservation-details-card h2 {
