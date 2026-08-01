@@ -114,7 +114,7 @@ async function handleBookingProcess(event) {
         await Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Hubo un problema al procesar la reserva.',
+            text: error.message || 'Hubo un problema al procesar la reserva.',
             confirmButtonText: 'Entendido',
             heightAuto: false,
             customClass: {
@@ -127,10 +127,10 @@ async function handleBookingProcess(event) {
 function validateForm() {
     let isValid = true;
 
-    // Expresiones regulares para validaciones
-    const docRegex = /^[a-zA-Z0-9]+$/; // Documento puede ser letras y números
-    const nameRegex = /^[a-zA-Z\s]+$/; // Solo letras y espacios
-    const phoneRegex = /^\d+$/; // Solo números
+    // Expresiones regulares para validaciones (mismo criterio que la pantalla de Clientes)
+    const docRegex = /^[a-zA-Z0-9-]+$/; // Documento: letras, números y guiones (ej. cédula 001-1234567-1)
+    const nameRegex = /^[\p{L}\s]+$/u; // Letras (incluye tildes y ñ) y espacios
+    const phoneRegex = /^[\d-]+$/; // Números y guiones
     const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
 
     // Validar número de documento
@@ -924,11 +924,22 @@ export function initializeRoomReservations() {
             const allReservations = await getAllBookings();
             console.log('All reservations:', allReservations); // Log para depurar
 
-            // Filtrar reservas por estado y evitar duplicados por habitación usando un Map
+            // Filtrar reservas por estado y evitar duplicados por habitación usando un Map.
+            // Las activas (pendiente/confirmada) tienen prioridad; una habitación solo
+            // muestra su reserva cancelada si no tiene ninguna reserva activa encima.
             const roomMap = new Map();
             allReservations.forEach(reservation => {
                 const status = reservation.status?.toLowerCase() || '';
                 if (['pendiente', 'confirmada'].includes(status)) {
+                    const roomId = reservation.roomId || reservation.room?.id || reservation.room;
+                    if (roomId && !roomMap.has(roomId)) {
+                        roomMap.set(roomId, { roomId, reservation });
+                    }
+                }
+            });
+            allReservations.forEach(reservation => {
+                const status = reservation.status?.toLowerCase() || '';
+                if (status === 'cancelada') {
                     const roomId = reservation.roomId || reservation.room?.id || reservation.room;
                     if (roomId && !roomMap.has(roomId)) {
                         roomMap.set(roomId, { roomId, reservation });
@@ -966,27 +977,35 @@ export function initializeRoomReservations() {
         roomsGrid.innerHTML = ''; // Clear the container before rendering
         reservations.forEach(reservation => {
             const { roomDetails, status, id } = reservation;
-            const statusClass = (status || '').toLowerCase() === 'confirmada' ? 'reservado' : 'confirmar';
-            const statusText = (status || '').toLowerCase() === 'confirmada' ? 'INICIAR HOSPEDAJE' : 'CONFIRMAR RESERVA';
-    
+            const normalizedStatus = (status || '').toLowerCase();
+            const statusClass = normalizedStatus === 'confirmada' ? 'reservado'
+                : normalizedStatus === 'cancelada' ? 'cancelled'
+                : 'confirmar';
+            const statusText = normalizedStatus === 'confirmada' ? 'INICIAR HOSPEDAJE'
+                : normalizedStatus === 'cancelada' ? 'CANCELADA'
+                : 'CONFIRMAR RESERVA';
+            const statusIcon = statusClass === 'reservado' ? 'fa-calendar-check'
+                : statusClass === 'cancelled' ? 'fa-ban'
+                : 'fa-check-circle';
+
             const roomCard = `
                 <div class="room-card ${statusClass}">
                     <div class="room-header">
                         <span class="room-number">NRO: ${roomDetails?.number || 'No disponible'}</span>
-                        <i class="fas ${statusClass === 'reservado' ? 'fa-calendar-check' : 'fa-check-circle'} room-icon"></i>
+                        <i class="fas ${statusIcon} room-icon"></i>
                     </div>
                     <div class="room-category">
                         CATEGORÍA: ${roomDetails?.type || 'Sin categoría'}
                     </div>
                     <div class="room-status ${statusClass}" data-id="${id}" data-room-id="${roomDetails?.id}">
                         ${statusText}
-                        <i class="fas fa-chevron-right"></i>
+                        ${statusClass !== 'cancelled' ? '<i class="fas fa-chevron-right"></i>' : ''}
                     </div>
                 </div>
             `;
             roomsGrid.insertAdjacentHTML('beforeend', roomCard);
         });
-    
+
         attachEventListeners();
     }
 
@@ -1400,8 +1419,8 @@ export async function initializeCheckInPage() {
                     <div class="panel-stat">
                         <div class="panel-icon-box panel-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
                         <div class="panel-stat-body">
-                            <span class="panel-stat-label">Cantidad Adelanto</span>
-                            <span class="panel-stat-value">RD$${booking.cashAdvance}</span>
+                            <label class="panel-stat-label" for="adelantoCheckIn_${booking.id}">Cantidad Adelanto</label>
+                            <input type="number" id="adelantoCheckIn_${booking.id}" class="panel-stat-value" min="0" step="0.01" value="${booking.cashAdvance || 0}">
                         </div>
                     </div>
                     <div class="panel-stat">
@@ -1530,22 +1549,43 @@ export async function initializeCheckInPage() {
                     });
 
                     if (result.isConfirmed) {
-                        await checkInBooking(booking.id, booking.cashAdvance);
-                    
-                        await Swal.fire({
-                            icon: 'success', // Cambia a un ícono de check
-                            title: 'Confirmada',
-                            text: 'La reserva ha sido confirmada exitosamente.',
-                            backdrop: true,
-                            heightAuto: false,
-                            customClass: {
-                                container: 'swal-container',
-                            },
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#3085d6',
-                        });
-                    
-                        window.location.href = '../pages/G_reservaciones.html';
+                        try {
+                            const adelantoInput = document.getElementById(`adelantoCheckIn_${booking.id}`);
+                            const cashAdvance = adelantoInput ? Number(adelantoInput.value) : booking.cashAdvance;
+                            // La reserva debe quedar con el adelanto actualizado antes del
+                            // check-in: el backend exige que tanto el monto guardado en la
+                            // reserva como el enviado en este paso sean mayores a cero.
+                            await updateBooking({ id: booking.id, cashAdvance });
+                            await checkInBooking(booking.id, cashAdvance);
+
+                            await Swal.fire({
+                                icon: 'success', // Cambia a un ícono de check
+                                title: 'Confirmada',
+                                text: 'La reserva ha sido confirmada exitosamente.',
+                                backdrop: true,
+                                heightAuto: false,
+                                customClass: {
+                                    container: 'swal-container',
+                                },
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#3085d6',
+                            });
+
+                            window.location.href = '../pages/G_reservaciones.html';
+                        } catch (error) {
+                            console.error('Error al hacer check-in:', error);
+                            await Swal.fire({
+                                icon: 'error',
+                                title: 'No se pudo iniciar el hospedaje',
+                                text: error.message || 'Hubo un problema al iniciar el hospedaje.',
+                                confirmButtonText: 'Entendido',
+                                backdrop: true,
+                                heightAuto: false,
+                                customClass: {
+                                    container: 'swal-container',
+                                },
+                            });
+                        }
                     }
                 });
             }

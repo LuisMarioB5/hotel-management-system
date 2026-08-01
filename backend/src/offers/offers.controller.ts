@@ -156,7 +156,7 @@ export class OffersController {
                     <p>Si cambias de opinión, puedes contactarnos para explorar otras opciones.</p>
                   `
               }
-              <a href="http://127.0.0.1:5500/frontend/src/pages/cuestionario.html">
+              <a href="http://127.0.0.1:8080/frontend/src/pages/cuestionario.html">
                 ${isAccepted ? 'Ingresar Preferencias' : 'Ver Otras Ofertas'}
               </a>
             </div>
@@ -164,7 +164,61 @@ export class OffersController {
         </html>
       `;
     } catch (error) {
-      throw new Error(error.message);
+      return `
+        <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 50px;
+                background-color: #f5f5f5;
+              }
+              .container {
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                max-width: 500px;
+                margin: 0 auto;
+              }
+              h2 {
+                color: #333;
+              }
+              p {
+                color: #555;
+                margin: 10px 0;
+              }
+              .error-icon {
+                font-size: 50px;
+                color: #CA4754;
+                margin-bottom: 20px;
+              }
+              a {
+                background: linear-gradient(135deg, #488ada, #ab2497);
+                color: #fff;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                display: inline-block;
+                margin-top: 20px;
+              }
+              a:hover {
+                opacity: 0.9;
+              }
+            </style>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+          </head>
+          <body>
+            <div class="container">
+              <i class="fas fa-times-circle error-icon"></i>
+              <h2>No se pudo procesar tu respuesta</h2>
+              <p>${error.message}</p>
+              <a href="http://localhost:3000">Volver al sitio</a>
+            </div>
+          </body>
+        </html>
+      `;
     }
   }
 }

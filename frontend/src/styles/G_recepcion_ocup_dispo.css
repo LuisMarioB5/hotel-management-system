@@ -1055,6 +1055,13 @@
     color: #fff;
 }
 
+.calendar-day.cancelled,
+.calendar-day.range-middle.cancelled {
+    background-color: #CA4754; /* Rojo para "Cancelada" */
+    color: #fff;
+    text-decoration: line-through;
+}
+
 /* Etiqueta para mostrar la información superpuesta */
 .calendar-day .reservation-label {
     position: absolute;
@@ -1103,6 +1110,11 @@
 
 .reservation-overlay.pending {
     background-color: rgba(128, 0, 128, 0.8); /* Color para "Pendiente" */
+    color: #fff;
+}
+
+.reservation-overlay.cancelled {
+    background-color: rgba(202, 71, 84, 0.8); /* Color para "Cancelada" */
     color: #fff;
 }
 

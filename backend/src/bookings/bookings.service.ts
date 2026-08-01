@@ -67,7 +67,7 @@ export class BookingsService {
         try {
             const confirmUrl = `http://localhost:3000/bookings/confirm-from-email/${booking.id}`;
             const cancelUrl = `http://localhost:3000/bookings/cancel-from-email/${booking.id}`;
-            const questionnaireUrl = `http://127.0.0.1:5500/frontend/src/pages/cuestionario.html`;
+            const questionnaireUrl = `http://127.0.0.1:8080/frontend/src/pages/cuestionario.html`;
 
             // Obtener las amenidades de la habitación
             const roomAmenities = await this.roomsService.getRoomAmenities(booking.room.id);
@@ -208,7 +208,7 @@ export class BookingsService {
         if(id === null) throw new BadRequestException('Debe suministrar el ID de la reserva a modificar.');
         const oldBooking = await this.findById(id);
         
-        if(b.roomId !== null) {
+        if(b.roomId !== null && b.roomId !== undefined) {
             const room: RoomEntity = await this.roomsService.findById(b.roomId);
             oldBooking.room = room;
         }

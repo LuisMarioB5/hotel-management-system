@@ -42,10 +42,12 @@ export class OffersService {
           offers = offersResult;
         }
 
-        // Buscar el WarningMessage
-        const warningResult = results.find(item => item && item.WarningMessage);
+        // Buscar el WarningMessage: viene como su propio conjunto de
+        // resultados (un arreglo con una sola fila), no como una propiedad
+        // suelta del conjunto en sí.
+        const warningResult = results.find(item => Array.isArray(item) && item.length > 0 && item[0].WarningMessage);
         if (warningResult) {
-          warningMessage = warningResult.WarningMessage;
+          warningMessage = warningResult[0].WarningMessage;
         }
       }
 
@@ -167,6 +169,10 @@ export class OffersService {
       throw new Error('La oferta ya ha sido procesada');
     }
 
+    if (offer.validTo && new Date(offer.validTo) < new Date(new Date().toDateString())) {
+      throw new Error('Esta oferta ya venció y no se puede procesar');
+    }
+
     const newStatus = action === 'accept' ? 'ACEPTADA' : 'RECHAZADA';
     await this.dataSource.query(
       `UPDATE offers SET status = ? WHERE id = ?`,
@@ -285,6 +291,10 @@ export class OffersService {
 
       if (offer.status !== 'PENDIENTE') {
         throw new Error('La oferta ya ha sido procesada');
+      }
+
+      if (offer.validTo && new Date(offer.validTo) < new Date(new Date().toDateString())) {
+        throw new Error('Esta oferta ya venció y no se puede procesar');
       }
 
       const newStatus = action === 'accept' ? 'ACEPTADA' : 'RECHAZADA';
@@ -413,7 +423,7 @@ export class OffersService {
     const { email, room_number, details, price, discount, checkInDate, checkOutDate, totalStayDays, totalCost, roomId } = data;
 
     try {
-      const questionnaireUrl = `http://127.0.0.1:5500/frontend/src/pages/cuestionario.html`;
+      const questionnaireUrl = `http://127.0.0.1:8080/frontend/src/pages/cuestionario.html`;
 
       const roomAmenities = await this.roomsService.getRoomAmenities(roomId);
 
@@ -590,9 +600,9 @@ export class OffersService {
     const emailPromises = savedOffers.map(async (offer) => {
       const { id, email, room_number, details, price, discount, validFrom, validTo, room_id } = offer;
 
-      const acceptUrl = `http://127.0.0.1:5500/frontend/src/pages/confirm-offer.html?offerId=${id}&action=accept&validFrom=${validFrom}&validTo=${validTo}`;
-      const rejectUrl = `http://127.0.0.1:5500/frontend/src/pages/confirm-offer.html?offerId=${id}&action=reject&validFrom=${validFrom}&validTo=${validTo}`;
-      const questionnaireUrl = `http://127.0.0.1:5500/frontend/src/pages/cuestionario.html`;
+      const acceptUrl = `http://127.0.0.1:8080/frontend/src/pages/confirm-offer.html?offerId=${id}&action=accept&validFrom=${validFrom}&validTo=${validTo}`;
+      const rejectUrl = `http://127.0.0.1:8080/frontend/src/pages/confirm-offer.html?offerId=${id}&action=reject&validFrom=${validFrom}&validTo=${validTo}`;
+      const questionnaireUrl = `http://127.0.0.1:8080/frontend/src/pages/cuestionario.html`;
 
       try {
         const roomAmenities = await this.roomsService.getRoomAmenities(room_id);

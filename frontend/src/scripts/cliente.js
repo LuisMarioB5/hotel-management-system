@@ -190,9 +190,9 @@ async function handleSaveClient() {
     const estado = document.getElementById('estado').value === 'Activo';
 
     // Expresiones regulares para validaciones
-    const docRegex = /^[a-zA-Z0-9]+$/; // Documento puede ser letras y números
-    const nameRegex = /^[a-zA-Z\s]+$/; // Solo letras y espacios
-    const phoneRegex = /^\d+$/; // Solo números
+    const docRegex = /^[a-zA-Z0-9-]+$/; // Documento: letras, números y guiones (ej. cédula 001-1234567-1)
+    const nameRegex = /^[\p{L}\s]+$/u; // Letras (incluye tildes y ñ) y espacios
+    const phoneRegex = /^[\d-]+$/; // Números y guiones
     const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
 
     // Validar cada campo y mostrar mensajes de error

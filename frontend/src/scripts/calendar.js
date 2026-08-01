@@ -46,7 +46,10 @@ export async function calendarioReserva() {
                             <span class="legend-color checkout"></span>
                             <span>Check-Out</span>
                         </div>
-                     
+                        <div class="legend-item">
+                            <span class="legend-color cancelled"></span>
+                            <span>Cancelada</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -164,7 +167,7 @@ export async function calendarioReserva() {
     
                 return (
                     booking.room.id === roomId &&
-                    ['PENDIENTE', 'CONFIRMADA', 'CHECKED_IN', 'CHECKED_OUT'].includes(booking.status) &&
+                    ['PENDIENTE', 'CONFIRMADA', 'CHECKED_IN', 'CHECKED_OUT', 'CANCELADA'].includes(booking.status) &&
                     ((checkInDate.getFullYear() === year && checkInDate.getMonth() === month) ||
                         (checkOutDate.getFullYear() === year && checkOutDate.getMonth() === month))
                 );
@@ -177,7 +180,12 @@ export async function calendarioReserva() {
             roomBookings.forEach(booking => {
                 const checkInDate = new Date(booking.checkInDate);
                 const checkOutDate = new Date(booking.checkOutDate);
-    
+                // Se ignora la hora guardada para comparar solo el día calendario;
+                // si no, el día de entrada casi nunca coincide con la medianoche
+                // usada para pintar las celdas y se queda sin marcar.
+                checkInDate.setHours(0, 0, 0, 0);
+                checkOutDate.setHours(0, 0, 0, 0);
+
                 // Asignar clases de estado específicas
                 const statusClass = booking.status === 'CONFIRMADA'
                     ? 'confirmed'
@@ -185,6 +193,8 @@ export async function calendarioReserva() {
                     ? 'checked-in'
                     : booking.status === 'CHECKED_OUT'
                     ? 'checked-out'
+                    : booking.status === 'CANCELADA'
+                    ? 'cancelled'
                     : 'pending';
     
                 // Encontrar los días de inicio y fin en el calendario
@@ -418,6 +428,10 @@ estilo.textContent = `
 
     .legend-color.pending {
         background-color: #800080;
+    }
+
+    .legend-color.cancelled {
+        background-color: #CA4754;
     }
 
     .legend-color.available {

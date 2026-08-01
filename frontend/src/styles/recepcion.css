@@ -104,12 +104,14 @@
 .room-card.reservado {border: 2px solid orange;}
 .room-card.limpieza {border: 2px solid #00b0ff; }
 .room-card.confirmar {border: 2px solid #b22596; }
+.room-card.cancelled {border: 2px solid #CA4754; opacity: 0.85;}
 
 .room-status.disponible {background-color: #00c853;}
 .room-status.ocupado {background-color: #ff3d00;}
 .room-status.reservado {background-color: orange;}
 .room-status.limpieza {background-color: #00b0ff;}
 .room-status.confirmar {background-color: #b22596; }
+.room-status.cancelled {background-color: #CA4754; cursor: default;}
 
 .room-status:hover {
     filter: brightness(95%);
@@ -128,6 +130,7 @@
 .room-card.ocupado .room-icon {color: #ff3d00;}
 .room-card.limpieza .room-icon {color: #00b0ff;}
 .room-card.confirmar .room-icon {color: #b22596;}
+.room-card.cancelled .room-icon {color: #CA4754;}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -764,11 +767,11 @@
 }
 
 /* Preferencias de habitación (cuestionario): checkboxes de amenidades */
-.cuestionario-form .suboption.cuestionario-weight {
+.cuestionario-form .cuestionario-weight {
     display: block;
 }
 
-.cuestionario-form .suboption.cuestionario-weight > label {
+.cuestionario-form .cuestionario-weight > label {
     display: block;
     margin-bottom: 8px;
     font-size: 12.5px;
@@ -776,7 +779,7 @@
     color: #1a1a2e;
 }
 
-[data-theme="dark"] .cuestionario-form .suboption.cuestionario-weight > label {
+[data-theme="dark"] .cuestionario-form .cuestionario-weight > label {
     color: var(--dark-text);
 }
 

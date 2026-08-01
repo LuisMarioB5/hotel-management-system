@@ -56,7 +56,8 @@ export async function getBookingById(id) {
 function parseDate(dateString) {
     if (!dateString) return null;
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
+    if (isNaN(date.getTime())) return null;
+    return date;
 }
 
 function dateRangesOverlap(start1, end1, start2, end2) {
@@ -83,7 +84,7 @@ async function checkExistingReservations(roomId, checkInDate, checkOutDate) {
         // First filter by roomId and active status
         const overlappingBookings = allBookings.filter(booking => {
             // Only check bookings for the same room
-            if (booking.roomId !== roomId) {
+            if (booking.room?.id !== roomId) {
                 return false;
             }
 
@@ -297,21 +298,20 @@ export async function updateBooking({
     if(status !== null) body.status = status;
     if(isActive !== null) body.isActive = isActive;
 
-    try {
-        const response = await fetch(BACKEND_ROUTES.bookings.update(id), {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body),
-        });
+    const response = await fetch(BACKEND_ROUTES.bookings.update(id), {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+    });
 
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al actualizar la reserva');
     }
+
+    return await response.json();
 }
 
 /**
@@ -427,21 +427,20 @@ export async function checkInBooking(id, cashAdvance) {
         cashAdvance,
     };
 
-    try {
-        const response = await fetch(BACKEND_ROUTES.bookings.checkIn(id), {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body),
-        });
+    const response = await fetch(BACKEND_ROUTES.bookings.checkIn(id), {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+    });
 
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al realizar el check-in');
     }
+
+    return await response.json();
 }
 
 /**
