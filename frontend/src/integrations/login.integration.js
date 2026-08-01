@@ -11,6 +11,9 @@ export async function loginIntegration() {
 
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
+        const submitBtn = document.querySelector('.login-submit');
+        submitBtn.classList.add('is-loading');
+        submitBtn.disabled = true;
 
         try {
             const response = await fetch(BACKEND_ROUTES.auth.login, {
@@ -33,6 +36,7 @@ export async function loginIntegration() {
 
                 if (status === 'success') {
                     window.location.href = redirectPage; // Redirigir al usuario
+                    return;
                 }
             } else {
                 // Manejo de errores según el código de estado
@@ -46,6 +50,9 @@ export async function loginIntegration() {
         } catch (error) {
             console.error('Error de red:', error);
             handleLoginNotification('network');
+        } finally {
+            submitBtn.classList.remove('is-loading');
+            submitBtn.disabled = false;
         }
     });
 }
