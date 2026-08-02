@@ -3,3 +3,8 @@ node_modules/
 .env
 backend/.env
 frontend/.env
+
+# Skills de agente instaladas localmente (npx skills add ...), no son parte del proyecto
+.agents/
+.claude/skills/
+skills-lock.json
