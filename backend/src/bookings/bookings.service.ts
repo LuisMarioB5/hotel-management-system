@@ -72,70 +72,88 @@ export class BookingsService {
             // Obtener las amenidades de la habitación
             const roomAmenities = await this.roomsService.getRoomAmenities(booking.room.id);
 
-            // Generar el HTML para las amenidades
+            // Generar el HTML para las amenidades, agrupadas por categoría y
+            // mostradas como chips (mismo lenguaje visual que el resto de la app)
             let amenitiesHtml = '';
             roomAmenities.forEach(category => {
+                const groups = category.options.filter(option => option.amenities.length > 0);
+                if (groups.length === 0) return;
+
                 amenitiesHtml += `
-                    <li style="margin-bottom: 10px;">
-                        <strong>${category.name}</strong>
-                        <ul style="list-style: none; padding-left: 20px;">
+                    <tr>
+                        <td style="padding: 10px 0 4px;">
+                            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #8a4dff;">${category.name}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0 0 6px;">
                 `;
-                category.options.forEach(option => {
-                    if (option.amenities.length > 0) {
-                        amenitiesHtml += `
-                            <li>${option.name}</li>
-                            <ul style="list-style: none; padding-left: 20px;">
-                        `;
-                        option.amenities.forEach(amenity => {
-                            amenitiesHtml += `
-                                <li>${amenity.value} (Disponibilidad: ${amenity.availability_level})</li>
-                            `;
-                        });
-                        amenitiesHtml += `</ul>`;
-                    }
+                groups.forEach(option => {
+                    amenitiesHtml += `<span style="display: inline-block; margin: 0 6px 6px 0; padding: 5px 12px; border: 1px solid #e4e6ef; border-radius: 999px; background: #fbfbfe; font-size: 12px; font-weight: 600; color: #2d2f42;">${option.name}: ${option.amenities.map(a => a.value).join(', ')}</span>`;
                 });
                 amenitiesHtml += `
-                        </ul>
-                    </li>
+                        </td>
+                    </tr>
                 `;
             });
 
             // Si no hay amenidades, mostramos un mensaje
             if (!amenitiesHtml) {
-                amenitiesHtml = '<li>No hay amenidades asociadas a esta habitación.</li>';
+                amenitiesHtml = '<tr><td style="color: #9a9fb5; font-size: 13px; padding: 8px 0;">Esta habitación no tiene amenidades adicionales registradas.</td></tr>';
             }
+
+            const detailRow = (label: string, value: string) => `
+                <tr>
+                    <td style="padding: 6px 0; color: #8a8f9c; font-size: 12px; text-transform: uppercase; letter-spacing: 0.02em; width: 40%;">${label}</td>
+                    <td style="padding: 6px 0; color: #14162b; font-size: 14px; font-weight: 700;">${value}</td>
+                </tr>
+            `;
 
             await this.mailerService.sendMail({
                 to: customerEmail,
                 subject: 'Confirma tu Reserva en Hotel Hodelpa',
                 html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-                        <img src="cid:hotel-image" alt="Hotel Hodelpa" style="max-width: 300px; height: auto; border-radius: 10px; display: block; margin: 0 auto;" />
-                        <h2 style="color: #333; text-align: center;">¡Tu Reserva en Hotel Hodelpa!</h2>
-                        <p style="color: #555;">Hola,</p>
-                        <p style="color: #555;">Hemos recibido tu solicitud de reserva. Aquí están los detalles:</p>
-                        <h3 style="color: #333;">Detalles de la Reserva:</h3>
-                        <ul style="color: #555; list-style: none; padding: 0;">
-                            <li><strong>Habitación:</strong> ${roomNumber}</li>
-                            <li><strong>Fecha de Entrada:</strong> ${new Date(booking.checkInDate).toLocaleDateString()}</li>
-                            <li><strong>Fecha de Salida:</strong> ${new Date(booking.checkOutDate).toLocaleDateString()}</li>
-                            <li><strong>Costo Total:</strong> RD$${booking.totalCost.toLocaleString()}</li>
-                        </ul>
-                        <h3 style="color: #333;">Amenidades de la Habitación:</h3>
-                        <ul style="color: #555; list-style: none; padding: 0;">
-                            ${amenitiesHtml}
-                        </ul>
-                        <p style="color: #555; text-align: center;">Por favor, confirma o cancela tu reserva haciendo clic en uno de los botones a continuación:</p>
-                        <div style="text-align: center; margin: 20px 0;">
-                            <a href="${confirmUrl}" style="background: linear-gradient(135deg, #488ada, #ab2497); color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Confirmar</a>
-                            <a href="${cancelUrl}" style="background-color: #ff3333; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Cancelar</a>
+                    <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; background: #f4f5fa; padding: 24px 12px;">
+                        <div style="background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 16px rgba(20,22,43,0.08);">
+                            <img src="cid:hotel-image" alt="Hotel Hodelpa" style="width: 100%; max-height: 220px; object-fit: cover; display: block;" />
+                            <div style="padding: 28px 32px;">
+                                <h2 style="color: #14162b; text-align: center; margin: 0 0 4px; font-size: 22px;">¡Tu Reserva en Hotel Hodelpa!</h2>
+                                <p style="color: #6b7085; text-align: center; margin: 0 0 24px; font-size: 14px;">Hemos recibido tu solicitud de reserva. Aquí están los detalles:</p>
+
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #fbfbfe; border: 1px solid #eef0f7; border-radius: 12px; padding: 4px 16px; margin-bottom: 20px;">
+                                    ${detailRow('Habitación', String(roomNumber))}
+                                    ${detailRow('Fecha de entrada', new Date(booking.checkInDate).toLocaleDateString())}
+                                    ${detailRow('Fecha de salida', new Date(booking.checkOutDate).toLocaleDateString())}
+                                    ${detailRow('Costo total', `RD$${booking.totalCost.toLocaleString()}`)}
+                                </table>
+
+                                <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #9a9fb5; margin-bottom: 6px;">Amenidades de la habitación</div>
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                                    ${amenitiesHtml}
+                                </table>
+
+                                <p style="color: #4a4d63; text-align: center; font-size: 14px; margin: 0 0 12px;">Por favor, confirma o cancela tu reserva:</p>
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                                    <tr>
+                                        <td align="center">
+                                            <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #2f6bff, #8a4dff); color: #fff; padding: 12px 26px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 14px; margin: 0 6px;">Confirmar</a>
+                                            <a href="${cancelUrl}" style="display: inline-block; background: #ca4754; color: #fff; padding: 12px 26px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 14px; margin: 0 6px;">Cancelar</a>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <p style="color: #4a4d63; text-align: center; font-size: 14px; margin: 0 0 12px;">¿Quieres personalizar tu experiencia? Ingresa tus preferencias:</p>
+                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 8px;">
+                                    <tr>
+                                        <td align="center">
+                                            <a href="${questionnaireUrl}" style="display: inline-block; background: #ffffff; color: #8a4dff; border: 1.5px solid #8a4dff; padding: 10px 24px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 13px;">Ingresar Preferencias</a>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <p style="color: #9a9fb5; text-align: center; font-size: 12px; margin: 20px 0 0;">Si tienes alguna pregunta, no dudes en contactarnos.<br>Saludos, el equipo de Hotel Hodelpa</p>
+                            </div>
                         </div>
-                        <p style="color: #555; text-align: center;">¿Quieres personalizar tu experiencia? Ingresa tus preferencias:</p>
-                        <div style="text-align: center; margin: 20px 0;">
-                            <a href="${questionnaireUrl}" style="background: linear-gradient(135deg, #48c9da, #24ab97); color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Ingresar Preferencias</a>
-                        </div>
-                        <p style="color: #555;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
-                        <p style="color: #555;">Saludos,<br>El equipo de Hotel Hodelpa</p>
                     </div>
                 `,
                 attachments: [
