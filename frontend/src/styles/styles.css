@@ -291,6 +291,126 @@
   }
 }
 
+/* Modal de "Habitación Sugerida" del cuestionario */
+.suggested-room-modal {
+  text-align: left;
+}
+
+.suggested-room-section-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #9a9fb5;
+  margin: 14px 0 8px;
+}
+
+.suggested-room-section-label:first-child {
+  margin-top: 0;
+}
+
+.suggested-room-amenities {
+  border: 1px solid #eef0f7;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fbfbfe;
+}
+
+.suggested-amenity-group {
+  margin-bottom: 10px;
+}
+
+.suggested-amenity-group:last-child {
+  margin-bottom: 0;
+}
+
+.suggested-amenity-group-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8a4dff;
+  margin-bottom: 5px;
+}
+
+.suggested-amenity-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.suggested-amenity-chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #e4e6ef;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #2d2f42;
+}
+
+.suggested-amenity-empty {
+  font-size: 12.5px;
+  color: #9a9fb5;
+  margin: 0;
+}
+
+.suggested-room-price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(47, 107, 255, 0.1), rgba(138, 77, 255, 0.1));
+  font-size: 13px;
+  color: #4a4d63;
+}
+
+.suggested-room-price i {
+  color: #8a4dff;
+}
+
+.suggested-room-price strong {
+  margin-left: auto;
+  font-size: 15px;
+  color: #1a1a2e;
+}
+
+.suggested-room-dates {
+  display: flex;
+  gap: 12px;
+}
+
+.suggested-room-dates .date-input-container {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.suggested-room-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #eef0f7;
+  font-size: 13px;
+  color: #4a4d63;
+}
+
+.suggested-room-total strong {
+  font-size: 15px;
+  color: #1a1a2e;
+}
+
+@media (max-width: 560px) {
+  .suggested-room-dates {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 500px) {
   .swal2-popup {
     width: 95vw !important;

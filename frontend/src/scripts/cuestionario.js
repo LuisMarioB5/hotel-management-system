@@ -470,60 +470,63 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     const roomAmenities = await amenitiesResponse.json();
 
-                    let amenitiesHtml = '';
+                    const amenityGroups = [];
                     roomAmenities.forEach(category => {
-                        amenitiesHtml += `
-                            <div class="amenity-category">
-                                <div class="option-label">
-                                    ${category.name}
-                                    <span class="toggle-icon">▼</span>
-                                </div>
-                                <div class="amenity-suboptions">
-                        `;
                         category.options.forEach(option => {
                             if (option.amenities.length > 0) {
-                                amenitiesHtml += `
-                                    <div class="option-name">${option.name}</div>
-                                `;
-                                option.amenities.forEach(amenity => {
-                                    amenitiesHtml += `
-                                        <div class="suboption">
-                                            ${amenity.value}
-                                        </div>
-                                    `;
-                                });
+                                amenityGroups.push({ label: option.name, amenities: option.amenities });
                             }
                         });
-                        amenitiesHtml += `
+                    });
+
+                    const amenitiesHtml = amenityGroups.length > 0
+                        ? amenityGroups.map(group => `
+                            <div class="suggested-amenity-group">
+                                <span class="suggested-amenity-group-label">${group.label}</span>
+                                <div class="suggested-amenity-chip-row">
+                                    ${group.amenities.map(amenity => `
+                                        <span class="suggested-amenity-chip">${amenity.value}</span>
+                                    `).join('')}
                                 </div>
                             </div>
-                        `;
-                    });
+                        `).join('')
+                        : '<p class="suggested-amenity-empty">Esta habitación no tiene amenidades adicionales registradas.</p>';
 
                     const reservationModal = await Swal.fire({
                         title: `Habitación Sugerida: ${room_number}`,
                         html: `
-                            <div style="text-align: left;">
-                                <h3>Detalles de la Habitación</h3>
-                                <div class="amenities-container" id="modal-amenities-container">${amenitiesHtml}</div>
-                                <p><strong>Precio por Noche:</strong> RD$${price.toLocaleString()}</p>
-                                <hr>
-                                <h3>Seleccione las Fechas de su Estancia</h3>
-                                <div class="date-input-container">
-                                    <label for="checkInDate">Fecha de Entrada:</label>
-                                    <div class="date-input-wrapper">
-                                        <input type="date" id="checkInDate" class="date-input">
-                                        <i class="fas fa-calendar-alt date-icon"></i>
+                            <div class="suggested-room-modal">
+                                <span class="suggested-room-section-label">Detalles de la habitación</span>
+                                <div class="suggested-room-amenities" id="modal-amenities-container">${amenitiesHtml}</div>
+
+                                <div class="suggested-room-price">
+                                    <i class="fas fa-tag"></i>
+                                    <span>Precio por noche</span>
+                                    <strong>RD$${price.toLocaleString()}</strong>
+                                </div>
+
+                                <span class="suggested-room-section-label">Fechas de su estancia</span>
+                                <div class="suggested-room-dates">
+                                    <div class="date-input-container">
+                                        <label for="checkInDate">Fecha de Entrada</label>
+                                        <div class="date-input-wrapper">
+                                            <input type="date" id="checkInDate" class="date-input">
+                                            <i class="fas fa-calendar-alt date-icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="date-input-container">
+                                        <label for="checkOutDate">Fecha de Salida</label>
+                                        <div class="date-input-wrapper">
+                                            <input type="date" id="checkOutDate" class="date-input">
+                                            <i class="fas fa-calendar-alt date-icon"></i>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="date-input-container">
-                                    <label for="checkOutDate">Fecha de Salida:</label>
-                                    <div class="date-input-wrapper">
-                                        <input type="date" id="checkOutDate" class="date-input">
-                                        <i class="fas fa-calendar-alt date-icon"></i>
-                                    </div>
+
+                                <div class="suggested-room-total">
+                                    <span>Costo total</span>
+                                    <strong id="totalCost">Seleccione las fechas</strong>
                                 </div>
-                                <p><strong>Costo Total:</strong> <span id="totalCost">Seleccione las fechas</span></p>
                             </div>
                         `,
                         showCancelButton: true,
@@ -603,17 +606,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             }
                         },
                         didOpen: () => {
-                            const modalAmenitiesContainer = document.getElementById('modal-amenities-container');
-                            modalAmenitiesContainer.addEventListener('click', (event) => {
-                                const optionLabel = event.target.closest('.option-label');
-                                if (optionLabel) {
-                                    const suboptions = optionLabel.nextElementSibling;
-                                    const isOpen = suboptions.classList.toggle('open');
-                                    const toggleIcon = optionLabel.querySelector('.toggle-icon');
-                                    toggleIcon.classList.toggle('open', isOpen);
-                                }
-                            });
-
                             const checkInDateInput = document.getElementById('checkInDate');
                             const checkOutDateInput = document.getElementById('checkOutDate');
                             const totalCostSpan = document.getElementById('totalCost');
