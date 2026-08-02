@@ -783,6 +783,315 @@
     color: var(--dark-text);
 }
 
+/* El nuevo picker de amenidades por pestañas reemplaza la grilla de
+   acordeones de styles.css dentro de este contenedor puntual */
+#amenities-container.amenities-container {
+    display: block;
+    max-height: none;
+    overflow: visible;
+    padding: 14px;
+}
+
+/* Detalle Cliente: una sola fila compacta en vez de la cuadrícula 2x2 */
+.cuestionario-client-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.cuestionario-client-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 160px;
+    min-width: 140px;
+}
+
+.cuestionario-client-field > i {
+    color: #8a4dff;
+    font-size: 13px;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.cuestionario-client-field-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.cuestionario-client-field-body label {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: #8a8f9c;
+    margin-bottom: 1px;
+}
+
+.cuestionario-client-field-body input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1a1a2e;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .cuestionario-client-field-body label {
+    color: #6f7488;
+}
+
+[data-theme="dark"] .cuestionario-client-field-body input {
+    color: var(--dark-text, #f0f0f0);
+}
+
+@media (max-width: 720px) {
+    .cuestionario-client-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cuestionario-client-field {
+        min-width: 0;
+    }
+}
+
+/* Amenidades: resumen de selección siempre visible */
+.amenity-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 30px;
+    margin-bottom: 12px;
+}
+
+.amenity-summary-empty {
+    font-size: 12px;
+    color: #9a9fb5;
+    align-self: center;
+}
+
+.amenity-summary-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 6px 5px 10px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(47, 107, 255, 0.12), rgba(138, 77, 255, 0.12));
+    border: 1px solid rgba(138, 77, 255, 0.25);
+    font-size: 12px;
+    font-weight: 600;
+    color: #2d2f42;
+}
+
+.amenity-summary-level {
+    color: #8a4dff;
+    font-weight: 700;
+}
+
+.amenity-summary-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(20, 22, 43, 0.08);
+    color: #4a4d63;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+.amenity-summary-remove:hover {
+    background: rgba(202, 71, 84, 0.18);
+    color: #ca4754;
+}
+
+[data-theme="dark"] .amenity-summary-chip {
+    color: var(--dark-text, #f0f0f0);
+    background: linear-gradient(135deg, rgba(47, 107, 255, 0.18), rgba(138, 77, 255, 0.18));
+    border-color: rgba(138, 77, 255, 0.35);
+}
+
+[data-theme="dark"] .amenity-summary-remove {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cfd1e0;
+}
+
+/* Amenidades: pestañas por categoría en vez de acordeón anidado */
+.amenity-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #eef0f7;
+}
+
+[data-theme="dark"] .amenity-tabs {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.amenity-tab {
+    border: none;
+    background: #f1f2f8;
+    color: #4a4d63;
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.amenity-tab:hover {
+    background: #e4e6f2;
+}
+
+.amenity-tab.active {
+    background: linear-gradient(135deg, #2f6bff, #8a4dff);
+    color: #fff;
+}
+
+[data-theme="dark"] .amenity-tab {
+    background: #232633;
+    color: #cfd1e0;
+}
+
+[data-theme="dark"] .amenity-tab:hover {
+    background: #2c3040;
+}
+
+.amenity-panel {
+    display: none;
+}
+
+.amenity-panel.active {
+    display: block;
+}
+
+.amenity-group {
+    margin-bottom: 14px;
+}
+
+.amenity-group-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #9a9fb5;
+    margin-bottom: 8px;
+}
+
+.amenity-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.amenity-chip {
+    display: flex;
+    align-items: center;
+}
+
+.amenity-chip-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.amenity-chip-label {
+    display: flex;
+    flex-direction: column;
+    padding: 7px 12px;
+    border-radius: 11px;
+    border: 1.5px solid #e4e6ef;
+    background: #fbfbfe;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    line-height: 1.3;
+}
+
+.amenity-chip-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #2d2f42;
+}
+
+.amenity-chip-cost {
+    font-size: 10.5px;
+    color: #9a9fb5;
+}
+
+.amenity-chip-checkbox:hover + .amenity-chip-label {
+    border-color: #cfd2e2;
+}
+
+.amenity-chip-checkbox:focus-visible + .amenity-chip-label {
+    outline: 2px solid #2f6bff;
+    outline-offset: 2px;
+}
+
+.amenity-chip-checkbox:checked + .amenity-chip-label {
+    border-color: #8a4dff;
+    background: linear-gradient(135deg, rgba(47, 107, 255, 0.1), rgba(138, 77, 255, 0.1));
+}
+
+.amenity-chip-checkbox:checked + .amenity-chip-label .amenity-chip-name {
+    color: #6a2fd9;
+}
+
+[data-theme="dark"] .amenity-chip-label {
+    background: #232633;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .amenity-chip-name {
+    color: var(--dark-text, #f0f0f0);
+}
+
+[data-theme="dark"] .amenity-chip-checkbox:checked + .amenity-chip-label {
+    background: linear-gradient(135deg, rgba(47, 107, 255, 0.22), rgba(138, 77, 255, 0.22));
+    border-color: #8a4dff;
+}
+
+[data-theme="dark"] .amenity-chip-checkbox:checked + .amenity-chip-label .amenity-chip-name {
+    color: #c9b3ff;
+}
+
+.amenity-chip-weight {
+    margin-left: 6px;
+    padding: 5px 7px;
+    border-radius: 8px;
+    border: 1.5px solid #8a4dff;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6a2fd9;
+    background: #fff;
+    cursor: pointer;
+}
+
+.amenity-chip-weight:disabled {
+    display: none;
+}
+
+[data-theme="dark"] .amenity-chip-weight {
+    background: #14151d;
+    color: #c9b3ff;
+}
+
 [data-theme="dark"] .amenities-container {
     background: #14151d;
     border-color: rgba(255, 255, 255, 0.1);

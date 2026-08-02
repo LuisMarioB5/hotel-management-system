@@ -22,6 +22,44 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let lastClientId = null;
 
+    // Se consulta el contenedor en fresco cada vez porque loadAmenities()
+    // reconstruye el DOM de las amenidades (y con él, #amenity-summary).
+    const renderAmenitySummary = () => {
+        const summaryEl = document.getElementById('amenity-summary');
+        if (!summaryEl) return;
+
+        const selected = Array.from(amenitiesContainer.querySelectorAll('.amenity-chip-checkbox:checked'));
+
+        if (selected.length === 0) {
+            summaryEl.innerHTML = '<span class="amenity-summary-empty">Aún no has marcado ninguna amenidad.</span>';
+            return;
+        }
+
+        summaryEl.innerHTML = selected.map(checkbox => {
+            const chip = checkbox.closest('.amenity-chip');
+            const name = chip?.dataset.name || '';
+            const select = chip?.querySelector('select');
+            const level = select ? select.value : '1';
+            return `
+                <span class="amenity-summary-chip">
+                    ${name}
+                    <span class="amenity-summary-level">★${level}</span>
+                    <button type="button" class="amenity-summary-remove" data-amenity-id="${checkbox.value}" aria-label="Quitar ${name}">×</button>
+                </span>
+            `;
+        }).join('');
+
+        summaryEl.querySelectorAll('.amenity-summary-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const checkbox = document.getElementById(`amenity-${btn.dataset.amenityId}`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+    };
+
     const resetForm = () => {
         minPriceSelect.value = minPriceSelect.options[0].value;
         maxPriceSelect.value = maxPriceSelect.options[maxPriceSelect.options.length - 1].value;
@@ -31,12 +69,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             if (checkbox.name === 'price_weight_level') return;
             checkbox.checked = false;
-            const preferenceSelect = checkbox.closest('.suboption')?.querySelector('select');
+            const preferenceSelect = checkbox.closest('.amenity-chip')?.querySelector('select');
             if (preferenceSelect) {
                 preferenceSelect.disabled = true;
                 preferenceSelect.value = '1';
             }
         });
+        renderAmenitySummary();
     };
 
     const loadAmenities = async () => {
@@ -54,62 +93,70 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const categories = await response.json();
 
-            let html = '';
-            categories.forEach(category => {
-                html += `
-                    <div class="amenity-category">
-                        <h3>${category.name}</h3>
-                `;
+            const tabsHtml = categories.map((category, index) => `
+                <button type="button" class="amenity-tab${index === 0 ? ' active' : ''}" data-category-tab="${category.id}">
+                    ${category.name}
+                </button>
+            `).join('');
 
-                category.options.forEach(option => {
-                    html += `
-                        <div class="amenity-option">
-                            <div class="option-label">
-                                ${option.name}
-                                <span class="toggle-icon">▼</span>
+            const panelsHtml = categories.map((category, index) => `
+                <div class="amenity-panel${index === 0 ? ' active' : ''}" data-category-panel="${category.id}">
+                    ${category.options.map(option => `
+                        <div class="amenity-group">
+                            <span class="amenity-group-label">${option.name}</span>
+                            <div class="amenity-chip-row">
+                                ${option.amenities.map(amenity => `
+                                    <div class="amenity-chip" data-name="${amenity.value}">
+                                        <input type="checkbox" class="amenity-chip-checkbox" id="amenity-${amenity.id}" value="${amenity.id}">
+                                        <label for="amenity-${amenity.id}" class="amenity-chip-label">
+                                            <span class="amenity-chip-name">${amenity.value}</span>
+                                            <span class="amenity-chip-cost">RD$${amenity.cost.toLocaleString()}</span>
+                                        </label>
+                                        <select class="preference-level amenity-chip-weight" name="preference-${amenity.id}" disabled title="¿Qué tan importante es esta amenidad para ti?">
+                                            ${[1, 2, 3, 4, 5].map(i => `<option value="${i}">${i}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                `).join('')}
                             </div>
-                            <div class="amenity-suboptions">
-                    `;
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
 
-                    option.amenities.forEach(amenity => {
-                        html += `
-                            <div class="suboption">
-                                <input type="checkbox" id="amenity-${amenity.id}" value="${amenity.id}">
-                                <label for="amenity-${amenity.id}">${amenity.value} (RD$${amenity.cost.toLocaleString()})</label>
-                                <select class="preference-level" name="preference-${amenity.id}" disabled title="¿Qué tan importante es esta amenidad para ti?">
-                        `;
-                        for (let i = 1; i <= 5; i++) {
-                            html += `<option value="${i}">${i}</option>`;
-                        }
-                        html += `</select></div>`;
-                    });
+            amenitiesContainer.innerHTML = `
+                <div class="amenity-summary" id="amenity-summary"></div>
+                <div class="amenity-tabs" id="amenity-tabs">${tabsHtml}</div>
+                <div class="amenity-panels" id="amenity-panels">${panelsHtml}</div>
+            `;
 
-                    html += `</div></div>`;
-                });
-
-                html += `</div>`;
-            });
-
-            amenitiesContainer.innerHTML = html;
-
-            amenitiesContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            amenitiesContainer.querySelectorAll('.amenity-chip-checkbox').forEach(checkbox => {
                 checkbox.addEventListener('change', () => {
-                    const preferenceSelect = checkbox.closest('.suboption')?.querySelector('select');
+                    const preferenceSelect = checkbox.closest('.amenity-chip')?.querySelector('select');
                     if (preferenceSelect) {
                         preferenceSelect.disabled = !checkbox.checked;
                     }
+                    renderAmenitySummary();
                 });
             });
 
-            amenitiesContainer.addEventListener('click', (event) => {
-                const optionLabel = event.target.closest('.option-label');
-                if (optionLabel) {
-                    const suboptionsDiv = optionLabel.nextElementSibling;
-                    const isOpen = suboptionsDiv.classList.toggle('open');
-                    const toggleIcon = optionLabel.querySelector('.toggle-icon');
-                    toggleIcon.classList.toggle('open', isOpen);
-                }
+            amenitiesContainer.querySelectorAll('.amenity-chip-weight').forEach(select => {
+                select.addEventListener('change', renderAmenitySummary);
             });
+
+            document.getElementById('amenity-tabs').addEventListener('click', (event) => {
+                const tabBtn = event.target.closest('.amenity-tab');
+                if (!tabBtn) return;
+
+                document.querySelectorAll('.amenity-tab').forEach(tab => tab.classList.remove('active'));
+                tabBtn.classList.add('active');
+
+                const categoryId = tabBtn.dataset.categoryTab;
+                document.querySelectorAll('.amenity-panel').forEach(panel => {
+                    panel.classList.toggle('active', panel.dataset.categoryPanel === categoryId);
+                });
+            });
+
+            renderAmenitySummary();
         } catch (error) {
             Swal.fire({
                 title: 'Error',
@@ -228,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 if (checkbox.name === 'price_weight_level') return;
                 checkbox.checked = false;
-                const preferenceSelect = checkbox.closest('.suboption')?.querySelector('select');
+                const preferenceSelect = checkbox.closest('.amenity-chip')?.querySelector('select');
                 if (preferenceSelect) {
                     preferenceSelect.disabled = true;
                     preferenceSelect.value = '1';
@@ -248,6 +295,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 });
             }
+
+            renderAmenitySummary();
         } catch (error) {
             Swal.fire({
                 title: 'Error',
