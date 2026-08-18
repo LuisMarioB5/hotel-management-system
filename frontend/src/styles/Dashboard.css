@@ -452,57 +452,95 @@ body, html {
     }
 }
 
-/* Ajustes para barra lateral en pantallas pequeñas */
+/* Botón hamburguesa: solo visible en pantallas chicas */
+.sidebar-toggle-btn {
+    display: none;
+}
+
+.sidebar-backdrop {
+    display: none;
+}
+
+/* Ajustes para barra lateral en pantallas pequeñas: se oculta por completo
+   y se muestra como panel deslizante mediante el botón hamburguesa. */
 @media (max-width: 768px) {
     .dashboard-container {
-        flex-direction: column;
-        position: relative; /* Añadido */
+        position: relative;
         min-height: 100vh;
     }
-   
+
     .main-content {
-        order: 1;
-        
-        position: relative; /* Añadido */
-        z-index: 1; /* Añadido */
+        position: relative;
+        z-index: 1;
+        padding-top: 76px;
     }
-    
+
     .sidebar {
-        width: 100%;
-        position: fixed; /* Cambiado de relative a fixed */
-        bottom: 0;
+        width: 240px;
+        max-width: 80vw;
+        min-width: 0;
+        position: fixed;
+        top: 0;
         left: 0;
-        right: 0;
-        height: auto;
-        z-index: 1000; /* Añadido */
-        padding: 10px;
-        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-        text-align: center
+        height: 100vh;
+        z-index: 1100;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 4px 0 14px rgba(0, 0, 0, 0.25);
     }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
     .sidebar ul {
-        flex-direction: row;
+        flex-direction: column;
         display: flex;
         width: 100%;
-        padding: 0;
-        margin: 0;
     }
+
     .sidebar li {
-        margin: 0;
-        flex: 0 1 auto; 
+        margin-bottom: 6px;
     }
+
     .sidebar a {
-        padding: 5px;
-        text-align: center;
+        padding: 11px 14px;
+        text-align: left;
         font-size: 14px;
     }
 
-    /* Ocultar elementos innecesarios en móvil */
     .sidebar-brand,
     .sidebar-theme-toggle,
     .sidebar-logout {
-        display: none;
+        display: flex;
     }
 
+    .sidebar-toggle-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        width: 42px;
+        height: 42px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #2F6BFF 0%, #8A4DFF 100%);
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        z-index: 1200;
+        box-shadow: 0 8px 18px rgba(47, 107, 255, 0.32);
+    }
+
+    .sidebar-backdrop.active {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 16, 24, 0.5);
+        z-index: 1050;
+    }
 }
 
 /* Estilo para el botón de usuario */

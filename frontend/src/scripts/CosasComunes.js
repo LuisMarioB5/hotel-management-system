@@ -163,6 +163,35 @@ document.addEventListener('DOMContentLoaded', async () => {
                 localStorage.setItem('theme', theme);
             });
         }
+
+        // Botón hamburguesa y overlay para mostrar/ocultar el sidebar en pantallas chicas
+        const sidebarEl = dashboardContainer.querySelector('.sidebar');
+        const toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'sidebar-toggle-btn';
+        toggleBtn.setAttribute('aria-label', 'Abrir menú');
+        toggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
+
+        const backdrop = document.createElement('div');
+        backdrop.className = 'sidebar-backdrop';
+
+        document.body.appendChild(toggleBtn);
+        document.body.appendChild(backdrop);
+
+        const closeSidebar = () => {
+            sidebarEl.classList.remove('mobile-open');
+            backdrop.classList.remove('active');
+        };
+        const openSidebar = () => {
+            sidebarEl.classList.add('mobile-open');
+            backdrop.classList.add('active');
+        };
+
+        toggleBtn.addEventListener('click', () => {
+            sidebarEl.classList.contains('mobile-open') ? closeSidebar() : openSidebar();
+        });
+        backdrop.addEventListener('click', closeSidebar);
+        sidebarEl.querySelectorAll('a').forEach(link => link.addEventListener('click', closeSidebar));
     }
 });
 
