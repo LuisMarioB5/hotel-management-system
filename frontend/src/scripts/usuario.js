@@ -126,6 +126,18 @@ function setupEventListeners() {
     const searchInput = document.getElementById('searchUser');
     searchInput.addEventListener('input', filterAndRenderUsers);
 
+    document.addEventListener('keydown', (event) => {
+        const active = document.activeElement;
+        const isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT' || active.isContentEditable);
+        if (isTyping) return;
+        if (event.key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey) return;
+
+        const modal = document.getElementById('createUserModal');
+        if (modal && modal.style.display === 'flex') return;
+
+        searchInput.focus();
+    });
+
     const statusFilter = document.getElementById('statusFilter');
     statusFilter.addEventListener('change', () => {
         currentPage = 1;
@@ -336,7 +348,7 @@ async function handleDelete(userId) {
             showAlert('success', 'Éxito', 'Usuario eliminado correctamente.', 1500);
         } catch (error) {
             console.error('Error deleting user:', error);
-            showAlert('error', 'Error', 'Error al eliminar el usuario', 1500);
+            showAlert('error', 'Error', error.message || 'Error al eliminar el usuario', 2500);
         }
     }
 }

@@ -163,20 +163,19 @@ export async function updateUser({ id = null, username = null, password = null, 
 export async function deleteUser(id) {
     validateParamIsNotNull('id', id);
 
-    try {
-        const response = await fetch(BACKEND_ROUTES.users.delete(id), {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
+    const response = await fetch(BACKEND_ROUTES.users.delete(id), {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
 
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error de red', error);
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al eliminar el usuario');
     }
+
+    return await response.json();
 }
 
 
