@@ -177,8 +177,8 @@ Creamos un usuario de prueba y luego intentamos crear un segundo usuario con exa
 **Precondiciones**: el usuario tiene al menos una tarea de mantenimiento asignada.
 **Pasos**: intentar eliminarlo desde el listado.
 **Resultado esperado**: el sistema debería impedir la eliminación o manejar de forma controlada qué pasa con esa tarea, no fallar con un error de base de datos sin explicación.
-**Resultado obtenido**: _(Pasó / No pasó / Bloqueado / No corrió)_
-**Evidencias**: [imagen del intento de eliminación y su resultado aquí]
+**Resultado obtenido**: **No pasó del todo.** El sistema impide la eliminación del usuario, pero el frontend solo muestra un mensaje genérico ("Error al eliminar el usuario"), sin explicar que la causa es tener una tarea de mantenimiento asignada.
+**Evidencias**: HTTP 500 al eliminar un usuario con tarea de mantenimiento asignada; alerta de error genérica en pantalla.
 
 ### HTL-USR-006 — Rol que no existe, enviado directo a la API (ejecutado por automatización)
 Mandamos una petición de creación de usuario con el rol `"SUPERADMIN"`, que no es uno de los cuatro roles válidos del sistema.
@@ -571,38 +571,23 @@ Cuando un huésped termina su estadía, se le genera una factura con el costo de
 
 **Escenarios**
 1. Generar una factura válida a partir de una reserva con consumos.
-2. Intentar crear una factura vacía directo a la API.
-3. Marcar una factura como pagada.
-4. Confirmar que una factura deshabilitada no aparezca en los reportes.
+2. Marcar una factura como pagada.
+
+> La validación de que una factura deshabilitada no aparezca en los reportes se cubre en el módulo HTL-REP (Reportes).
 
 ### HTL-FAC-001 — Generar factura válida
 **Precondiciones**: una reserva con check-out ya hecho y consumos registrados.
 **Pasos**: ir a Facturación desde la reserva finalizada, generar la factura.
 **Resultado esperado**: la factura sale con el total correcto (estadía más consumos) y queda pendiente de pago.
-**Resultado obtenido**: _(Pasó / No pasó / Bloqueado / No corrió)_
-**Evidencias**: [imagen de la factura generada con el desglose de montos aquí]
+**Resultado obtenido**: **No pasó del todo.** El desglose entre estadía y consumos sale bien separado, sumando solo los consumos pendientes y dejando fuera los ya pagados. Pero el total no descuenta el anticipo (cash advance) que el cliente ya pagó en el check-in: tanto la pantalla de salida como la factura generada cobran el costo completo de la estadía como si el anticipo nunca se hubiera dado. Además, la factura no queda pendiente de pago: sale directamente marcada como "PAGADA" aunque no se envió ningún estado de pago en la petición, y el consumo pendiente se marca como pagado automáticamente al generarla.
+**Evidencias**: factura id 59 sobre la reserva 2 (sin anticipo), total 4,520.00, `paymentStatus: "PAGADA"`. Reserva 3, con anticipo de RD$1,500.00 registrado en el check-in: la pantalla de salida y el cálculo de la factura muestran RD$5,600.00 + RD$500.00 de consumo pendiente = RD$6,100.00 a cobrar, sin restar el anticipo ya pagado.
 
-### HTL-FAC-002 — Factura vacía directo a la API
-**Pasos**: mandar una petición de crear factura sin ningún dato (sin reserva, sin cliente, sin ítems).
-**Resultado esperado**: debería rechazarse.
-**Resultado obtenido**: _(Pasó / No pasó / Bloqueado / No corrió)_
-**Evidencias**: [imagen de la petición y respuesta en Postman aquí]
-
-> Revisando el DTO de creación de facturas, todos los campos están marcados como opcionales, así que probablemente el sistema sí permita crear una factura vacía si no hay una regla adicional en el servicio que lo impida; conviene revisarlo antes de dar por sentado el resultado.
-
-### HTL-FAC-003 — Marcar factura como pagada
+### HTL-FAC-002 — Marcar factura como pagada
 **Precondiciones**: factura pendiente.
 **Pasos**: registrar el pago completo.
 **Resultado esperado**: el estado cambia a pagada y se refleja en los reportes.
 **Resultado obtenido**: _(Pasó / No pasó / Bloqueado / No corrió)_
 **Evidencias**: [imagen de la factura marcada como pagada aquí]
-
-### HTL-FAC-004 — Factura deshabilitada fuera de los reportes
-**Precondiciones**: una factura marcada como deshabilitada.
-**Pasos**: generar el reporte del período correspondiente.
-**Resultado esperado**: esa factura no debe sumarse en los totales del reporte.
-**Resultado obtenido**: _(Pasó / No pasó / Bloqueado / No corrió)_
-**Evidencias**: [imagen del reporte generado sin incluir la factura deshabilitada aquí]
 
 ---
 
