@@ -114,7 +114,11 @@ export class PDFReport {
     doc.on('data', buffers.push.bind(buffers));
 
     // Encabezado
-    this.addHeader(doc, { title: `Reporte de Reservas de la Habitación #${bookings[0].room.number}`, period: this.parsePeriod(checkInDate, checkOutDate) });
+    const uniqueRoomNumbers = new Set(bookings.map(b => b.room.number));
+    const title = uniqueRoomNumbers.size === 1
+      ? `Reporte de Reservas de la Habitación #${bookings[0].room.number}`
+      : 'Reporte de Reservas — Todas las Habitaciones';
+    this.addHeader(doc, { title, period: this.parsePeriod(checkInDate, checkOutDate) });
 
     // Table de reservas
     this.addBookingTable(doc, bookings);
@@ -460,8 +464,8 @@ export class PDFReport {
       .font('Helvetica')
       .moveDown();
   
-    const tableHeaders = ['ID', 'CheckIn', 'CheckOut', 'Días', 'Estado', 'Cliente', 'Total Estadía', 'Total Consumos', 'Subtotal'];
-    const columnWidths = [20, 60, 60, 40, 80, 80, 70, 75, 65]; // Anchos de las columnas
+    const tableHeaders = ['ID', 'Hab.', 'CheckIn', 'CheckOut', 'Días', 'Estado', 'Cliente', 'Total Estadía', 'Total Consumos', 'Subtotal'];
+    const columnWidths = [20, 35, 55, 55, 30, 70, 70, 65, 70, 60]; // Anchos de las columnas
     
     // Establecer la posición inicial para las filas de la tabla
     const startX = doc.x;
@@ -494,29 +498,32 @@ export class PDFReport {
       
       doc.text(`${booking.id}`, currentX, currentY, { width: columnWidths[0], align: 'center' });
       currentX += columnWidths[0];
-      
-      doc.text(DateFormatter.getSimpleDate(booking.checkInDate), currentX, currentY, { width: columnWidths[1], align: 'center' });
+
+      doc.text(`${booking.room.number}`, currentX, currentY, { width: columnWidths[1], align: 'center' });
       currentX += columnWidths[1];
-      
-      doc.text(DateFormatter.getSimpleDate(booking.checkOutDate), currentX, currentY, { width: columnWidths[2], align: 'center' });
+
+      doc.text(DateFormatter.getSimpleDate(booking.checkInDate), currentX, currentY, { width: columnWidths[2], align: 'center' });
       currentX += columnWidths[2];
-      
-      doc.text(booking.totalStayDays.toString(), currentX, currentY, { width: columnWidths[3], align: 'center' });
+
+      doc.text(DateFormatter.getSimpleDate(booking.checkOutDate), currentX, currentY, { width: columnWidths[3], align: 'center' });
       currentX += columnWidths[3];
-      
-      doc.fontSize(9).text(`${booking.status}`, currentX, currentY, { width: columnWidths[4], align: 'center' });
+
+      doc.text(booking.totalStayDays.toString(), currentX, currentY, { width: columnWidths[4], align: 'center' });
       currentX += columnWidths[4];
-      
-      doc.fontSize(10).text(`${booking.customer.name} ${booking.customer.lastName}`, currentX, currentY, { width: columnWidths[5], align: 'center' });
+
+      doc.fontSize(9).text(`${booking.status}`, currentX, currentY, { width: columnWidths[5], align: 'center' });
       currentX += columnWidths[5];
-      
-      doc.text(`$${Number(stayCost).toFixed(2)}`, currentX, currentY, { width: columnWidths[6], align: 'center' });
+
+      doc.fontSize(10).text(`${booking.customer.name} ${booking.customer.lastName}`, currentX, currentY, { width: columnWidths[6], align: 'center' });
       currentX += columnWidths[6];
-      
-      doc.text(`$${Number(consumptionCost).toFixed(2)}`, currentX, currentY, { width: columnWidths[7], align: 'center' });
+
+      doc.text(`$${Number(stayCost).toFixed(2)}`, currentX, currentY, { width: columnWidths[7], align: 'center' });
       currentX += columnWidths[7];
-      
-      doc.text(`$${Number(subtotal).toFixed(2)}`, currentX, currentY, { width: columnWidths[8], align: 'center' });
+
+      doc.text(`$${Number(consumptionCost).toFixed(2)}`, currentX, currentY, { width: columnWidths[8], align: 'center' });
+      currentX += columnWidths[8];
+
+      doc.text(`$${Number(subtotal).toFixed(2)}`, currentX, currentY, { width: columnWidths[9], align: 'center' });
       currentY += 20; // Espacio después de cada fila
     });
   
@@ -528,12 +535,12 @@ export class PDFReport {
   
     // Imprimir el total de consumo como una fila más en la tabla
     currentX = startX;
-    const emptyWidth = (columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + columnWidths[4] + columnWidths[5] + columnWidths[6]);
+    const emptyWidth = (columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + columnWidths[4] + columnWidths[5] + columnWidths[6] + columnWidths[7]);
     doc.text('', currentX, currentY, { width: emptyWidth, align: 'center' });
     currentX += emptyWidth;
-    doc.text('Total faltante:', currentX, currentY, { width: columnWidths[7], align: 'center' });
-    currentX += columnWidths[7];
-    doc.text(`$${Number(total).toFixed(2)}`, currentX, currentY, { width: columnWidths[8], align: 'center' });
+    doc.text('Total faltante:', currentX, currentY, { width: columnWidths[8], align: 'center' });
+    currentX += columnWidths[8];
+    doc.text(`$${Number(total).toFixed(2)}`, currentX, currentY, { width: columnWidths[9], align: 'center' });
   
     doc.moveDown();
   }

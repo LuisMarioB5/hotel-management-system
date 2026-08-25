@@ -344,8 +344,10 @@ export async function loadRoomNumbers() {
     try {
         const rooms = await getAllRooms();
 
-        // Limpiar el select antes de llenarlo
-        select.innerHTML = '<option value="">Seleccione una habitación</option>';
+        // Limpiar el select antes de llenarlo. "Todos" queda seleccionado por
+        // defecto: si no se elige una habitación específica, el reporte trae
+        // las reservas de todas las habitaciones en el rango de fechas.
+        select.innerHTML = '<option value="all">Todos</option>';
 
         // Agregar las habitaciones al select
         rooms.forEach(room => {
@@ -455,22 +457,11 @@ function formatDateToMMDDYYYY(date) {
     return `${month}/${day}/${year}`; // Reorganizar en formato MM/dd/yyyy
 }
 
-// Función para generar el reporte usando el ID de la habitación seleccionada
+// Función para generar el reporte usando el ID de la habitación seleccionada.
+// Si no se eligió una habitación específica (roomId vacío), se genera el
+// reporte para todas las habitaciones en el rango de fechas.
 window.generateRoomReport = async function () {
-    const roomId = document.getElementById('room-id-hidden').value;
-
-    if (!roomId) {
-        await Swal.fire({
-            icon: 'warning',
-            title: 'Selección requerida',
-            text: 'Por favor, selecciona una habitación antes de generar el reporte.',
-            heightAuto: false,
-            customClass: {
-                container: 'swal-container',
-            },
-        });
-        return;
-    }
+    const roomId = document.getElementById('room-id-hidden').value || 'all';
 
     const startDate = document.getElementById('fechaEntrada').value;
     const endDate = document.getElementById('fechaSalida').value;
@@ -530,48 +521,6 @@ window.generateRoomReport = async function () {
 // El estilo de `.room-grid` / `.room-item` (y del resto de los modales de
 // búsqueda) vive en recepcion.css para que respete el tema claro/oscuro del
 // sitio, en vez de inyectarse aquí como CSS plano.
-
-// Función para generar el reporte usando el ID de la habitación seleccionada
-window.generateRoomReport = function () {
-    const roomId = document.getElementById('room-id-hidden').value;
-
-    if (!roomId) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Selección requerida',
-            text: 'Por favor, selecciona una habitación antes de generar el reporte.',
-            heightAuto: false,
-            customClass: {
-                container: 'swal-container',
-            },
-        });
-        return;
-    }
-
-    const startDate = document.getElementById('fechaEntrada').value;
-    const endDate = document.getElementById('fechaSalida').value;
-
-    if (!startDate || !endDate) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Fechas requeridas',
-            text: 'Por favor, selecciona una fecha de inicio y una fecha de fin antes de generar el reporte.',
-            heightAuto: false,
-            customClass: {
-                container: 'swal-container',
-            },
-        });
-        return;
-    }
-
-    // Formatear las fechas en MM/dd/yyyy
-    const formattedStartDate = formatDateToMMDDYYYY(startDate);
-    const formattedEndDate = formatDateToMMDDYYYY(endDate);
-
-    // Llamar a la función para generar el PDF del reporte
-    generateBookingsByRoomReportPDF(roomId, formattedStartDate, formattedEndDate);
-    console.log(`Generando reporte para la habitación con ID ${roomId} desde ${formattedStartDate} hasta ${formattedEndDate}`);
-}
 
 // Cargar los números de las habitaciones al cargar la página
 loadRoomNumbers();

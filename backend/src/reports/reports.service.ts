@@ -38,13 +38,16 @@ export class ReportsService {
     // }
   }
 
-  async generateBookingsByRoomReport(format: 'pdf' | 'excel', roomId: number, checkInDate: string, checkOutDate: string): Promise<Buffer> {
+  async generateBookingsByRoomReport(format: 'pdf' | 'excel', roomId: string, checkInDate: string, checkOutDate: string): Promise<Buffer> {
     const checkinDate = DateFormatter.parseStrDate(checkInDate, 'MM/dd/yyyy');
     const checkoutDate = checkOutDate ? DateFormatter.parseStrDate(checkOutDate, 'MM/dd/yyyy') : new Date();
-    
-    let filteredBookings = await this.bookingsService.getReservationsByRoomAndDateRange(roomId, checkinDate, checkoutDate);
+
+    const isAllRooms = !roomId || roomId === 'all';
+    const parsedRoomId = isAllRooms ? null : Number(roomId);
+
+    let filteredBookings = await this.bookingsService.getReservationsByRoomAndDateRange(parsedRoomId, checkinDate, checkoutDate);
     if(filteredBookings.length === 0) {
-      throw new NotFoundException('No existen reservas para la habitación en el periodo de tiempo seleccionado.');
+      throw new NotFoundException('No existen reservas en el periodo de tiempo seleccionado.');
     }
 
     if (format === 'pdf') {

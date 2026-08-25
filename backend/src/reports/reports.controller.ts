@@ -53,7 +53,7 @@ export class ReportsController {
   }
   
   @Get('bookingsByRoom/:roomId/pdf')
-  async generateBookingsByRoomReport(@Param('roomId') roomId: number, @Query('checkInDate') checkInDate: string, @Query('checkOutDate') checkOutDate: string, @Res() res: Response) {
+  async generateBookingsByRoomReport(@Param('roomId') roomId: string, @Query('checkInDate') checkInDate: string, @Query('checkOutDate') checkOutDate: string, @Res() res: Response) {
     try {
       const pdfBuffer = await this.service.generateBookingsByRoomReport('pdf', roomId, checkInDate, checkOutDate);
       const date = new Date()

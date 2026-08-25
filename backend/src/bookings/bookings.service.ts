@@ -400,18 +400,19 @@ export class BookingsService {
     }
 
     async getReservationsByRoomAndDateRange(
-        roomId: number,
+        roomId: number | null,
         startDate: Date,
         endDate: Date,
     ): Promise<BookingEntity[]> {
-        const startdate = startDate;
-        const enddate = endDate;
+        const where: Record<string, unknown> = {
+            checkInDate: Between(startDate, endDate),
+        };
+        if (roomId !== null) {
+            where.room = { id: roomId };
+        }
 
         return this.repository.find({
-            where: {
-                room: {id: roomId},
-                checkInDate: Between(startdate, enddate)
-            },
+            where,
             relations: ['room', 'customer', 'consumptions'],
         });
     }
